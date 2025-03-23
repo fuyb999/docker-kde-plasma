@@ -10,9 +10,9 @@ ENV SELKIES_VENV=$VENV_DIR/selkies
 ENV SELKIES_VENV_PYTHON=$SELKIES_VENV/bin/python
 ENV SELKIES_VENV_PIP=$SELKIES_VENV/bin/pip
 
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
+ENV LANG zh_CN.UTF-8
+ENV LANGUAGE zh_CN:zh
+ENV LC_ALL zh_CN.UTF-8
 
 ENV USER_GROUPS=${USER_GROUPS},input,lpadmin
 ENV DISPLAY :0
@@ -37,7 +37,7 @@ ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES all
 ENV __GL_SYNC_TO_VBLANK 0
 
-ENV TZ UTC
+ENV TZ Asia/Shanghai
 ENV DISPLAY_SIZEW 1920
 ENV DISPLAY_SIZEH 1080
 ENV DISPLAY_REFRESH 60
@@ -59,11 +59,11 @@ ENV KDE_APPLICATIONS_AS_SCOPE=1
 ENV KWIN_COMPOSE N
 ENV KWIN_X11_NO_SYNC_TO_VBLANK 1
 ENV SUDO_EDITOR kate
-# Set input to fcitx
-ENV GTK_IM_MODULE fcitx
-ENV QT_IM_MODULE fcitx
-ENV XIM fcitx
-ENV XMODIFIERS "@im=fcitx"
+# Set input to fcitx5
+ENV GTK_IM_MODULE fcitx5
+ENV QT_IM_MODULE fcitx5
+#ENV XIM fcitx
+ENV XMODIFIERS "@im=fcitx5"
 
 ENV APPIMAGE_EXTRACT_AND_RUN 1
 
@@ -75,6 +75,9 @@ COPY --chown=0:1111 ./COPY_ROOT_0/ /
 
 ENV OPT_SYNC=$OPT_SYNC
 ENV IMAGE_SLUG="linux-desktop"
+
+# Update mirror
+RUN sed -i -E 's/(archive|security).ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list
 
 # Use build scripts to ensure we can build all targets from one Dockerfile in a single layer.
 # Don't put anything heavy in here - We can use multi-stage building above if necessary.

@@ -5,23 +5,23 @@ services:
     build:
       context: ./build
       args:
-        IMAGE_BASE: ${IMAGE_BASE:-ghcr.io/ai-dock/base-image:v2-cuda-12.1.1-cuddn8-runtime-22.04}
-        SELKIES_VERSION: ${SELKIES_VERSION:-latest}
-      tags:
-        - "ghcr.io/ai-dock/linux-desktop:${IMAGE_TAG:-v2-cuda-12.1.1-cudnn8-runtime-22.04}"
+        IMAGE_BASE: ${IMAGE_BASE:-ghcr.nju.edu.cn/ai-dock/base-image:v2-cuda-12.1.1-cudnn8-runtime-22.04}
+        SELKIES_VERSION: ${SELKIES_VERSION:-1.6.2}
+#      tags:
+#        - "ghcr.io/ai-dock/linux-desktop:${IMAGE_TAG:-v2-cuda-12.1.1-cudnn8-runtime-22.04}"
         
-    image: ghcr.io/ai-dock/linux-desktop:${IMAGE_TAG:-v2-cuda-12.1.1-cudnn8-runtime-22.04}
+    image: docker-kde-plasma:${IMAGE_TAG:-v2-cuda-12.1.1-cudnn8-runtime-22.04}
     
     shm_size: 2G
     
     ## For Nvidia GPU's - You probably want to uncomment this
-    #deploy:
-    #  resources:
-    #    reservations:
-    #      devices:
-    #        - driver: nvidia
-    #          count: all
-    #          capabilities: [gpu]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
     
     cap_add:
       - SYS_ADMIN
@@ -49,7 +49,7 @@ services:
         # Web UI for easy service access
         - ${SERVICEPORTAL_PORT_HOST:-1111}:${SERVICEPORTAL_PORT_HOST:-1111}
         # Coturn
-        - ${COTURN_PORT_HOST:-3478}:${COTURN_PORT_HOST:-3478}
+#        - ${COTURN_PORT_HOST:-3478}:${COTURN_PORT_HOST:-3478}
         # Selkies
         - ${SELKIES_PORT_HOST:-6100}:${SELKIES_PORT_HOST:-6100}
         # VNC
@@ -62,11 +62,11 @@ services:
         # Don't enclose values in quotes
         - ENABLE_COTURN=${ENABLE_COTURN:-false}
         # External IP
-        - COTURN_LISTEN_ADDRESS=${COTURN_LISTEN_ADDRESS:-127.0.0.1}
-        - COTURN_PORT_HOST=${COTURN_PORT_HOST:-3478}
-        - COTURN_USER=${COTURN_USER:-user}
+#        - COTURN_LISTEN_ADDRESS=${COTURN_LISTEN_ADDRESS:-127.0.0.1}
+#        - COTURN_PORT_HOST=${COTURN_PORT_HOST:-3478}
+#        - COTURN_USER=${COTURN_USER:-user}
         # Auto-generated when empty
-        - COTURN_PASSWORD=${COTURN_PASSWORD:-}
+#        - COTURN_PASSWORD=${COTURN_PASSWORD:-}
         # External IP if coturn
         - SELKIES_TURN_HOST=${SELKIES_TURN_HOST:-127.0.0.1}
         - SELKIES_TURN_PORT=${SELKIES_TURN_PORT:-3478}
@@ -84,6 +84,7 @@ services:
         - WORKSPACE_SYNC=${WORKSPACE_SYNC:-true}
         - CF_TUNNEL_TOKEN=${CF_TUNNEL_TOKEN:-}
         - CF_QUICK_TUNNELS=${CF_QUICK_TUNNELS:-true}
+        - WEB_ENABLE_HTTPS=${WEB_ENABLE_HTTPS:-true}
         - WEB_ENABLE_AUTH=${WEB_ENABLE_AUTH:-true}
         - WEB_USER=${WEB_USER:-user}
         - WEB_PASSWORD=${WEB_PASSWORD:-password}
@@ -104,13 +105,13 @@ services:
         - SYNCTHING_URL=${SYNCTHING_URL:-}
         #- PROVISIONING_SCRIPT=${PROVISIONING_SCRIPT:-}
         # Vast.ai KVM testing
-        - VAST_TCP_PORT_1111=${VAST_TCP_PORT_1111}
-        - VAST_TCP_PORT_2222=${VAST_TCP_PORT_2222}
-        - VAST_TCP_PORT_6100=${VAST_TCP_PORT_6100}
-        - VAST_TCP_PORT_6200=${VAST_TCP_PORT_6200}
-        - VAST_TCP_PORT_8384=${VAST_TCP_PORT_8384}
-        - VAST_TCP_PORT_70000=${VAST_TCP_PORT_70000}
-        - VAST_TCP_PORT_72299=${VAST_TCP_PORT_72299}
+#        - VAST_TCP_PORT_1111=${VAST_TCP_PORT_1111}
+#        - VAST_TCP_PORT_2222=${VAST_TCP_PORT_2222}
+#        - VAST_TCP_PORT_6100=${VAST_TCP_PORT_6100}
+#        - VAST_TCP_PORT_6200=${VAST_TCP_PORT_6200}
+#        - VAST_TCP_PORT_8384=${VAST_TCP_PORT_8384}
+#        - VAST_TCP_PORT_70000=${VAST_TCP_PORT_70000}
+#        - VAST_TCP_PORT_72299=${VAST_TCP_PORT_72299}
         
     # Magic bullet to solve networking issues - I don't like it
     # Turn server works fine both within local network and for internet

@@ -168,7 +168,8 @@ function build_common_install_pipewire() {
 }
 
 function build_common_install_virtualgl() {
-    export VIRTUALGL_VERSION="$(curl -fsSL "https://api.github.com/repos/VirtualGL/virtualgl/releases/latest" | jq -r '.tag_name' | sed 's/[^0-9\.\-]*//g')"
+#    export VIRTUALGL_VERSION="$(curl -fsSL "https://api.github.com/repos/VirtualGL/virtualgl/releases/latest" | jq -r '.tag_name' | sed 's/[^0-9\.\-]*//g')"
+    export VIRTUALGL_VERSION="3.1.2"
     env-store VIRTUALGL_VERSION
     cd /tmp
     wget "https://github.com/VirtualGL/virtualgl/releases/download/${VIRTUALGL_VERSION}/virtualgl_${VIRTUALGL_VERSION}_amd64.deb"
@@ -214,6 +215,7 @@ function build_common_install_kde() {
     # Essentials for KDE to start without issues
     $APT_INSTALL \
         kde-plasma-desktop \
+        language-pack-kde-zh-hans \
         adwaita-icon-theme-full \
         appmenu-gtk3-module \
         ark \
@@ -229,21 +231,6 @@ function build_common_install_kde() {
         dolphin-plugins \
         dbus-x11 \
         enchant-2 \
-        fcitx \
-        fcitx-frontend-gtk2 \
-        fcitx-frontend-gtk3 \
-        fcitx-frontend-qt5 \
-        fcitx-module-dbus \
-        fcitx-module-kimpanel \
-        fcitx-module-lua \
-        fcitx-module-x11 \
-        fcitx-tools \
-        fcitx-hangul \
-        fcitx-libpinyin \
-        fcitx-m17n \
-        fcitx-mozc \
-        fcitx-sayura \
-        fcitx-unikey \
         filelight \
         frameworkintegration \
         gwenview \
@@ -254,7 +241,12 @@ function build_common_install_kde() {
         kcalc \
         kcharselect \
         kdeadmin \
-        kde-config-fcitx \
+        fcitx5 \
+        fcitx5-chinese-addons \
+        fcitx5-frontend-gtk2 \
+        fcitx5-frontend-gtk3 \
+        fcitx5-frontend-qt5 \
+        kde-config-fcitx5 \
         kde-config-gtk-style \
         kde-config-gtk-style-preview \
         kdeconnect \
@@ -334,18 +326,18 @@ function build_common_install_kde() {
 function build_common_install_packages() {
     mkdir -pm755 /etc/apt/trusted.gpg.d && curl -fsSL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x0AB215679C571D1C8325275B9BDB3D89CE49EC21" | gpg --dearmor -o /etc/apt/trusted.gpg.d/mozillateam-ubuntu-ppa.gpg && \
     mkdir -pm755 /etc/apt/sources.list.d && echo "deb https://ppa.launchpadcontent.net/mozillateam/ppa/ubuntu $(grep UBUNTU_CODENAME= /etc/os-release | cut -d= -f2 | tr -d '\"') main" > "/etc/apt/sources.list.d/mozillateam-ubuntu-ppa-$(grep UBUNTU_CODENAME= /etc/os-release | cut -d= -f2 | tr -d '\"').list" && \
-    apt-get update
 
-    $APT_INSTALL \
+    apt-get update && $APT_INSTALL \
         firefox \
-        vlc \
-        vlc-l10n \
-        vlc-plugin-access-extra \
-        vlc-plugin-notify \
-        vlc-plugin-samba \
-        vlc-plugin-skins2 \
-        vlc-plugin-video-splitter \
-        vlc-plugin-visualization
+        tzdata \
+#        vlc \
+#        vlc-l10n \
+#        vlc-plugin-access-extra \
+#        vlc-plugin-notify \
+#        vlc-plugin-samba \
+#        vlc-plugin-skins2 \
+#        vlc-plugin-video-splitter \
+#        vlc-plugin-visualization
 
         update-alternatives --set x-www-browser /usr/bin/firefox
 }
