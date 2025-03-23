@@ -5,7 +5,7 @@ source /opt/ai-dock/etc/environment.sh
 build_common_main() {
     add-apt-repository multiverse
     apt-get update
-    build_common_install_hans
+#    build_common_install_hans
     build_common_install_xorg
     build_common_install_kde
     build_common_install_pipewire
@@ -207,8 +207,8 @@ function build_common_install_kasmvnc() {
 
 function build_common_install_kde() {
     # Essentials for KDE to start without issues
+#    language-pack-kde-zh-hans
     $APT_INSTALL \
-#        language-pack-kde-zh-hans \
         kde-plasma-desktop \
         adwaita-icon-theme-full \
         appmenu-gtk3-module \
@@ -337,15 +337,10 @@ function build_common_install_packages() {
     mkdir -pm755 /etc/apt/sources.list.d && echo "deb https://ppa.launchpadcontent.net/mozillateam/ppa/ubuntu $(grep UBUNTU_CODENAME= /etc/os-release | cut -d= -f2 | tr -d '\"') main" > "/etc/apt/sources.list.d/mozillateam-ubuntu-ppa-$(grep UBUNTU_CODENAME= /etc/os-release | cut -d= -f2 | tr -d '\"').list" && \
 
     apt-get update && $APT_INSTALL \
-        firefox \
-#        vlc \
-#        vlc-l10n \
-#        vlc-plugin-access-extra \
-#        vlc-plugin-notify \
-#        vlc-plugin-samba \
-#        vlc-plugin-skins2 \
-#        vlc-plugin-video-splitter \
-#        vlc-plugin-visualization
+        ssl-cert \
+        fuse \
+        libfuse2 \
+        firefox
 
         update-alternatives --set x-www-browser /usr/bin/firefox
 }

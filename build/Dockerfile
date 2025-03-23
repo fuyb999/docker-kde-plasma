@@ -79,6 +79,30 @@ ENV IMAGE_SLUG="linux-desktop"
 # Update mirror
 RUN sed -i -E 's/(archive|security).ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list
 
+# Update locale
+RUN \
+    echo "**** Update apt database ****" \
+        && apt-get update \
+    && \
+    echo "**** Install and configure locals ****" \
+        && apt-get install -y --no-install-recommends \
+            locales \
+            tzdata \
+            language-pack-zh-hans \
+            fonts-wqy-zenhei \
+        && echo 'zh_CN.UTF-8 UTF-8' > /etc/locale.gen \
+        && locale-gen \
+    && \
+    echo "**** Section cleanup ****" \
+        && apt-get clean autoclean -y \
+        && apt-get autoremove -y \
+        && rm -rf \
+            /var/lib/apt/lists/* \
+            /var/tmp/* \
+            /tmp/* \
+    && \
+    echo
+
 # Use build scripts to ensure we can build all targets from one Dockerfile in a single layer.
 # Don't put anything heavy in here - We can use multi-stage building above if necessary.
 
