@@ -10,10 +10,6 @@ ENV SELKIES_VENV=$VENV_DIR/selkies
 ENV SELKIES_VENV_PYTHON=$SELKIES_VENV/bin/python
 ENV SELKIES_VENV_PIP=$SELKIES_VENV/bin/pip
 
-ENV LANG zh_CN.UTF-8
-ENV LANGUAGE zh_CN:zh
-ENV LC_ALL zh_CN.UTF-8
-
 ENV USER_GROUPS=${USER_GROUPS},input,lpadmin
 ENV DISPLAY :0
 ENV VNC_DISPLAY :1
@@ -86,8 +82,8 @@ RUN \
     && \
     echo "**** Install and configure locals ****" \
         && apt-get install -y --no-install-recommends \
-            locales \
             tzdata \
+            locales \
             language-pack-zh-hans \
             fonts-wqy-zenhei \
         && echo 'zh_CN.UTF-8 UTF-8' > /etc/locale.gen \
@@ -102,6 +98,10 @@ RUN \
             /tmp/* \
     && \
     echo
+
+ENV LANG zh_CN.UTF-8
+ENV LANGUAGE zh_CN:zh
+ENV LC_ALL zh_CN.UTF-8
 
 # Use build scripts to ensure we can build all targets from one Dockerfile in a single layer.
 # Don't put anything heavy in here - We can use multi-stage building above if necessary.
