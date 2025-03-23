@@ -89,6 +89,9 @@ RUN \
         && echo 'zh_CN.UTF-8 UTF-8' > /etc/locale.gen \
         && locale-gen \
     && \
+    echo "**** Configure timezone ****" \
+        && ln -snf "/usr/share/zoneinfo/${TZ}" /etc/localtime && echo "${TZ}" > /etc/timezone \
+    && \
     echo "**** Section cleanup ****" \
         && apt-get clean autoclean -y \
         && apt-get autoremove -y \
@@ -111,6 +114,13 @@ RUN set -eo pipefail && /opt/ai-dock/bin/build/layer0/init.sh | tee /var/log/bui
 # Copy overrides and new files into a final layer for fast rebuilds. Uncomment below
 COPY --chown=0:1111 ./COPY_ROOT_99/ /
 RUN set -eo pipefail && /opt/ai-dock/bin/build/layer99/init.sh | tee -a /var/log/build.log
+
+COPY ttf-wps-fonts /tmp/ttf-wps-fonts
+RUN \
+    echo "**** Install ttf-wps-fonts ****" \
+        && /tmp/ttf-wps-fonts/install.sh \
+        && rm -rf /tmp/ttf-wps-fonts \
+    echo
 
 # Keep init.sh as-is and place additional logic in /opt/ai-dock/bin/preflight.sh
 CMD ["init.sh"]
