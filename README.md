@@ -60,3 +60,11 @@ This project has been developed and is supported in part by the National Researc
 ---
 
 _The author ([@robballantyne](https://github.com/robballantyne)) may be compensated if you sign up to services linked in this document. Testing multiple variants of GPU images in many different environments is both costly and time-consuming; This helps to offset costs_
+
+### coturn
+```shell
+sudo docker run --name coturn --restart=always -d -p 3478:3478 -p 3478:3478/udp -p 65500-65535:65500-65535 \
+    -p 65500-65535:65500-65535/udp ghcr.nju.edu.cn/coturn/coturn -n --listening-ip="0.0.0.0" --listening-ip="::" \
+    --external-ip="192.168.2.50" --min-port=65500 --max-port=65535 --use-auth-secret \
+    --static-auth-secret=n0TaRealCoTURNAuthSecretThatIsSixtyFourLengthsLongPlaceholdPlace
+```

@@ -5,16 +5,25 @@ source /opt/ai-dock/etc/environment.sh
 build_common_main() {
     add-apt-repository multiverse
     apt-get update
+    build_common_install_hans
     build_common_install_xorg
+    build_common_install_kde
     build_common_install_pipewire
     build_common_install_virtualgl
-    build_common_install_kde
-    build_common_install_packages
     build_common_install_selkies
     build_common_install_kasmvnc
     build_common_install_coturn
+    build_common_install_packages
 }
 
+function build_common_install_hans() {
+    $APT_INSTALL \
+        tzdata \
+        locales \
+        ssl-cert \
+        language-pack-zh-hans \
+        fonts-wqy-zenhei
+}
 
 function build_common_install_xorg() {
     # Minimal xorg installation
@@ -29,21 +38,6 @@ function build_common_install_xorg() {
         cups-pdf \
         dbus-user-session \
         dbus-x11 \
-        fonts-dejavu \
-        fonts-freefont-ttf \
-        fonts-hack \
-        fonts-liberation \
-        fonts-noto \
-        fonts-noto-cjk \
-        fonts-noto-cjk-extra \
-        fonts-noto-color-emoji \
-        fonts-noto-extra \
-        fonts-noto-hinted \
-        fonts-noto-mono \
-        fonts-noto-unhinted \
-        fonts-opensymbol \
-        fonts-symbola \
-        fonts-ubuntu \
         gstreamer1.0-plugins-bad \
         libgstreamer-plugins-bad1.0-dev \
         im-config \
@@ -214,8 +208,8 @@ function build_common_install_kasmvnc() {
 function build_common_install_kde() {
     # Essentials for KDE to start without issues
     $APT_INSTALL \
+#        language-pack-kde-zh-hans \
         kde-plasma-desktop \
-        language-pack-kde-zh-hans \
         adwaita-icon-theme-full \
         appmenu-gtk3-module \
         ark \
@@ -230,6 +224,21 @@ function build_common_install_kde() {
         dolphin \
         dolphin-plugins \
         dbus-x11 \
+        fonts-dejavu \
+        fonts-freefont-ttf \
+        fonts-hack \
+        fonts-liberation \
+        fonts-noto \
+        fonts-noto-cjk \
+        fonts-noto-cjk-extra \
+        fonts-noto-color-emoji \
+        fonts-noto-extra \
+        fonts-noto-hinted \
+        fonts-noto-mono \
+        fonts-noto-unhinted \
+        fonts-opensymbol \
+        fonts-symbola \
+        fonts-ubuntu \
         enchant-2 \
         filelight \
         frameworkintegration \
@@ -329,7 +338,6 @@ function build_common_install_packages() {
 
     apt-get update && $APT_INSTALL \
         firefox \
-        tzdata \
 #        vlc \
 #        vlc-l10n \
 #        vlc-plugin-access-extra \
@@ -344,7 +352,7 @@ function build_common_install_packages() {
 
 function build_common_install_selkies() {
     # Install latest Selkies-GStreamer (https://github.com/selkies-project/selkies-gstreamer) build, Python application, and web application, should be consistent with selkies-gstreamer documentation
-    
+    export PIP_BREAK_SYSTEM_PACKAGES=1
     # Many duplicates here, but easiest to track selkies package list directly
     $APT_INSTALL \
         python3-pip \
@@ -352,6 +360,7 @@ function build_common_install_selkies() {
         python3-gi \
         python3-setuptools \
         python3-wheel \
+        python3-venv \
         libaa1 \
         bzip2 \
         libgcrypt20 \
@@ -413,9 +422,6 @@ function build_common_install_selkies() {
             | jq -r '.tag_name' | sed 's/[^0-9\.\-]*//g')"
         env-store SELKIES_VERSION
     fi
-    
-    $APT_INSTALL \
-        python3-venv
 
     python3 -m venv --system-site-packages "$SELKIES_VENV"
 
@@ -427,10 +433,13 @@ function build_common_install_selkies() {
 
     cd /tmp 
     curl -O -fsSL "https://github.com/selkies-project/selkies-gstreamer/releases/download/v${SELKIES_VERSION}/selkies_gstreamer-${SELKIES_VERSION}-py3-none-any.whl" 
+    "$SELKIES_VENV_PIP" install --no-cache-dir --force-reinstall setuptools==61
     "$SELKIES_VENV_PIP" install --no-cache-dir --force-reinstall "selkies_gstreamer-${SELKIES_VERSION}-py3-none-any.whl"
+    "$SELKIES_VENV_PIP" install --no-cache-dir --force-reinstall websockets==10.4
 
     curl -o selkies-js-interposer.deb -fsSL "https://github.com/selkies-project/selkies-gstreamer/releases/download/v${SELKIES_VERSION}/selkies-js-interposer_v${SELKIES_VERSION}_ubuntu$(grep VERSION_ID= /etc/os-release | cut -d= -f2 | tr -d '\"')_$(dpkg --print-architecture).deb"
     $APT_INSTALL ./selkies-js-interposer.deb
+
 }
 
 function build_common_install_coturn() {
