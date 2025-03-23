@@ -68,3 +68,12 @@ sudo docker run --name coturn --restart=always -d -p 3478:3478 -p 3478:3478/udp 
     --external-ip="192.168.2.50" --min-port=65500 --max-port=65535 --use-auth-secret \
     --static-auth-secret=n0TaRealCoTURNAuthSecretThatIsSixtyFourLengthsLongPlaceholdPlace
 ```
+
+### moonlight undefined symbol: SDL_GetTouchName
+```shell
+wget https://www.libsdl.org/release/SDL2-2.0.22.tar.gz
+./configure --prefix=/usr/     --enable-video-x11     --enable-alsa     --enable-pulseaudio     --enable-input-libinput     --enable-h264     --enable-hevc     --enable-network     --enable-openssl
+make -j$(nproc)
+sudo make install
+sudo mv build/.libs/libSDL2-2.0.so.0.22.0 /usr/lib/x86_64-linux-gnu/libSDL2-2.0.so.0
+```
