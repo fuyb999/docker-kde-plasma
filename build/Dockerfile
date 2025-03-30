@@ -118,6 +118,7 @@ RUN set -eo pipefail && /opt/ai-dock/bin/build/layer99/init.sh | tee -a /var/log
 COPY ttf-wps-fonts /tmp/ttf-wps-fonts
 RUN \
     echo "**** Install ttf-wps-fonts ****" \
+        && chmod +x /tmp/ttf-wps-fonts/install.sh \
         && /tmp/ttf-wps-fonts/install.sh \
         && rm -rf /tmp/ttf-wps-fonts \
     echo
