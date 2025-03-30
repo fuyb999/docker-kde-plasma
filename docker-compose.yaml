@@ -5,12 +5,12 @@ services:
     build:
       context: ./build
       args:
-        IMAGE_BASE: ${IMAGE_BASE:-ghcr.nju.edu.cn/ai-dock/base-image:v2-cuda-12.1.1-cudnn8-runtime-22.04}
+        IMAGE_BASE: ${IMAGE_BASE:-ghcr.io/ai-dock/base-image:v2-cpu-22.04}
         SELKIES_VERSION: ${SELKIES_VERSION:-1.6.2}
 #      tags:
 #        - "ghcr.io/ai-dock/linux-desktop:${IMAGE_TAG:-v2-cuda-12.1.1-cudnn8-runtime-22.04}"
         
-    image: docker-kde-plasma:${IMAGE_TAG:-v2-cuda-12.1.1-cudnn8-runtime-22.04}
+    image: docker-kde-plasma:${IMAGE_TAG:-v2-22.04}
     
     shm_size: 2G
     
