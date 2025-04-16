@@ -121,6 +121,8 @@ RUN \
         && chmod +x /tmp/ttf-wps-fonts/install.sh \
         && /tmp/ttf-wps-fonts/install.sh \
         && rm -rf /tmp/ttf-wps-fonts \
+        && chmod +x /opt/ai-dock/bin/supervisor-fcitx5.sh \
+        && \
     echo
 
 # Keep init.sh as-is and place additional logic in /opt/ai-dock/bin/preflight.sh
