@@ -51,13 +51,13 @@ $APT_INSTALL \
 #chmod +x /opt/ai-dock/bin/krita
 
 # Chrome
-wget -O /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-$APT_INSTALL /tmp/chrome.deb
-dpkg-divert --add /opt/google/chrome/google-chrome
-cp -f /opt/google/chrome/google-chrome /opt/google/chrome/google-chrome.distrib
-cp -f /opt/ai-dock/share/google-chrome/bin/google-chrome /opt/google/chrome/google-chrome
+#wget -O /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+#$APT_INSTALL /tmp/chrome.deb
+#dpkg-divert --add /opt/google/chrome/google-chrome
+#cp -f /opt/google/chrome/google-chrome /opt/google/chrome/google-chrome.distrib
+#cp -f /opt/ai-dock/share/google-chrome/bin/google-chrome /opt/google/chrome/google-chrome
 
-apt-get clean -y
+#apt-get clean -y
 
 fix-permissions.sh -o container
 

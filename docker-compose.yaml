@@ -15,13 +15,13 @@ services:
     shm_size: 2G
     
     ## For Nvidia GPU's - You probably want to uncomment this
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
+#    deploy:
+#      resources:
+#        reservations:
+#          devices:
+#            - driver: nvidia
+#              count: all
+#              capabilities: [gpu]
     
     cap_add:
       - SYS_ADMIN
@@ -42,8 +42,11 @@ services:
       # Avoids changing local file owner
       - ./config/authorized_keys:/root/.ssh/authorized_keys_mount
       - ./config/provisioning/default.sh:/opt/ai-dock/bin/provisioning.sh
-      - /data/apps/egl:/data
-      - /data/container-apps:/opt/apps
+      # TLS Certificates
+      - ./config/tls/server.crt:/opt/caddy/tls/container.crt
+      - ./config/tls/server.key:/opt/caddy/tls/container.key
+#      - /data/apps/egl:/data
+#      - /data/container-apps:/opt/apps
 
     ports:
         # SSH available on host machine port 2222 to avoid conflict. Change to suit
