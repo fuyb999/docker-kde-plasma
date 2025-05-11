@@ -32,3 +32,4 @@ function start() {
     /usr/sbin/sshd -D -p ${SSH_PORT_HOST}
 }
 
+start 2>&1

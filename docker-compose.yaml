@@ -43,7 +43,7 @@ services:
       - ./workspace:${WORKSPACE:-/workspace}:rshared
       # Will echo to root-owned authorized_keys file;
       # Avoids changing local file owner
-      - ./config/authorized_keys:/root/.ssh/authorized_keys_mount
+#      - ./config/authorized_keys:/root/.ssh/authorized_keys_mount
       - ./config/provisioning/default.sh:/opt/ai-dock/bin/provisioning.sh
       # TLS Certificates
       - ./config/tls/server.crt:/opt/caddy/tls/container.crt
@@ -52,6 +52,8 @@ services:
 #      - /data/container-apps:/opt/apps
       - ./build/COPY_ROOT_0/opt/ai-dock/bin/supervisor-kasmvnc.sh:/opt/ai-dock/bin/supervisor-kasmvnc.sh
       - ./build/COPY_ROOT_0/opt/ai-dock/bin/supervisor-selkies-gstreamer.sh:/opt/ai-dock/bin/supervisor-selkies-gstreamer.sh
+      - ./build/COPY_ROOT_0/opt/ai-dock/bin/supervisor-sshd.sh:/opt/ai-dock/bin/supervisor-sshd.sh
+      - ./build/COPY_ROOT_0/opt/ai-dock/bin/supervisor-fcitx5.sh:/opt/ai-dock/bin/supervisor-fcitx5.sh
       - ./build/COPY_ROOT_0/opt/ai-dock/fastapi:/opt/ai-dock/fastapi
 
     # Magic bullet to solve networking issues - I don't like it
