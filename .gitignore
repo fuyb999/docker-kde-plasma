@@ -1,4 +1,3 @@
 workspace
 config/authorized_keys
 config/rclone
-.env

@@ -121,7 +121,7 @@ RUN \
         && chmod +x /tmp/ttf-wps-fonts/install.sh \
         && /tmp/ttf-wps-fonts/install.sh \
         && rm -rf /tmp/ttf-wps-fonts \
-        && chmod +x /opt/ai-dock/bin/supervisor-fcitx5.sh \
+        && chmod +x /opt/ai-dock/bin/*.sh \
         && \
     echo
 

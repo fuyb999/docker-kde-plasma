@@ -84,6 +84,7 @@ function start() {
         -disableBasicAuth \
         -interface 127.0.0.1 \
         -websocketPort "${LISTEN_PORT}" \
+        -publicIP "${IP_HOST}" \
         -desktop "VNC Proxy (${DISPLAY} on ${VNC_DISPLAY}"
       
     sleep infinity
