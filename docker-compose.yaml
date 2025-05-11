@@ -13,6 +13,7 @@ services:
 #        - "ghcr.io/ai-dock/linux-desktop:${IMAGE_TAG:-v2-cuda-12.1.1-cudnn8-runtime-22.04}"
         
     image: docker-kde-plasma:${IMAGE_TAG:-v2-22.04}
+    privileged: true
     container_name: kde
     
     shm_size: 2G
@@ -32,15 +33,15 @@ services:
     security_opt:
       - seccomp:unconfined
 
-    devices:
-      - "/dev/dri:/dev/dri"
+#    devices:
+#      - "/dev/dri:/dev/dri"
       # For AMD GPU
       #- "/dev/kfd:/dev/kfd"
     
     volumes:
       - ./config/rclone:/etc/rclone
       # Workspace
-      - ./workspace:${WORKSPACE:-/workspace}:rshared
+      - ./workspace:${WORKSPACE:-/workspace}:rw
       # Will echo to root-owned authorized_keys file;
       # Avoids changing local file owner
 #      - ./config/authorized_keys:/root/.ssh/authorized_keys_mount
