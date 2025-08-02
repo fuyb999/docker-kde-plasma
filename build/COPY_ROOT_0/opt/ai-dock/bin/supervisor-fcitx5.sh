@@ -51,8 +51,7 @@ function start() {
 
     source /opt/ai-dock/etc/environment.sh
    
-    # Start FCITX 
-#    fcitx -D
+    # Start FCITX
     autostart
     exec sleep 10
 }

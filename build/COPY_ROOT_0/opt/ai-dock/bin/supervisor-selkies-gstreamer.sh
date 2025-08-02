@@ -77,7 +77,7 @@ function start() {
    
     selkies-gstreamer-resize ${DISPLAY_SIZEW}x${DISPLAY_SIZEH}
     
-    if [[ ${ENABLE_COTURN,,} == "true" ]]; then
+    if [[ ${COTURN_ENABLED,,} == "true" ]]; then
         export SELKIES_TURN_HOST="${SELKIES_TURN_HOST:-$(/opt/ai-dock/bin/external-ip-address)}"
         export SELKIES_TURN_PORT="${COTURN_PORT_HOST:-3478}"
         export SELKIES_TURN_USERNAME="${COTURN_USER:-user}"

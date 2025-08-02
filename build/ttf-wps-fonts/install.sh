@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# cd "$( dirname "${BASH_SOURCE[0]}" )"
+cd "$( dirname "${BASH_SOURCE[0]}" )"
 
 if [[ $(id -u) -ne 0 ]] ; then
   echo "This script requires sudo privileges"
@@ -44,7 +44,7 @@ fi
 # fi
 
 if [ ! -d "$FONT_PATH" ]; then
-  echo "Creating Font Directory..."
+  echo "Creating $FONT_PATH Font Directory..."
   mkdir $FONT_PATH
 fi
 

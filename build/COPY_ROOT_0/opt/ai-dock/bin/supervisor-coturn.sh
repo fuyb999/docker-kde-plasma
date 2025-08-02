@@ -19,8 +19,8 @@ function start() {
         exec sleep 10
     fi
     
-    if [[ ${ENABLE_COTURN,,} != "true" ]]; then
-        printf "Refusing to start $SERVICE_NAME without ENABLE_COTURN=true\n"
+    if [[ ${COTURN_ENABLED,,} != "true" ]]; then
+        printf "Refusing to start $SERVICE_NAME without COTURN_ENABLED=true\n"
         exec sleep 10
     fi
     
