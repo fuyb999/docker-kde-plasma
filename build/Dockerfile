@@ -397,5 +397,6 @@ RUN echo "**** Fix permissions ****" \
     && \
     echo
 
+ENV XDG_RUNTIME_DIR=/tmp/runtime-user
 # Keep init.sh as-is and place additional logic in /opt/ai-dock/bin/preflight.sh
 CMD ["init.sh"]

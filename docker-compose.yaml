@@ -48,7 +48,7 @@ services:
     volumes:
       - ./config/rclone:/etc/rclone
       # Workspace
-      - ./workspace:${WORKSPACE:-/workspace}:rw
+#      - ./workspace:${WORKSPACE:-/workspace}:rw
       # Will echo to root-owned authorized_keys file;
       # Avoids changing local file owner
 #      - ./config/authorized_keys:/root/.ssh/authorized_keys_mount
@@ -68,7 +68,7 @@ services:
 #    network_mode: "host"
 
     ports:
-      - "5900:59${DISPLAY}"
+      - "5900:5910"
 #        # SSH available on host machine port 2222 to avoid conflict. Change to suit
 #        - ${SSH_PORT_HOST:-2222}:${SSH_PORT_HOST:-2222}
 #        # Web UI for easy service access

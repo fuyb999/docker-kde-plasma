@@ -31,7 +31,7 @@ function preflight_main() {
     export PULSE_SERVER="${PULSE_SERVER:-unix:${PULSE_RUNTIME_PATH:-${XDG_RUNTIME_DIR:-/tmp}/pulse}/native}"
     env-store PULSE_SERVER
     
-    rm -rf $XDG_RUNTIME_DIR
+#    rm -rf $XDG_RUNTIME_DIR
     
     home_dir="/home/${USER_NAME}"
     desktop_dir="${home_dir}/Desktop"
