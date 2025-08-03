@@ -15,7 +15,12 @@ function start() {
         printf "Refusing to start $SERVICE_NAME in serverless mode\n"
         exec sleep 10
     fi
-    
+
+    if [[ ${SELKIES_ENABLED,,} != "true" ]]; then
+        printf "Refusing to start $SERVICE_NAME without SELKIES_ENABLED=true\n"
+        exec sleep 10
+    fi
+
     printf "Starting ${SERVICE_NAME}...\n"
     
     until [ -S "/tmp/.X11-unix/X${DISPLAY/:/}" ]; do

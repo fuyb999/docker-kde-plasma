@@ -24,6 +24,11 @@ function start() {
         printf "Refusing to start $SERVICE_NAME in serverless mode\n"
         exec sleep 10
     fi
+
+    if [[ ${KASMVNC_ENABLED,,} != "true" ]]; then
+        printf "Refusing to start $SERVICE_NAME without KASMVNC_ENABLED=true\n"
+        exec sleep 10
+    fi
     
     file_content="$(
       jq --null-input \

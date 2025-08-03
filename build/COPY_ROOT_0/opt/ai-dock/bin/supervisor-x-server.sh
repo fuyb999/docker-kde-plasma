@@ -72,7 +72,20 @@ function start_nvidia() {
 # If /dev/dri is not available in te container we will have no HW accel
 function start_proxy() {
     echo "proxy" > /tmp/.X-mode
-    /usr/bin/Xvfb "${DISPLAY}" -screen 0 "8192x4096x${DISPLAY_CDEPTH}" -dpi "${DISPLAY_DPI}" +extension "COMPOSITE" +extension "DAMAGE" +extension "GLX" +extension "RANDR" +extension "RENDER" +extension "MIT-SHM" +extension "XFIXES" +extension "XTEST" +iglx +render -nolisten "tcp" -ac -noreset -shmem
+#    /usr/bin/Xvfb "${DISPLAY}" -screen 0 "8192x4096x${DISPLAY_CDEPTH}" -dpi "${DISPLAY_DPI}" +extension "COMPOSITE" +extension "DAMAGE" +extension "GLX" +extension "RANDR" +extension "RENDER" +extension "MIT-SHM" +extension "XFIXES" +extension "XTEST" +iglx +render -nolisten "tcp" -ac -noreset -shmem
+
+    mkdir -p ~/.vnc/
+  	mkdir -p ~/.dosbox
+  	echo $USER_PASSWORD | /opt/TurboVNC/bin/vncpasswd -f > ~/.vnc/passwd
+  	chmod 0600 ~/.vnc/passwd
+    /opt/TurboVNC/bin/vncserver ${DISPLAY} \
+      -geometry 1920x1080 \
+      -depth ${DISPLAY_CDEPTH} \
+      -auth ~/.vnc/passwd \
+      -x509key /opt/caddy/tls/container.key \
+      -x509cert /opt/caddy/tls/container.crt
+
+    /opt/TurboVNC/bin/xstartup.turbovnc
 }
 
 function is_nvidia_capable() {

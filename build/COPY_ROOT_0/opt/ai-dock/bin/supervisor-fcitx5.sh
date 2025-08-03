@@ -38,21 +38,10 @@ function start() {
     fi
     
     printf "Starting ${SERVICE_NAME}...\n"
-    
-#    until [[ -S "$DBUS_SOCKET" ]]; do
-#        printf "Waiting for dbus socket...\n"
-#        sleep 1
-#    done
-    
-#    until [ -S "/tmp/.X11-unix/X${DISPLAY/:/}" ]; do
-#        printf "Waiting for X11 socket...\n"
-#        sleep 1
-#    done
 
-    source /opt/ai-dock/etc/environment.sh
-   
-    # Start FCITX
-    autostart
+    source /opt/ai-dock/etc/environment.sh \
+      && autostart
+
     exec sleep 10
 }
 

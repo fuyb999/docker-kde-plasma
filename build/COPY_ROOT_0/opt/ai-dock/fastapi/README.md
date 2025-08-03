@@ -1,1 +1,0 @@
-https://github.com/ai-dock/base-image/tree/main/build/COPY_ROOT_0/opt/ai-dock/fastapi

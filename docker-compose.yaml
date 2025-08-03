@@ -7,20 +7,19 @@ services:
     build:
       context: ./build
       args:
-        IMAGE_BASE: ${IMAGE_BASE:-ghcr.io/ai-dock/base-image:v2-cpu-22.04}
+        IMAGE_BASE: ${IMAGE_BASE:-fuyb/base-image:v2-cpu-22.04}
         XPU_TARGET: ${XPU_TARGET:-NVIDIA_GPU}
-        SELKIES_VERSION: ${SELKIES_VERSION:-1.6.2}
         XORG_ENABLED: ${XORG_ENABLED:-false}
         PLASMA_ENABLED: ${PLASMA_ENABLED:-false}
         PIPEWIRE_ENABLED: ${PIPEWIRE_ENABLED:-false}
         VIRTUALGL_ENABLED: ${VIRTUALGL_ENABLED:-false}
         SELKIES_ENABLED: ${SELKIES_ENABLED:-false}
         KASMVNC_ENABLED: ${KASMVNC_ENABLED:-false}
+        TURBOVNC_ENABLED: ${TURBOVNC_ENABLED:-false}
         FIREFOX_ENABLED: ${FIREFOX_ENABLED:-false}
-#      tags:
-#        - "ghcr.io/ai-dock/linux-desktop:${IMAGE_TAG:-v2-cuda-12.1.1-cudnn8-runtime-22.04}"
-        
-    image: docker-kde-plasma:${IMAGE_TAG:-v2-22.04}
+        SELKIES_VERSION: ${SELKIES_VERSION:-1.6.2}
+
+    image: fuyb/docker-kde-plasma:${IMAGE_TAG:-v2-22.04}
     privileged: true
     container_name: kde
     
