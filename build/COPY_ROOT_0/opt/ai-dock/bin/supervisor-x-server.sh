@@ -79,7 +79,7 @@ function start_proxy() {
   	echo $USER_PASSWORD | /opt/TurboVNC/bin/vncpasswd -f > ~/.vnc/passwd
   	chmod 0600 ~/.vnc/passwd
     /opt/TurboVNC/bin/vncserver ${DISPLAY} \
-      -geometry 1920x1080 \
+      -geometry ${DISPLAY_SIZEW}x${DISPLAY_SIZEH} \
       -depth ${DISPLAY_CDEPTH} \
       -auth ~/.vnc/passwd \
       -x509key /opt/caddy/tls/container.key \

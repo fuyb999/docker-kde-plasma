@@ -65,9 +65,10 @@ services:
 
     # Magic bullet to solve networking issues - I don't like it
     # Turn server works fine both within local network and for internet
-    network_mode: "host"
+#    network_mode: "host"
 
-#    ports:
+    ports:
+      - "5900:59${DISPLAY}"
 #        # SSH available on host machine port 2222 to avoid conflict. Change to suit
 #        - ${SSH_PORT_HOST:-2222}:${SSH_PORT_HOST:-2222}
 #        # Web UI for easy service access
