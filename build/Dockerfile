@@ -17,6 +17,8 @@ RUN \
         && $VAAPI_VENV/bin/meson setup build \
         && $VAAPI_VENV/bin/meson install -C build
 
+FROM jlesage/baseimage-gui:ubuntu-22.04-v4.9.0 as baseimggui
+
 FROM ${IMAGE_BASE}
 
 LABEL org.opencontainers.image.source="https://github.com/ai-dock/linux-desktop"
@@ -82,7 +84,7 @@ ENV SELKIES_ENCODER=nvh264enc
 ENV SELKIES_ENABLE_RESIZE=false
 ENV SELKIES_ENABLE_BASIC_AUTH=false
 
-ENV XDG_RUNTIME_DIR="/tmp/.X11-unix/run"
+ENV XDG_RUNTIME_DIR=/tmp/runtime-user
 ENV XDG_SESSION_TYPE=x11
 ENV FORCE_X11_DUMMY_CONFIG=false
 
@@ -110,6 +112,10 @@ ENV WINE_BRANCH=${WINE_BRANCH}
 
 ENV OPT_SYNC=$OPT_SYNC
 ENV IMAGE_SLUG="linux-desktop"
+
+COPY --from=vaapibuilder /usr/lib/x86_64-linux-gnu/dri /usr/lib/x86_64-linux-gnu/dri
+COPY --from=baseimggui /opt/base/bin/openbox /usr/bin/openbox
+COPY --from=baseimggui /opt/base/bin/obxprop /usr/bin/obxprop
 
 # Update locale
 RUN \
@@ -155,7 +161,7 @@ ENV LC_ALL zh_CN.UTF-8
 RUN \
     echo "**** Install core requirements ****" \
         && apt-get update \
-        && apt-get install -y --no-install-recommends sudo fakeroot sox file git bc jq acl less tree curl rar unar unrar unzip vim wget xz-utils zip bzip2 gzip htop lsof mlocate net-tools rsync openssh-server pkg-config ca-certificates supervisor \
+        && apt-get install -y --no-install-recommends sudo fakeroot sox file git bc jq acl less tree curl rar unar unrar unzip vim wget xz-utils zip bzip2 gzip htop lsof mlocate net-tools rsync openssh-server pkg-config ca-certificates supervisor dbus-x11 dbus-user-session x11-utils avahi-utils \
     && \
     echo "**** Install libtcmalloc ****" \
         && apt-get install -y --no-install-recommends libtcmalloc-minimal4 \
@@ -198,7 +204,6 @@ RUN set -e; \
         && apt-get install -y --no-install-recommends i965-va-driver-shaders intel-media-va-driver-non-free xserver-xorg-video-intel \
     ;} || echo "XPU_TARGET CPU disabled."
 
-COPY --from=vaapibuilder /usr/lib/x86_64-linux-gnu/dri /usr/lib/x86_64-linux-gnu/dri
 COPY --chown=0:1111 ./COPY_ROOT_0/opt/ai-dock/share/ /opt/ai-dock/share
 RUN \
     echo "**** Install NVIDIA VAAPI drivers ****" \
@@ -334,7 +339,8 @@ RUN set -e; \
         && cd /tmp \
         && export TURBOVNC_VERSION="3.2" \
         && wget https://github.com/TurboVNC/turbovnc/releases/download/${TURBOVNC_VERSION}/turbovnc_${TURBOVNC_VERSION}_amd64.deb \
-        && apt-get install -y --no-install-recommends ./turbovnc_${TURBOVNC_VERSION}_amd64.deb \
+        && apt-get update \
+        && apt-get install -y --no-install-recommends xauth ./turbovnc_${TURBOVNC_VERSION}_amd64.deb \
     && \
     echo "**** Section cleanup ****" \
         && apt-get clean autoclean -y \
@@ -372,11 +378,14 @@ RUN \
     && \
     echo
 
-RUN apt-get update && \
-      apt-get install -y xterm && \
-      mkdir -p /usr/share/xsessions && \
-      touch /usr/share/xsessions/xfce.desktop && \
-      echo "Exec=/usr/bin/xterm" > /usr/share/xsessions/xfce.desktop \
+RUN apt-get update \
+      && apt-get install -y xterm openbox \
+      && mkdir --mode=755 /var/run/openbox \
+      && touch /var/run/openbox/rc.xml \
+      && chmod 777 /var/run/openbox/rc.xml \
+      && mkdir -p /usr/share/xsessions \
+      && touch /usr/share/xsessions/xfce.desktop \
+      && echo "Exec=/etc/openbox/startup.sh" > /usr/share/xsessions/xfce.desktop \
     && \
     echo "**** Section cleanup ****" \
         && apt-get clean autoclean -y \
@@ -397,6 +406,5 @@ RUN echo "**** Fix permissions ****" \
     && \
     echo
 
-ENV XDG_RUNTIME_DIR=/tmp/runtime-user
 # Keep init.sh as-is and place additional logic in /opt/ai-dock/bin/preflight.sh
 CMD ["init.sh"]
