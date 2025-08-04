@@ -524,7 +524,7 @@
 -->
 
   <!-- Main window should be maximized and without decoration. -->
-  <application %MAIN_APP_WINDOW_MATCH_CRITERIAS%>
+  <application name="unknown" type="normal">
     <decor>no</decor>
     <maximized>false</maximized>
     <layer>below</layer>

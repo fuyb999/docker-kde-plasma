@@ -17,8 +17,6 @@ RUN \
         && $VAAPI_VENV/bin/meson setup build \
         && $VAAPI_VENV/bin/meson install -C build
 
-FROM jlesage/baseimage-gui:ubuntu-22.04-v4.9.0 as baseimggui
-
 FROM ${IMAGE_BASE}
 
 LABEL org.opencontainers.image.source="https://github.com/ai-dock/linux-desktop"
@@ -114,8 +112,6 @@ ENV OPT_SYNC=$OPT_SYNC
 ENV IMAGE_SLUG="linux-desktop"
 
 COPY --from=vaapibuilder /usr/lib/x86_64-linux-gnu/dri /usr/lib/x86_64-linux-gnu/dri
-COPY --from=baseimggui /opt/base/bin/openbox /usr/bin/openbox
-COPY --from=baseimggui /opt/base/bin/obxprop /usr/bin/obxprop
 
 # Update locale
 RUN \
@@ -380,12 +376,9 @@ RUN \
 
 RUN apt-get update \
       && apt-get install -y xterm openbox \
-      && mkdir --mode=755 /var/run/openbox \
-      && touch /var/run/openbox/rc.xml \
-      && chmod 777 /var/run/openbox/rc.xml \
       && mkdir -p /usr/share/xsessions \
       && touch /usr/share/xsessions/xfce.desktop \
-      && echo "Exec=/etc/openbox/startup.sh" > /usr/share/xsessions/xfce.desktop \
+      && echo "Exec=/startapp.sh" > /usr/share/xsessions/xfce.desktop \
     && \
     echo "**** Section cleanup ****" \
         && apt-get clean autoclean -y \

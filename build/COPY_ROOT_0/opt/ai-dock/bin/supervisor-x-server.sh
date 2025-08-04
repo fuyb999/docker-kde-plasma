@@ -69,82 +69,10 @@ function start_nvidia() {
     start_proxy
 }
 
-
-#
-# Setup selection criterias of the main window.
-#
-
-APP_DEF_NAME=
-APP_DEF_CLASS=
-APP_DEF_GROUP_NAME=
-APP_DEF_GROUP_CLASS=
-APP_DEF_ROLE=
-APP_DEF_TITLE=
-APP_DEF_TYPE=
-
-set_app_def_vars() {
-    f="$1"
-
-    APP_DEF_NAME="$(awk -F "[><]" '/Name/{print $3}' < "${f}")"
-    APP_DEF_CLASS="$(awk -F "[><]" '/Class/{print $3}' < "${f}")"
-    APP_DEF_GROUP_NAME="$(awk -F "[><]" '/GroupName/{print $3}' < "${f}")"
-    APP_DEF_GROUP_CLASS="$(awk -F "[><]" '/GroupClass/{print $3}' < "${f}")"
-    APP_DEF_ROLE="$(awk -F "[><]" '/Role/{print $3}' < "${f}")"
-    APP_DEF_TITLE="$(awk -F "[><]" '/Title/{print $3}' < "${f}")"
-    APP_DEF_TYPE="$(awk -F "[><]" '/Type/{print $3}' < "${f}")"
-
-    # If using the JWM config, remove the begining `^` and ending `$` regex
-    # characters, because they are not supported by Openbox.
-    if [ "${f}" = /etc/jwm/main-window-selection.jwmrc ]; then
-        APP_DEF_NAME="$(echo "${APP_DEF_NAME}" | sed 's/^\^//' | sed 's/\$$//')"
-        APP_DEF_CLASS="$(echo "${APP_DEF_CLASS}" | sed 's/^\^//' | sed 's/\$$//')"
-        APP_DEF_GROUP_NAME="$(echo "${APP_DEF_GROUP_NAME}" | sed 's/^\^//' | sed 's/\$$//')"
-        APP_DEF_GROUP_CLASS="$(echo "${APP_DEF_GROUP_CLASS}" | sed 's/^\^//' | sed 's/\$$//')"
-        APP_DEF_ROLE="$(echo "${APP_DEF_ROLE}" | sed 's/^\^//' | sed 's/\$$//')"
-        APP_DEF_TITLE="$(echo "${APP_DEF_TITLE}" | sed 's/^\^//' | sed 's/\$$//')"
-        APP_DEF_TYPE="$(echo "${APP_DEF_TYPE}" | sed 's/^\^//' | sed 's/\$$//')"
-    fi
-}
-
 # If /dev/dri is not available in te container we will have no HW accel
 function start_proxy() {
     echo "proxy" > /tmp/.X-mode
 #    /usr/bin/Xvfb "${DISPLAY}" -screen 0 "8192x4096x${DISPLAY_CDEPTH}" -dpi "${DISPLAY_DPI}" +extension "COMPOSITE" +extension "DAMAGE" +extension "GLX" +extension "RANDR" +extension "RENDER" +extension "MIT-SHM" +extension "XFIXES" +extension "XTEST" +iglx +render -nolisten "tcp" -ac -noreset -shmem
-
-    if [ -f /etc/openbox/main-window-selection.xml ]; then
-        set_app_def_vars /etc/openbox/main-window-selection.xml
-    elif [ -f /etc/jwm/main-window-selection.jwmrc ]; then
-        set_app_def_vars /etc/jwm/main-window-selection.jwmrc
-    else
-        APP_DEF_TYPE=normal
-    fi
-
-    # Generate matching criterias.
-    CRITERIAS=
-    if [ -n "${APP_DEF_NAME}" ]; then
-        CRITERIAS="${CRITERIAS} name=\"${APP_DEF_NAME}\""
-    fi
-    if [ -n "${APP_DEF_CLASS}" ]; then
-        CRITERIAS="${CRITERIAS} class=\"${APP_DEF_CLASS}\""
-    fi
-    if [ -n "${APP_DEF_GROUP_NAME}" ]; then
-        CRITERIAS="${CRITERIAS} groupname=\"${APP_DEF_GROUP_NAME}\""
-    fi
-    if [ -n "${APP_DEF_GROUP_CLASS}" ]; then
-        CRITERIAS="${CRITERIAS} groupclass=\"${APP_DEF_GROUP_CLASS}\""
-    fi
-    if [ -n "${APP_DEF_ROLE}" ]; then
-        CRITERIAS="${CRITERIAS} role=\"${APP_DEF_ROLE}\""
-    fi
-    if [ -n "${APP_DEF_TITLE}" ]; then
-        CRITERIAS="${CRITERIAS} title=\"${APP_DEF_TITLE}\""
-    fi
-    if [ -n "${APP_DEF_TYPE}" ]; then
-        CRITERIAS="${CRITERIAS} type=\"${APP_DEF_TYPE}\""
-    fi
-
-    # Write the final Openbox config file.
-    sed "s/%MAIN_APP_WINDOW_MATCH_CRITERIAS%/${CRITERIAS}/" < /etc/openbox/rc.xml.template > /var/run/openbox/rc.xml
 
     mkdir -p ~/.vnc/ ~/.dosbox
   	echo $USER_PASSWORD | /opt/TurboVNC/bin/vncpasswd -f > ~/.vnc/passwd
@@ -156,7 +84,9 @@ function start_proxy() {
       -x509key /opt/caddy/tls/container.key \
       -x509cert /opt/caddy/tls/container.crt
 
-    /usr/bin/openbox --config-file /var/run/openbox/rc.xml --startup /opt/TurboVNC/bin/xstartup.turbovnc
+    /usr/bin/openbox --config-file /etc/openbox/rc.xml --startup /opt/TurboVNC/bin/xstartup.turbovnc
+
+    sleep infinity
 }
 
 function is_nvidia_capable() {

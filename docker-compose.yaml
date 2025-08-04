@@ -57,11 +57,6 @@ services:
       - ./config/tls/server.crt:/opt/caddy/tls/container.crt
       - ./config/tls/server.key:/opt/caddy/tls/container.key
 #      - /data/container-apps:/opt/apps
-      - ./build/COPY_ROOT_0/opt/ai-dock/bin/supervisor-kasmvnc.sh:/opt/ai-dock/bin/supervisor-kasmvnc.sh
-      - ./build/COPY_ROOT_0/opt/ai-dock/bin/supervisor-selkies-gstreamer.sh:/opt/ai-dock/bin/supervisor-selkies-gstreamer.sh
-      - ./build/COPY_ROOT_0/opt/ai-dock/bin/supervisor-sshd.sh:/opt/ai-dock/bin/supervisor-sshd.sh
-      - ./build/COPY_ROOT_0/opt/ai-dock/bin/supervisor-fcitx5.sh:/opt/ai-dock/bin/supervisor-fcitx5.sh
-      - ./build/COPY_ROOT_0/opt/ai-dock/fastapi:/opt/ai-dock/fastapi
 
     # Magic bullet to solve networking issues - I don't like it
     # Turn server works fine both within local network and for internet
