@@ -157,7 +157,7 @@ ENV LC_ALL zh_CN.UTF-8
 RUN \
     echo "**** Install core requirements ****" \
         && apt-get update \
-        && apt-get install -y --no-install-recommends sudo fakeroot sox file git bc jq acl less tree curl rar unar unrar unzip vim wget xz-utils zip bzip2 gzip htop lsof mlocate net-tools rsync openssh-server pkg-config ca-certificates supervisor dbus-x11 dbus-user-session x11-utils avahi-utils \
+        && apt-get install -y --no-install-recommends sudo fakeroot sox file git bc jq acl less tree curl rar unar unrar unzip vim wget xz-utils zip bzip2 gzip htop lsof mlocate net-tools rsync openssh-server pkg-config ca-certificates supervisor \
     && \
     echo "**** Install libtcmalloc ****" \
         && apt-get install -y --no-install-recommends libtcmalloc-minimal4 \
@@ -174,15 +174,16 @@ RUN \
     echo
 
 # Install X Server requirements
-# TODO: Refine this list of packages to only what is required.
 # apt-get install -y --no-install-recommends alsa-base alsa-utils clinfo cups-browsed cups-bsd cups-common cups-filters cups-pdf dbus-user-session dbus-x11 gstreamer1.0-plugins-bad libgstreamer-plugins-bad1.0-dev im-config lame libavcodec-extra libdatetime-perl libdbus-c++-1-0v5 libegl1 libegl-dev libelf-dev libgles2 libgl1 libglu1 libglvnd0 libopenjp2-7 libopus0 libpulse0 libsm6 libva2 libva-dev libvulkan-dev libxcb1 libxau6 libx11-6 libxext6 libxkbcommon0 libxrandr-dev libxdmcp6 libxv1 libxvmc1 libxtst6 libzita-alsa-pcmi0 libzita-resampler1 mesa-utils mesa-utils-extra mesa-vulkan-drivers meson net-tools ocl-icd-libopencl1 packagekit-tools python3 python3-cups ubuntu-drivers-common vainfo va-driver-all vdpau-driver-all vdpauinfo vulkan-tools whoopsie wmctrl x11-apps x11-utils x11-xkb-utils x11-xserver-utils x264 x265 xauth xbitmaps xclip xcvt cups-bsd xdg-user-dirs xdg-utils xfonts-base xfonts-scalable xinit xkb-data xsel xsettingsd xserver-xorg-input-all xserver-xorg-input-wacom xserver-xorg-video-all xserver-xorg-video-qxl xorg xvfb \
+# apt-get install -y --no-install-recommends avahi-utils dbus-x11 dbus-user-session libxcomposite-dev libxcursor1 wmctrl libfuse2 x11-utils x11-xfs-utils x11-xkb-utils x11-xserver-utils x11vnc xauth xbindkeys xclip xcvt xdotool xfishtank xfonts-base xinit xorg xserver-xorg-core xserver-xorg-input-evdev xserver-xorg-input-libinput xserver-xorg-legacy xserver-xorg-video-all xserver-xorg-video-dummy \
+# TODO: xauth only for turbovnc and bigger
 RUN set -e; \
     [ "$XORG_ENABLED" = "true" ] && { \
     echo "**** Update apt database ****" \
         && apt-get update \
     && \
     echo "**** Install X Server requirements ****" \
-        && apt-get install -y --no-install-recommends avahi-utils dbus-x11 dbus-user-session libxcomposite-dev libxcursor1 wmctrl libfuse2 x11-utils x11-xfs-utils x11-xkb-utils x11-xserver-utils x11vnc xauth xbindkeys xclip xcvt xdotool xfishtank xfonts-base xinit xorg xserver-xorg-core xserver-xorg-input-evdev xserver-xorg-input-libinput xserver-xorg-legacy xserver-xorg-video-all xserver-xorg-video-dummy \
+        && apt-get install -y --no-install-recommends dbus-x11 dbus-user-session x11-utils avahi-utils xauth \
     && \
     echo "**** Section cleanup ****" \
         && apt-get clean autoclean -y \
@@ -335,8 +336,7 @@ RUN set -e; \
         && cd /tmp \
         && export TURBOVNC_VERSION="3.2" \
         && wget https://github.com/TurboVNC/turbovnc/releases/download/${TURBOVNC_VERSION}/turbovnc_${TURBOVNC_VERSION}_amd64.deb \
-        && apt-get update \
-        && apt-get install -y --no-install-recommends xauth ./turbovnc_${TURBOVNC_VERSION}_amd64.deb \
+        && apt-get install -y --no-install-recommends ./turbovnc_${TURBOVNC_VERSION}_amd64.deb \
     && \
     echo "**** Section cleanup ****" \
         && apt-get clean autoclean -y \
@@ -365,17 +365,8 @@ RUN set -e; \
             /tmp/* \
     ;} || echo "Firefox disabled."
 
-COPY ttf-wps-fonts /tmp/ttf-wps-fonts
-RUN \
-    echo "**** Install ttf-wps-fonts ****" \
-        && chmod +x /tmp/ttf-wps-fonts/install.sh \
-        && /tmp/ttf-wps-fonts/install.sh \
-        && rm -rf /tmp/ttf-wps-fonts \
-    && \
-    echo
-
 RUN apt-get update \
-      && apt-get install -y xterm openbox \
+      && apt-get install -y xterm openbox fcitx5 fcitx5-chinese-addons fcitx5-frontend-gtk2 fcitx5-frontend-gtk3 fcitx5-frontend-gtk4 \
       && mkdir -p /usr/share/xsessions \
       && touch /usr/share/xsessions/xfce.desktop \
       && echo "Exec=/startapp.sh" > /usr/share/xsessions/xfce.desktop \
@@ -387,6 +378,15 @@ RUN apt-get update \
             /var/lib/apt/lists/* \
             /var/tmp/* \
             /tmp/*
+
+COPY ttf-wps-fonts /tmp/ttf-wps-fonts
+RUN \
+    echo "**** Install ttf-wps-fonts ****" \
+        && chmod +x /tmp/ttf-wps-fonts/install.sh \
+        && /tmp/ttf-wps-fonts/install.sh \
+        && rm -rf /tmp/ttf-wps-fonts \
+    && \
+    echo
 
 # Copy early so we can use scripts in the build - Changes to these files will invalidate the cache and cause a rebuild.
 COPY --chown=0:1111 ./COPY_ROOT_0/ /

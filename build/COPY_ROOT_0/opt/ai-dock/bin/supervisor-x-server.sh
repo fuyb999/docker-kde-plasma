@@ -73,20 +73,6 @@ function start_nvidia() {
 function start_proxy() {
     echo "proxy" > /tmp/.X-mode
 #    /usr/bin/Xvfb "${DISPLAY}" -screen 0 "8192x4096x${DISPLAY_CDEPTH}" -dpi "${DISPLAY_DPI}" +extension "COMPOSITE" +extension "DAMAGE" +extension "GLX" +extension "RANDR" +extension "RENDER" +extension "MIT-SHM" +extension "XFIXES" +extension "XTEST" +iglx +render -nolisten "tcp" -ac -noreset -shmem
-
-    mkdir -p ~/.vnc/ ~/.dosbox
-  	echo $USER_PASSWORD | /opt/TurboVNC/bin/vncpasswd -f > ~/.vnc/passwd
-  	chmod 0600 ~/.vnc/passwd
-    /opt/TurboVNC/bin/vncserver ${DISPLAY} \
-      -geometry ${DISPLAY_SIZEW}x${DISPLAY_SIZEH} \
-      -depth ${DISPLAY_CDEPTH} \
-      -auth ~/.vnc/passwd \
-      -x509key /opt/caddy/tls/container.key \
-      -x509cert /opt/caddy/tls/container.crt
-
-    /usr/bin/openbox --config-file /etc/openbox/rc.xml --startup /opt/TurboVNC/bin/xstartup.turbovnc
-
-    sleep infinity
 }
 
 function is_nvidia_capable() {
@@ -96,6 +82,5 @@ function is_nvidia_capable() {
         echo "false"
     fi
 }
-
 
 start 2>&1
