@@ -19,10 +19,9 @@ services:
         FIREFOX_ENABLED: ${FIREFOX_ENABLED:-false}
         SELKIES_VERSION: ${SELKIES_VERSION:-1.6.2}
 
-    image: fuyb/docker-kde-plasma:${IMAGE_TAG:-v2-22.04}
+    image: fuyb/docker-turbo:${IMAGE_TAG:-v1-22.04}
     privileged: true
     container_name: kde
-    
     shm_size: 2G
     
     ## For Nvidia GPU's - You probably want to uncomment this
@@ -40,13 +39,12 @@ services:
     security_opt:
       - seccomp:unconfined
 
-#    devices:
-#      - "/dev/dri:/dev/dri"
+    devices:
+      - "/dev/dri:/dev/dri"
       # For AMD GPU
       #- "/dev/kfd:/dev/kfd"
     
     volumes:
-      - ./config/rclone:/etc/rclone
       # Workspace
       - ./workspace:${WORKSPACE:-/workspace}:rw
       # Will echo to root-owned authorized_keys file;
@@ -56,12 +54,8 @@ services:
       # TLS Certificates
       - ./config/tls/server.crt:/opt/caddy/tls/container.crt
       - ./config/tls/server.key:/opt/caddy/tls/container.key
-#      - /data/container-apps:/opt/apps
-
-    # Magic bullet to solve networking issues - I don't like it
-    # Turn server works fine both within local network and for internet
-#    network_mode: "host"
-
+      # Apps
+      - /data/container-apps:/opt/apps
     ports:
       - "5900:5900"
     environment:

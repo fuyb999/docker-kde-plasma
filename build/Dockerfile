@@ -97,11 +97,15 @@ ENV KDE_APPLICATIONS_AS_SCOPE=1
 ENV KWIN_COMPOSE=N
 ENV KWIN_X11_NO_SYNC_TO_VBLANK=1
 ENV SUDO_EDITOR=kate
+
 # Set input to fcitx5
-ENV GTK_IM_MODULE=fcitx
-ENV QT_IM_MODULE=fcitx
-#ENV XIM fcitx
-ENV XMODIFIERS="@im=fcitx"
+ENV XIM=fcitx5 \
+    XIM_PROGRAM=fcitx5 \
+    GTK_IM_MODULE=fcitx5 \
+    QT_IM_MODULE=fcitx5 \
+    XMODIFIERS="@im=fcitx5" \
+    SDL_IM_MODULE=fcitx5 \
+    GLFW_IM_MODULE=fcitx5
 
 ENV APPIMAGE_EXTRACT_AND_RUN=1
 
@@ -205,7 +209,7 @@ COPY --chown=0:1111 ./COPY_ROOT_0/opt/ai-dock/share/ /opt/ai-dock/share
 RUN \
     echo "**** Install NVIDIA VAAPI drivers ****" \
         && apt-get update \
-        && apt-get install -y --no-install-recommends vulkan-tools libvulkan1 \
+        && apt-get install -y --no-install-recommends vulkan-tools libvulkan1 libglu1-mesa \
         && printf "/usr/local/nvidia/lib\n" >> /etc/ld.so.conf.d/nvidia.conf \
         && printf "/usr/local/nvidia/lib64\n" >> /etc/ld.so.conf.d/nvidia.conf \
         && echo "**** Configure OpenCL manually ****" \
@@ -225,8 +229,8 @@ RUN \
             /var/tmp/* \
             /tmp/*
 
-RUN set -e; \
-    [ "$VIRTUALGL_ENABLED" = "true" ] && { \
+#    [ "$VIRTUALGL_ENABLED" = "true" ] && { \
+RUN \
     echo "**** Install Virtualgl requirements ****" \
         && cd /tmp \
         && export VIRTUALGL_VERSION="3.1.2" \
@@ -242,8 +246,8 @@ RUN set -e; \
         && rm -rf \
             /var/lib/apt/lists/* \
             /var/tmp/* \
-            /tmp/* \
-    ;} || echo "Virtualgl disabled."
+            /tmp/*
+#    ;} || echo "Virtualgl disabled."
 
 RUN set -e; \
     [ "$PLASMA_ENABLED" = "true" ] && { \
@@ -365,8 +369,9 @@ RUN set -e; \
             /tmp/* \
     ;} || echo "Firefox disabled."
 
+# fcitx5 fcitx5-chinese-addons fcitx5-frontend-gtk2 fcitx5-frontend-gtk3 fcitx5-frontend-gtk4
 RUN apt-get update \
-      && apt-get install -y xterm openbox fcitx5 fcitx5-chinese-addons fcitx5-frontend-gtk2 fcitx5-frontend-gtk3 fcitx5-frontend-gtk4 \
+      && apt-get install --no-install-recommends -y xterm openbox fcitx5 fcitx5-chinese-addons fcitx5-frontend-gtk3 \
       && mkdir -p /usr/share/xsessions \
       && touch /usr/share/xsessions/xfce.desktop \
       && echo "Exec=/startapp.sh" > /usr/share/xsessions/xfce.desktop \

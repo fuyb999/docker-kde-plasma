@@ -27,19 +27,24 @@ function start() {
         sleep 1
     done
 
+    sudo mkdir -p /tmp/.X11-unix
+    sudo chmod 777 -R /tmp/.X11-unix
+
     mkdir -p ~/.vnc/ ~/.dosbox
-     	echo $USER_PASSWORD | /opt/TurboVNC/bin/vncpasswd -f > ~/.vnc/passwd
-     	chmod 0600 ~/.vnc/passwd
-       /opt/TurboVNC/bin/vncserver ${DISPLAY} \
-         -geometry ${DISPLAY_SIZEW}x${DISPLAY_SIZEH} \
-         -depth ${DISPLAY_CDEPTH} \
-         -auth ~/.vnc/passwd \
-         -x509key /opt/caddy/tls/container.key \
-         -x509cert /opt/caddy/tls/container.crt
+    echo $USER_PASSWORD | /opt/TurboVNC/bin/vncpasswd -f > ~/.vnc/passwd
+    chmod 0600 ~/.vnc/passwd
 
-       /usr/bin/openbox --config-file /etc/openbox/rc.xml --startup /opt/TurboVNC/bin/xstartup.turbovnc
+    /opt/TurboVNC/bin/vncserver ${DISPLAY} \
+       -geometry ${DISPLAY_SIZEW}x${DISPLAY_SIZEH} \
+       -depth ${DISPLAY_CDEPTH} \
+       -auth ~/.vnc/passwd \
+       -x509key /opt/caddy/tls/container.key \
+       -x509cert /opt/caddy/tls/container.crt \
+       -vgl
 
-       sleep infinity
+    /usr/bin/openbox --config-file /etc/openbox/rc.xml --startup /opt/TurboVNC/bin/xstartup.turbovnc
+
+    sleep infinity
 
 }
 

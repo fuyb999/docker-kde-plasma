@@ -77,3 +77,4 @@ make -j$(nproc)
 sudo make install
 sudo mv build/.libs/libSDL2-2.0.so.0.22.0 /usr/lib/x86_64-linux-gnu/libSDL2-2.0.so.0
 ```
+
