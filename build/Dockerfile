@@ -17,6 +17,7 @@ RUN \
         && $VAAPI_VENV/bin/meson setup build \
         && $VAAPI_VENV/bin/meson install -C build
 
+
 FROM ${IMAGE_BASE}
 
 LABEL org.opencontainers.image.source="https://github.com/ai-dock/linux-desktop"
@@ -99,13 +100,10 @@ ENV KWIN_X11_NO_SYNC_TO_VBLANK=1
 ENV SUDO_EDITOR=kate
 
 # Set input to fcitx5
-ENV XIM=fcitx5 \
-    XIM_PROGRAM=fcitx5 \
-    GTK_IM_MODULE=fcitx5 \
-    QT_IM_MODULE=fcitx5 \
-    XMODIFIERS="@im=fcitx5" \
-    SDL_IM_MODULE=fcitx5 \
-    GLFW_IM_MODULE=fcitx5
+ENV GTK_IM_MODULE=fcitx
+ENV QT_IM_MODULE=fcitx
+#ENV XIM fcitx
+ENV XMODIFIERS="@im=fcitx"
 
 ENV APPIMAGE_EXTRACT_AND_RUN=1
 
@@ -161,7 +159,7 @@ ENV LC_ALL zh_CN.UTF-8
 RUN \
     echo "**** Install core requirements ****" \
         && apt-get update \
-        && apt-get install -y --no-install-recommends sudo fakeroot sox file git bc jq acl less tree curl rar unar unrar unzip vim wget xz-utils zip bzip2 gzip htop lsof mlocate net-tools rsync openssh-server pkg-config ca-certificates supervisor \
+        && apt-get install -y --no-install-recommends sudo fakeroot sox file git bc jq acl less tree curl rar unar unrar unzip vim wget xz-utils zip bzip2 gzip htop lsof mlocate net-tools rsync openssh-server pkg-config ca-certificates python3 \
     && \
     echo "**** Install libtcmalloc ****" \
         && apt-get install -y --no-install-recommends libtcmalloc-minimal4 \
@@ -334,6 +332,7 @@ RUN set -e; \
             /tmp/* \
     ;} || echo "KasmVNC disabled."
 
+# TODO: python3 only for turbovnc and bigger
 RUN set -e; \
     [ "$TURBOVNC_ENABLED" = "true" ] && { \
     echo "**** Install TurboVNC requirements ****" \
@@ -371,7 +370,7 @@ RUN set -e; \
 
 # fcitx5 fcitx5-chinese-addons fcitx5-frontend-gtk2 fcitx5-frontend-gtk3 fcitx5-frontend-gtk4
 RUN apt-get update \
-      && apt-get install --no-install-recommends -y xterm openbox fcitx5 fcitx5-chinese-addons fcitx5-frontend-gtk3 \
+      && apt-get install --no-install-recommends -y xterm openbox \
       && mkdir -p /usr/share/xsessions \
       && touch /usr/share/xsessions/xfce.desktop \
       && echo "Exec=/startapp.sh" > /usr/share/xsessions/xfce.desktop \

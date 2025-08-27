@@ -9,13 +9,13 @@ services:
       args:
         IMAGE_BASE: ${IMAGE_BASE:-fuyb/base-image:v2-cpu-22.04}
         XPU_TARGET: ${XPU_TARGET:-NVIDIA_GPU}
-        XORG_ENABLED: ${XORG_ENABLED:-false}
+        XORG_ENABLED: ${XORG_ENABLED:-true}
         PLASMA_ENABLED: ${PLASMA_ENABLED:-false}
         PIPEWIRE_ENABLED: ${PIPEWIRE_ENABLED:-false}
-        VIRTUALGL_ENABLED: ${VIRTUALGL_ENABLED:-false}
+        VIRTUALGL_ENABLED: ${VIRTUALGL_ENABLED:-true}
         SELKIES_ENABLED: ${SELKIES_ENABLED:-false}
         KASMVNC_ENABLED: ${KASMVNC_ENABLED:-false}
-        TURBOVNC_ENABLED: ${TURBOVNC_ENABLED:-false}
+        TURBOVNC_ENABLED: ${TURBOVNC_ENABLED:-true}
         FIREFOX_ENABLED: ${FIREFOX_ENABLED:-false}
         SELKIES_VERSION: ${SELKIES_VERSION:-1.6.2}
 
@@ -49,7 +49,7 @@ services:
       - ./workspace:${WORKSPACE:-/workspace}:rw
       # Will echo to root-owned authorized_keys file;
       # Avoids changing local file owner
-#      - ./config/authorized_keys:/root/.ssh/authorized_keys_mount
+      - ./config/authorized_keys:/root/.ssh/authorized_keys_mount
       - ./config/provisioning/default.sh:/opt/ai-dock/bin/provisioning.sh
       # TLS Certificates
       - ./config/tls/server.crt:/opt/caddy/tls/container.crt
@@ -61,5 +61,4 @@ services:
     environment:
         SERVERLESS: ${SERVERLESS:-false}
         WORKSPACE: ${WORKSPACE:-/workspace}
-        WORKSPACE_SYNC: ${WORKSPACE_SYNC:-true}
         SSH_PORT_HOST: ${SSH_PORT_HOST:-2222}

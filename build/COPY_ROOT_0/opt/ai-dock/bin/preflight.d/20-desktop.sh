@@ -10,13 +10,13 @@ function preflight_main() {
     sync_vars DISPLAY_REFRESH REFRESH
     sync_vars DISPLAY_DPI DPI
     sync_vars DISPLAY_CDEPTH CDEPTH
-    sync_vars_with_prefixes "SELKIES_" "WEBRTC_"
-    sync_vars SELKIES_TURN_PROTOCOL TURN_PROTOCOL
-    sync_vars SELKIES_TURN_PROTOCOL TURN_PROTOCOL
-    sync_vars SELKIES_TURN_HOST TURN_HOST
-    sync_vars SELKIES_TURN_PORT TURN_PORT
-    sync_vars SELKIES_TURN_USERNAME TURN_USERNAME
-    sync_vars SELKIES_TURN_PASSWORD TURN_PASSWORD
+#    sync_vars_with_prefixes "SELKIES_" "WEBRTC_"
+#    sync_vars SELKIES_TURN_PROTOCOL TURN_PROTOCOL
+#    sync_vars SELKIES_TURN_PROTOCOL TURN_PROTOCOL
+#    sync_vars SELKIES_TURN_HOST TURN_HOST
+#    sync_vars SELKIES_TURN_PORT TURN_PORT
+#    sync_vars SELKIES_TURN_USERNAME TURN_USERNAME
+#    sync_vars SELKIES_TURN_PASSWORD TURN_PASSWORD
 
     export DBUS_SOCKET="${XDG_RUNTIME_DIR:-/tmp}/dbus-session-${DISPLAY#*:}"
     env-store DBUS_SOCKET
@@ -24,12 +24,12 @@ function preflight_main() {
     env-store DBUS_SESSION_BUS_ADDRESS
     export XDG_SESSION_ID="${DISPLAY#*:}"
     env-store XDG_SESSION_ID
-    export PIPEWIRE_RUNTIME_DIR="${PIPEWIRE_RUNTIME_DIR:-${XDG_RUNTIME_DIR:-/tmp}}"
-    env-store PIPEWIRE_RUNTIME_DIR
-    export PULSE_RUNTIME_PATH="${PULSE_RUNTIME_PATH:-${XDG_RUNTIME_DIR:-/tmp}/pulse}"
-    env-store PULSE_RUNTIME_PATH
-    export PULSE_SERVER="${PULSE_SERVER:-unix:${PULSE_RUNTIME_PATH:-${XDG_RUNTIME_DIR:-/tmp}/pulse}/native}"
-    env-store PULSE_SERVER
+#    export PIPEWIRE_RUNTIME_DIR="${PIPEWIRE_RUNTIME_DIR:-${XDG_RUNTIME_DIR:-/tmp}}"
+#    env-store PIPEWIRE_RUNTIME_DIR
+#    export PULSE_RUNTIME_PATH="${PULSE_RUNTIME_PATH:-${XDG_RUNTIME_DIR:-/tmp}/pulse}"
+#    env-store PULSE_RUNTIME_PATH
+#    export PULSE_SERVER="${PULSE_SERVER:-unix:${PULSE_RUNTIME_PATH:-${XDG_RUNTIME_DIR:-/tmp}/pulse}/native}"
+#    env-store PULSE_SERVER
     
     rm -rf $XDG_RUNTIME_DIR
     
@@ -47,15 +47,15 @@ function sync_vars() {
     local var1_name=$1
     local var2_name=$2
 
-    # Get the values of the environment variables
-    local var1_value=$(eval echo "\$$var1_name")
-    local var2_value=$(eval echo "\$$var2_name")
+    # 使用默认值防止未绑定变量错误
+    local var1_value=${!var1_name:-}
+    local var2_value=${!var2_name:-}
 
-    # Synchronize the variables
-    if [ -z "$var1_value" ]; then
+    # 同步变量
+    if [ -z "$var1_value" ] && [ -n "$var2_value" ]; then
         export $var1_name="$var2_value"
         env-store $var1_name
-    elif [ -z "$var2_value" ]; then
+    elif [ -n "$var1_value" ] && [ -z "$var2_value" ]; then
         export $var2_name="$var1_value"
         env-store $var2_name
     fi

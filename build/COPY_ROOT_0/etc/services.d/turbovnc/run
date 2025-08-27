@@ -1,0 +1,24 @@
+#!/bin/sh
+
+set -u # Treat unset variables as an error.
+
+#sudo rm -f /opt/TurboVNC/bin/xstartup.turbovnc
+
+sudo rm -rf /tmp/.X* ~/.cache
+
+source /opt/ai-dock/etc/environment.sh
+
+sudo mkdir -p /tmp/.X11-unix
+sudo chmod 777 -R /tmp/.X11-unix
+
+mkdir -p ~/.vnc/ ~/.dosbox
+echo $USER_PASSWORD | /opt/TurboVNC/bin/vncpasswd -f > ~/.vnc/passwd
+chmod 0600 ~/.vnc/passwd
+
+exec /opt/TurboVNC/bin/vncserver ${DISPLAY} \
+   -geometry ${DISPLAY_SIZEW}x${DISPLAY_SIZEH} \
+   -depth ${DISPLAY_CDEPTH} \
+   -auth ~/.vnc/passwd \
+   -x509key /opt/caddy/tls/container.key \
+   -x509cert /opt/caddy/tls/container.crt \
+   -vgl
