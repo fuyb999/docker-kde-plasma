@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -u # Treat unset variables as an error.
+
+echo "${DISPLAY}"
+echo "-geometry ${DISPLAY_SIZEW}x${DISPLAY_SIZEH}"
+echo "-depth ${DISPLAY_CDEPTH}"
+echo "-auth ~/.vnc/passwd"
+echo "-x509key /opt/caddy/tls/container.key"
+echo "-x509cert /opt/caddy/tls/container.crt"
+echo "-vgl"
