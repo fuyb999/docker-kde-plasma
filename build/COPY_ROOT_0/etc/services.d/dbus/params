@@ -1,8 +1,3 @@
 #!/bin/bash
 
-source /opt/ai-dock/etc/environment.sh
-
-echo "--session"
-echo "--nosyslog"
-echo "--address=$DBUS_SESSION_BUS_ADDRESS"
-echo "--nofork"
+echo $DBUS_SESSION_BUS_ADDRESS

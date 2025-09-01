@@ -10,6 +10,10 @@ source /opt/ai-dock/etc/environment.sh
 sudo mkdir -pm700 "$XDG_RUNTIME_DIR"
 sudo chown $(id -u):$(id -u) "$XDG_RUNTIME_DIR"
 
-exec dbus-daemon "$@"
+export DBUS_SOCKET="${XDG_RUNTIME_DIR:-/tmp}/dbus-session-${DISPLAY#*:}"
+export DBUS_SESSION_BUS_ADDRESS="unix:path=${DBUS_SOCKET}"
+export XDG_SESSION_ID="${DISPLAY#*:}"
+
+exec dbus-daemon --session --nosyslog --address=$DBUS_SESSION_BUS_ADDRESS --nofork
 
 # vim:ft=sh:ts=4:sw=4:et:sts=4

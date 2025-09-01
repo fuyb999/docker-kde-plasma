@@ -22,6 +22,7 @@ services:
     image: fuyb/docker-turbo:${IMAGE_TAG:-v1-22.04}
     privileged: true
     container_name: kde
+#    entrypoint: tail -f /dev/null
     shm_size: 2G
     
     ## For Nvidia GPU's - You probably want to uncomment this
