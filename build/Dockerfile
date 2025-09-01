@@ -393,7 +393,7 @@ RUN \
     echo
 
 # Copy early so we can use scripts in the build - Changes to these files will invalidate the cache and cause a rebuild.
-COPY --chown=0:0 ./COPY_ROOT_0/ /
+COPY --chown=0:1111 ./COPY_ROOT_0/ /
 RUN find /etc/services.d/ -type f \( -name '*.dep' -o -name 'respawn' \) | xargs chmod 666
 RUN find /etc/services.d/ -type f -name "respawn" | xargs rm -f
 
