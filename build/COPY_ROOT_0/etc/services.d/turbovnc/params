@@ -1,6 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
 set -u # Treat unset variables as an error.
+
+source /opt/ai-dock/etc/environment.sh
 
 echo "${DISPLAY}"
 echo "-geometry ${DISPLAY_SIZEW}x${DISPLAY_SIZEH}"
