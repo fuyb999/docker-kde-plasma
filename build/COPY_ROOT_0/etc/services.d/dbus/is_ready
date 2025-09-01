@@ -1,5 +1,5 @@
 #!/bin/sh
 
-[ -f "$XDG_RUNTIME_DIR" ]
+[ -f "$DBUS_SESSION_BUS_ADDRESS" ]
 
 # vim:ft=sh:ts=4:sw=4:et:sts=4
