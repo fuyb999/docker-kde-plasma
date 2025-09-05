@@ -4,7 +4,9 @@
 # but not to re-creations.
 #
 
-#set -e # Exit immediately if a command exits with a non-zero status.
+set -e # Exit immediately if a command exits with a non-zero status.
+set -u # Treat unset variables as an error.
+
 source /opt/ai-dock/etc/environment.sh
 
 sudo mkdir -p /tmp/.X11-unix
@@ -21,7 +23,5 @@ chmod 0600 ~/.vnc/passwd
    -x509key /opt/caddy/tls/container.key \
    -x509cert /opt/caddy/tls/container.crt \
    -vgl
-
-#/usr/bin/openbox --config-file /etc/openbox/rc.xml --startup /opt/TurboVNC/bin/xstartup.turbovnc
 
 # vim:ft=sh:ts=4:sw=4:et:sts=4
