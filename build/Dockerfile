@@ -373,7 +373,7 @@ RUN apt-get update \
       && apt-get install --no-install-recommends -y xterm openbox \
       && mkdir -p /usr/share/xsessions \
       && touch /usr/share/xsessions/xfce.desktop \
-      && echo "Exec=/startapp.sh" > /usr/share/xsessions/xfce.desktop \
+      && echo "Exec=tail -f /dev/null" > /usr/share/xsessions/xfce.desktop \
     && \
     echo "**** Section cleanup ****" \
         && apt-get clean autoclean -y \

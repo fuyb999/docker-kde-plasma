@@ -1,4 +1,4 @@
 --config-file
 /etc/openbox/rc.xml
 --startup
-sudo touch /var/run/openbox/openbox.ready
+/opt/TurboVNC/bin/xstartup.turbovnc
