@@ -10,8 +10,8 @@ source /opt/ai-dock/etc/environment.sh
 sudo mkdir -p /tmp/.X11-unix
 sudo chmod 777 -R /tmp/.X11-unix
 
-sudo mkdir -p ~/.vnc/ ~/.dosbox
-echo $USER_PASSWORD | sudo /opt/TurboVNC/bin/vncpasswd -f | sudo tee /root/.vnc/passwd > /dev/null
-sudo chmod 0600 ~/.vnc/passwd
+mkdir -p ~/.vnc/ ~/.dosbox
+echo $USER_PASSWORD | /opt/TurboVNC/bin/vncpasswd -f | tee /root/.vnc/passwd > /dev/null
+chmod 0600 ~/.vnc/passwd
 
 exec /opt/TurboVNC/bin/vncserver "$@"

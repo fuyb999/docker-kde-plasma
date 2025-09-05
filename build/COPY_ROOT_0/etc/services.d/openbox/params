@@ -1,6 +1,4 @@
-#!/bin/bash
-
-echo "--config-file"
-echo "/etc/openbox/rc.xml"
-echo "--startup"
-echo "touch /var/run/openbox/openbox.ready"
+--config-file
+/etc/openbox/rc.xml
+--startup
+touch /var/run/openbox/openbox.ready
