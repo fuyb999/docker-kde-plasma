@@ -19,7 +19,7 @@ services:
         FIREFOX_ENABLED: ${FIREFOX_ENABLED:-false}
         SELKIES_VERSION: ${SELKIES_VERSION:-1.6.2}
 
-    image: fuyb/docker-turbo:${IMAGE_TAG:-v1-22.04}
+    image: fuyb/docker-turbo:${IMAGE_TAG:-v2-22.04}
     privileged: true
     container_name: kde
 #    entrypoint: tail -f /dev/null
