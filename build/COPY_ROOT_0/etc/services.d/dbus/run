@@ -13,6 +13,6 @@ export DBUS_SOCKET="${XDG_RUNTIME_DIR:-/tmp}/dbus-session-${DISPLAY#*:}"
 export DBUS_SESSION_BUS_ADDRESS="unix:path=${DBUS_SOCKET}"
 export XDG_SESSION_ID="${DISPLAY#*:}"
 
-dbus-daemon --session --nosyslog --address=$DBUS_SESSION_BUS_ADDRESS --nofork
+exec dbus-daemon --session --nosyslog --address=$DBUS_SESSION_BUS_ADDRESS --nofork
 
 # vim:ft=sh:ts=4:sw=4:et:sts=4
