@@ -1,0 +1,7 @@
+#!/bin/bash
+
+source /opt/ai-dock/etc/environment.sh
+
+[ -d "$XDG_RUNTIME_DIR" ]
+
+# vim:ft=sh:ts=4:sw=4:et:sts=4

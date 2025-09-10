@@ -34,12 +34,8 @@ function preflight_main() {
     rm -rf $XDG_RUNTIME_DIR
     
     home_dir="/home/${USER_NAME}"
-    desktop_dir="${home_dir}/Desktop"
-    mkdir -p ${desktop_dir}
-    chown ${USER_NAME}.${USER_NAME} "${desktop_dir}"
-    ln -sf "${home_dir}" "${desktop_dir}"
-    ln -sf "${WORKSPACE}" "${desktop_dir}"
-    locale-gen $LANG
+    mkdir -p ${home_dir}
+    chown ${USER_NAME}.${USER_NAME} "${home_dir}"
 }
 
 

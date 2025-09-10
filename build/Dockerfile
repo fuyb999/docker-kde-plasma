@@ -1,7 +1,7 @@
 # For build automation - Allows building from any ai-dock base image
 ARG IMAGE_BASE="ghcr.io/ai-dock/base-image:v2-cuda-12.1.1-cudnn8-runtime-22.04"
 
-FROM ${IMAGE_BASE} as vaapibuilder
+FROM ${IMAGE_BASE} AS vaapibuilder
 
 RUN \
     apt-get update \
@@ -143,9 +143,9 @@ RUN \
     && \
     echo
 
-ENV LANG zh_CN.UTF-8
-ENV LANGUAGE zh_CN:zh
-ENV LC_ALL zh_CN.UTF-8
+ENV LANG=zh_CN.UTF-8
+ENV LANGUAGE=zh_CN:zh
+ENV LC_ALL=zh_CN.UTF-8
 
 # Use build scripts to ensure we can build all targets from one Dockerfile in a single layer.
 # Don't put anything heavy in here - We can use multi-stage building above if necessary.
@@ -370,10 +370,11 @@ RUN set -e; \
 
 # fcitx5 fcitx5-chinese-addons fcitx5-frontend-gtk2 fcitx5-frontend-gtk3 fcitx5-frontend-gtk4
 RUN apt-get update \
-      && apt-get install --no-install-recommends -y xterm openbox \
+      && apt-get install --no-install-recommends -y xterm openbox xdg-desktop-portal xdg-desktop-portal-gtk xdg-utils \
+      # !!! must be here
       && mkdir -p /usr/share/xsessions \
-      && touch /usr/share/xsessions/xfce.desktop \
-      && echo "Exec=tail -f /dev/null" > /usr/share/xsessions/xfce.desktop \
+          && touch /usr/share/xsessions/xfce.desktop \
+          && echo "Exec=/etc/services.d/openbox/startup.sh" > /usr/share/xsessions/xfce.desktop \
     && \
     echo "**** Section cleanup ****" \
         && apt-get clean autoclean -y \
