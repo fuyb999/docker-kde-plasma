@@ -6,44 +6,44 @@ set -u # Treat unset variables as an error.
 source /opt/ai-dock/etc/environment.sh
 
 sudo mkdir -p /var/run/dbus
-sudo mkdir -p /run/dbus  # 确保 /run/dbus 目录存在
+sudo mkdir -p /run/dbus  # Ensure /run/dbus directory exists
 
-# 生成机器ID（如果不存在）
+# Generate machine ID if it doesn't exist
 if [ ! -f /var/lib/dbus/machine-id ]; then
     sudo dbus-uuidgen > /var/lib/dbus/machine-id
 fi
 
-# 清理可能存在的旧套接字
+# Clean up any old sockets
 sudo rm -f /var/run/dbus/system_bus_socket
 sudo rm -f /run/dbus/system_bus_socket
 
-# 启动系统级D-Bus守护进程
-echo "启动系统D-Bus守护进程..."
+# Start system-level D-Bus daemon
+echo "Starting system D-Bus daemon..."
 sudo dbus-daemon --system --nosyslog --nofork --print-address &
 
-# 等待D-Bus启动并创建套接字
-echo "等待D-Bus套接字创建..."
+# Wait for D-Bus socket creation
+echo "Waiting for D-Bus socket creation..."
 MAX_WAIT=10
 count=0
 while [ ! -S /run/dbus/system_bus_socket ] && [ $count -lt $MAX_WAIT ]; do
     sleep 1
     count=$((count+1))
-    echo "等待D-Bus套接字... ($count/$MAX_WAIT)"
+    echo "Waiting for D-Bus socket... ($count/$MAX_WAIT)"
 done
 
 if [ ! -S /run/dbus/system_bus_socket ]; then
-    echo "错误: D-Bus套接字未创建"
+    echo "Error: D-Bus socket was not created"
     exit 1
 fi
 
-# 设置DBUS_SYSTEM_BUS_ADDRESS环境变量
+# Set DBUS_SYSTEM_BUS_ADDRESS environment variable
 export DBUS_SYSTEM_BUS_ADDRESS=unix:path=/run/dbus/system_bus_socket
-echo "D-Bus系统地址: $DBUS_SYSTEM_BUS_ADDRESS"
+echo "D-Bus system address: $DBUS_SYSTEM_BUS_ADDRESS"
 
-# 等待rtkit启动
+# Wait for rtkit to start
 sleep 2
 
-# 测试rtkitctl
+# Test rtkitctl
 rtkitctl --start
 
 exec dbus-daemon --session --nosyslog --address=$DBUS_SESSION_BUS_ADDRESS --nofork

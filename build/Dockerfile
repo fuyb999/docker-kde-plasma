@@ -384,14 +384,14 @@ RUN apt-get update \
             /var/tmp/* \
             /tmp/*
 
-COPY ttf-wps-fonts /tmp/ttf-wps-fonts
-RUN \
-    echo "**** Install ttf-wps-fonts ****" \
-        && chmod +x /tmp/ttf-wps-fonts/install.sh \
-        && /tmp/ttf-wps-fonts/install.sh \
-        && rm -rf /tmp/ttf-wps-fonts \
-    && \
-    echo
+#COPY ttf-wps-fonts /tmp/ttf-wps-fonts
+#RUN \
+#    echo "**** Install ttf-wps-fonts ****" \
+#        && chmod +x /tmp/ttf-wps-fonts/install.sh \
+#        && /tmp/ttf-wps-fonts/install.sh \
+#        && rm -rf /tmp/ttf-wps-fonts \
+#    && \
+#    echo
 
 # Copy early so we can use scripts in the build - Changes to these files will invalidate the cache and cause a rebuild.
 COPY --chown=0:1111 ./COPY_ROOT_0/ /

@@ -49,7 +49,8 @@ services:
     
     volumes:
       # Workspace
-      - ./workspace:${WORKSPACE:-/home/${USER_NAME}}:rw
+      - ./workspace:${WORKSPACE}:rw
+      - ./addons:${WORKSPACE}/addons:rw
       # Will echo to root-owned authorized_keys file;
       # Avoids changing local file owner
       - ./config/authorized_keys:/root/.ssh/authorized_keys_mount
@@ -62,5 +63,6 @@ services:
     ports:
       - "5900:5900"
     environment:
+        WORKSPACE: ${WORKSPACE}
         SERVERLESS: ${SERVERLESS:-false}
         SSH_PORT_HOST: ${SSH_PORT_HOST:-2222}
