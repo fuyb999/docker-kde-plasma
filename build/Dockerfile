@@ -370,7 +370,7 @@ RUN set -e; \
 
 # fcitx5 fcitx5-chinese-addons fcitx5-frontend-gtk2 fcitx5-frontend-gtk3 fcitx5-frontend-gtk4
 RUN apt-get update \
-      && apt-get install --no-install-recommends -y xterm openbox xdg-desktop-portal xdg-desktop-portal-gtk xdg-utils \
+      && apt-get install --no-install-recommends -y xterm openbox xdg-desktop-portal xdg-desktop-portal-gtk xdg-utils at-spi2-core rtkit libpulse-mainloop-glib0 libxcb-image0 libxcb-render-util0 \
       # !!! must be here
       && mkdir -p /usr/share/xsessions \
           && touch /usr/share/xsessions/xfce.desktop \

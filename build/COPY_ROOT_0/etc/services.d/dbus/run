@@ -5,13 +5,9 @@ set -u # Treat unset variables as an error.
 
 source /opt/ai-dock/etc/environment.sh
 
-rm -rf "$XDG_RUNTIME_DIR"
+sudo rm -rf "$XDG_RUNTIME_DIR"
 mkdir -pm700 "$XDG_RUNTIME_DIR"
 chown -R ${USER_ID}:${GROUP_ID} "$XDG_RUNTIME_DIR"
-
-export DBUS_SOCKET="${XDG_RUNTIME_DIR:-/tmp}/dbus-session-${DISPLAY#*:}"
-export DBUS_SESSION_BUS_ADDRESS="unix:path=${DBUS_SOCKET}"
-export XDG_SESSION_ID="${DISPLAY#*:}"
 
 exec dbus-daemon --session --nosyslog --address=$DBUS_SESSION_BUS_ADDRESS --nofork
 
