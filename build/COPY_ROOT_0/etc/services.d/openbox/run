@@ -12,6 +12,6 @@ sudo mkdir -p /var/run/openbox /root/.cache/openbox /root/.cache/openbox/session
 #/usr/libexec/xdg-desktop-portal-gtk &
 #sleep 2
 
-exec openbox-session
+exec /usr/bin/openbox "$@"
 
 # vim:ft=sh:ts=4:sw=4:et:sts=4
