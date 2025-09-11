@@ -16,6 +16,7 @@ fi
 # Clean up any old sockets
 sudo rm -f /var/run/dbus/system_bus_socket
 sudo rm -f /run/dbus/system_bus_socket
+sudo rm -f /run/dbus/pid
 
 # Start system-level D-Bus daemon
 echo "Starting system D-Bus daemon..."
