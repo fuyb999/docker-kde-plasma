@@ -12,7 +12,7 @@ DBEAVER_HOME=${XDG_SOFTWARE_HOME}/dbeaver-${DBEAVER_VERSION}
 
 install(){
   if [ -d "$DBEAVER_HOME" ] && [ -f "$DBEAVER_HOME/dbeaver" ]; then
-    ln -sf $DBEAVER_HOME/dbeaver /usr/local/bin/dbeaver
+    sudo ln -sf $DBEAVER_HOME/dbeaver /usr/local/bin/dbeaver
   fi
 }
 
