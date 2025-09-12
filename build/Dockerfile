@@ -48,7 +48,7 @@ ENV SELKIES_VENV=$VENV_DIR/selkies
 ENV SELKIES_VENV_PYTHON=$SELKIES_VENV/bin/python
 ENV SELKIES_VENV_PIP=$SELKIES_VENV/bin/pip
 
-ENV USER_GROUPS=${USER_GROUPS},input,lpadmin
+ENV USER_GROUPS=${USER_GROUPS},input
 ENV DISPLAY=:0
 ENV VNC_DISPLAY=:1
 
@@ -70,21 +70,20 @@ ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=all
 ENV __GL_SYNC_TO_VBLANK=0
 
-ENV TZ=Asia/Shanghai
 ENV DISPLAY_SIZEW=1920
 ENV DISPLAY_SIZEH=1080
 ENV DISPLAY_REFRESH=60
 ENV DISPLAY_DPI=96
 ENV DISPLAY_CDEPTH=24
 
-ARG SELKIES_VERSION=1.6.1
-ENV SELKIES_VERSION=${SELKIES_VERSION}
-ENV SELKIES_ENCODER=nvh264enc
-ENV SELKIES_ENABLE_RESIZE=false
-ENV SELKIES_ENABLE_BASIC_AUTH=false
+#ARG SELKIES_VERSION=1.6.1
+#ENV SELKIES_VERSION=${SELKIES_VERSION}
+#ENV SELKIES_ENCODER=nvh264enc
+#ENV SELKIES_ENABLE_RESIZE=false
+#ENV SELKIES_ENABLE_BASIC_AUTH=false
 
-ENV XDG_RUNTIME_DIR=/tmp/runtime-user
-#ENV XDG_SESSION_TYPE=x11
+ENV XDG_RUNTIME_DIR=/run/user/${USER_ID}
+ENV XDG_SESSION_TYPE=x11
 ENV FORCE_X11_DUMMY_CONFIG=false
 
 # KDE,xfce
@@ -370,11 +369,11 @@ RUN set -e; \
 
 # fcitx5 fcitx5-chinese-addons fcitx5-frontend-gtk2 fcitx5-frontend-gtk3 fcitx5-frontend-gtk4
 RUN apt-get update \
-      && apt-get install --no-install-recommends -y xterm openbox xdg-desktop-portal xdg-desktop-portal-gtk xdg-utils at-spi2-core rtkit libpulse-mainloop-glib0 libxcb-image0 libxcb-render-util0 pipewire fonts-liberation libnspr4 libnss3 \
+      && apt-get install --no-install-recommends -y ssl-cert xterm openbox xdg-desktop-portal xdg-desktop-portal-gtk xdg-utils at-spi2-core rtkit libpulse-mainloop-glib0 libxcb-image0 libxcb-render-util0 pipewire fonts-liberation libnspr4 libnss3 \
       # !!! must be here
       && mkdir -p /usr/share/xsessions \
           && touch /usr/share/xsessions/xfce.desktop \
-          && echo "Exec=/etc/services.d/openbox/startup.sh" > /usr/share/xsessions/xfce.desktop \
+          && echo "Exec=/usr/bin/openbox --config-file /etc/openbox/rc.xml" > /usr/share/xsessions/xfce.desktop \
     && \
     echo "**** Section cleanup ****" \
         && apt-get clean autoclean -y \

@@ -18,22 +18,24 @@ function preflight_main() {
 #    sync_vars SELKIES_TURN_USERNAME TURN_USERNAME
 #    sync_vars SELKIES_TURN_PASSWORD TURN_PASSWORD
 
-    export DBUS_SOCKET="${XDG_RUNTIME_DIR:-/tmp}/dbus-session-${DISPLAY#*:}"
+    export SYSTEM_DBUS_SOCKET=/run/dbus/system_bus_socket
+    env-store SYSTEM_DBUS_SOCKET
+    export DBUS_SYSTEM_BUS_ADDRESS="unix:path=${SYSTEM_DBUS_SOCKET}"
+    env-store DBUS_SYSTEM_BUS_ADDRESS
+
+    export DBUS_SOCKET="${XDG_RUNTIME_DIR}/dbus-session-${DISPLAY#*:}"
     env-store DBUS_SOCKET
     export DBUS_SESSION_BUS_ADDRESS="unix:path=${DBUS_SOCKET}"
     env-store DBUS_SESSION_BUS_ADDRESS
     export XDG_SESSION_ID="${DISPLAY#*:}"
     env-store XDG_SESSION_ID
+
 #    export PIPEWIRE_RUNTIME_DIR="${PIPEWIRE_RUNTIME_DIR:-${XDG_RUNTIME_DIR:-/tmp}}"
 #    env-store PIPEWIRE_RUNTIME_DIR
 #    export PULSE_RUNTIME_PATH="${PULSE_RUNTIME_PATH:-${XDG_RUNTIME_DIR:-/tmp}/pulse}"
 #    env-store PULSE_RUNTIME_PATH
 #    export PULSE_SERVER="${PULSE_SERVER:-unix:${PULSE_RUNTIME_PATH:-${XDG_RUNTIME_DIR:-/tmp}/pulse}/native}"
 #    env-store PULSE_SERVER
-    
-    home_dir="/home/${USER_NAME}"
-    mkdir -p ${home_dir}
-    chown ${USER_NAME}.${USER_NAME} "${home_dir}"
 }
 
 

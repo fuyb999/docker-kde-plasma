@@ -9,7 +9,7 @@ set -u # Treat unset variables as an error.
 
 source /opt/ai-dock/etc/environment.sh
 
-rm -rf /tmp/.X${DISPLAY:1}-lock /tmp/.X11-unix
+rm -rf /tmp/.X${DISPLAY:1}-lock /tmp/.X11-unix ~/.vnc
 mkdir -p /tmp/.X11-unix
 chmod 755 -R /tmp/.X11-unix
 

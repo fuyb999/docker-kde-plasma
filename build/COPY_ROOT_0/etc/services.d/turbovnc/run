@@ -3,16 +3,6 @@
 set -e # Exit immediately if a command exits with a non-zero status.
 set -u # Treat unset variables as an error.
 
-#sudo rm -rf /tmp/.X* ~/.cache
-#
-#source /opt/ai-dock/etc/environment.sh
-#
-#sudo mkdir -p /tmp/.X11-unix
-#sudo chmod 777 -R /tmp/.X11-unix
-#
-#sudo mkdir -p ~/.vnc/ ~/.dosbox
-#echo $USER_PASSWORD | sudo /opt/TurboVNC/bin/vncpasswd -f | sudo tee /root/.vnc/passwd > /dev/null
-#sudo chmod 0600 ~/.vnc/passwd
-#sudo chown -R 1000:1000 ~/.vnc
-#
-#exec /opt/TurboVNC/bin/vncserver "$@"
+source /opt/ai-dock/etc/environment.sh
+
+/opt/TurboVNC/bin/xstartup.turbovnc

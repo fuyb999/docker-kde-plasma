@@ -3,8 +3,9 @@
 set -e # Exit immediately if a command exits with a non-zero status.
 set -u # Treat unset variables as an error.
 
+sudo rm -rf ~/.dbus
 sudo rm -f /var/run/openbox/openbox.ready
-sudo mkdir -p /var/run/openbox /root/.cache/openbox /root/.cache/openbox/sessions
+sudo mkdir -p /var/run/openbox
 
 #/usr/libexec/xdg-desktop-portal &
 #sleep 2
@@ -12,6 +13,6 @@ sudo mkdir -p /var/run/openbox /root/.cache/openbox /root/.cache/openbox/session
 #/usr/libexec/xdg-desktop-portal-gtk &
 #sleep 2
 
-exec /usr/bin/openbox "$@"
+#exec /usr/bin/openbox "$@"
 
 # vim:ft=sh:ts=4:sw=4:et:sts=4

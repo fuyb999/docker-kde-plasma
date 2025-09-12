@@ -1,5 +1,5 @@
 #!/bin/sh
 
-[ -f /opt/TurboVNC/bin/xstartup.turbovnc ]
+[ -f ~/.vnc/passwd ]
 
 # vim:ft=sh:ts=4:sw=4:et:sts=4
