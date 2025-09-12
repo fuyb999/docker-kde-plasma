@@ -367,9 +367,9 @@ RUN set -e; \
             /tmp/* \
     ;} || echo "Firefox disabled."
 
-# fcitx5 fcitx5-chinese-addons fcitx5-frontend-gtk2 fcitx5-frontend-gtk3 fcitx5-frontend-gtk4
+#
 RUN apt-get update \
-      && apt-get install --no-install-recommends -y ssl-cert xterm openbox xdg-desktop-portal xdg-desktop-portal-gtk xdg-utils at-spi2-core rtkit libpulse-mainloop-glib0 libxcb-image0 libxcb-render-util0 pipewire fonts-liberation libnspr4 libnss3 \
+      && apt-get install --no-install-recommends -y fcitx5 fcitx5-chinese-addons fcitx5-frontend-gtk2 fcitx5-frontend-gtk3 fcitx5-frontend-gtk4 ssl-cert xterm openbox xdg-desktop-portal xdg-desktop-portal-gtk xdg-utils at-spi2-core rtkit libpulse-mainloop-glib0 libxcb-image0 libxcb-render-util0 pipewire fonts-liberation libnspr4 libnss3 \
       # !!! must be here
       && mkdir -p /usr/share/xsessions \
           && touch /usr/share/xsessions/xfce.desktop \
