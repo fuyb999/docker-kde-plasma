@@ -1,4 +1,4 @@
-<!--$HOME/.config/JetBrains/IntelliJIdea2023.2/tools/External Tools.xml-->
+<!--$HOME/.config/JetBrains/IntelliJIdea2025.2/tools/External Tools.xml-->
 <toolSet name="External Tools">
   <tool name="Mozilla Firefox" description="Firefox 浏览器" showInMainMenu="false" showInEditor="false" showInProject="false" showInSearchPopup="false" disabled="false" useConsole="true" showConsoleOnStdOut="false" showConsoleOnStdErr="false" synchronizeAfterRun="true">
     <exec>
@@ -7,7 +7,14 @@
       <option name="WORKING_DIRECTORY" value="$ProjectFileDir$" />
     </exec>
   </tool>
-  <tool name="DBeaver Enterprise Edition" description="DBeaver Enterprise Edition" showInMainMenu="false" showInEditor="false" showInProject="false" showInSearchPopup="false" disabled="false" useConsole="true" showConsoleOnStdOut="false" showConsoleOnStdErr="false" synchronizeAfterRun="true">
+  <tool name="WindTerm" description="WindTerm" showInMainMenu="false" showInEditor="false" showInProject="false" showInSearchPopup="false" disabled="false" useConsole="true" showConsoleOnStdOut="false" showConsoleOnStdErr="false" synchronizeAfterRun="true">
+    <exec>
+      <option name="COMMAND" value="WindTerm" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$ProjectFileDir$" />
+    </exec>
+  </tool>
+  <tool name="DBeaver Ultimate Edition" description="DBeaver Ultimate Edition" showInMainMenu="false" showInEditor="false" showInProject="false" showInSearchPopup="false" disabled="false" useConsole="true" showConsoleOnStdOut="false" showConsoleOnStdErr="false" synchronizeAfterRun="true">
     <exec>
       <option name="COMMAND" value="dbeaver" />
       <option name="PARAMETERS" />

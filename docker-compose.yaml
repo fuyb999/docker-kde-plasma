@@ -30,7 +30,7 @@ x-setup-template: &setup-template
         exit 1;
       fi;
       if [ ! -d ${HOME}/.config/JetBrains ]; then
-        echo "Restore idea config";
+        echo "Try restore idea config";
         sleep 1;
         if [ -f /backup/config-idea${IDEA_VERSION}-plugins.tar.bz2.0 ]; then
           cat /backup/config-idea${IDEA_VERSION}-plugins.tar.bz2.* > /backup/config-idea${IDEA_VERSION}-plugins.tar.bz2;
@@ -42,11 +42,12 @@ x-setup-template: &setup-template
           echo "The config file not found"
         fi;
       fi;
+      echo '' > /tmp/.config_restored
       until curl  -s -I http://idea-docker:5800 | grep -q "HTTP/1.1 200 OK"; do sleep 30; done;
       echo "All done!";
     '
   healthcheck:
-    test: [ "CMD-SHELL", "[ -d /config/xdg/state/logrotate ]" ]
+    test: [ "CMD-SHELL", "[ -f /tmp/.config_restored ]" ]
     interval: 10s
     timeout: 5s
     retries: 120
@@ -57,7 +58,7 @@ x-idea-docker-template: &idea-docker-template
     - .env
   image: fuyb/docker-turbo:${IMAGE_TAG:-v2-22.04}
   privileged: true
-  container_name: kde
+  container_name: idea-docker
   shm_size: 2G
 
   ## For Nvidia GPU's - You probably want to uncomment this
@@ -91,7 +92,6 @@ x-idea-docker-template: &idea-docker-template
 
   volumes:
     # Workspace
-    - ${ADDONS_DIR:-./addons}:${HOME}/addons:rw
     - ${USERS_WORKSPACE}/config:${HOME}:rw
     - ${USERS_WORKSPACE}/projects:${HOME}/IdeaProjects:z
     # Will echo to root-owned authorized_keys file;
@@ -102,9 +102,11 @@ x-idea-docker-template: &idea-docker-template
     - ./config/tls/server.crt:/opt/caddy/tls/container.crt
     - ./config/tls/server.key:/opt/caddy/tls/container.key
     # External Tools
-    - ./config/tools/External Tools.xml:${HOME}/.config/JetBrains/IntelliJIdea2024.1/tools/External Tools.xml
+    - ./config/tools/External Tools.xml:${HOME}/.config/JetBrains/IntelliJIdea${IDEA_VERSION}/tools/External Tools.xml
+    # Addons
+    - ./addons:/opt/addons:rw
     # Apps
-    - /data/container-apps:/opt/apps
+#    - /data/container-apps:/opt/apps
 
 services:
   setup:
