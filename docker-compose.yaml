@@ -1,70 +1,117 @@
 version: "3.8"
-# Compose file build variables set in .env
+
+x-setup-template: &setup-template
+  image: ${IDEA_DOCKER_IMAGES}
+  build:
+    context: ./build
+    args:
+      IMAGE_BASE: ${IMAGE_BASE:-fuyb/base-image:v2-cpu-22.04}
+      XPU_TARGET: ${XPU_TARGET:-NVIDIA_GPU}
+      XORG_ENABLED: ${XORG_ENABLED:-true}
+      PLASMA_ENABLED: ${PLASMA_ENABLED:-false}
+      PIPEWIRE_ENABLED: ${PIPEWIRE_ENABLED:-false}
+      VIRTUALGL_ENABLED: ${VIRTUALGL_ENABLED:-true}
+      SELKIES_ENABLED: ${SELKIES_ENABLED:-false}
+      KASMVNC_ENABLED: ${KASMVNC_ENABLED:-false}
+      TURBOVNC_ENABLED: ${TURBOVNC_ENABLED:-true}
+      FIREFOX_ENABLED: ${FIREFOX_ENABLED:-false}
+      SELKIES_VERSION: ${SELKIES_VERSION:-1.6.2}
+  privileged: true
+  volumes:
+    - ${USERS_WORKSPACE}/config:/config:rw
+    - ${CONFIG_BACKUP_PATH:-./addons/backups}:/backup
+  environment:
+    - USER_ID=${USER_ID}
+    - GROUP_ID=${GROUP_ID}
+  command: >
+    bash -c '
+      if [ "x${USERS_WORKSPACE}" == "x" ]; then
+        echo "Set the USERS_WORKSPACE environment variable in the .env file";
+        exit 1;
+      fi;
+      if [ ! -d ${HOME}/.config/JetBrains ]; then
+        echo "Restore idea config";
+        sleep 1;
+        if [ -f /backup/config-idea${IDEA_VERSION}-plugins.tar.bz2.0 ]; then
+          cat /backup/config-idea${IDEA_VERSION}-plugins.tar.bz2.* > /backup/config-idea${IDEA_VERSION}-plugins.tar.bz2;
+          tar -jxvf /backup/config-idea${IDEA_VERSION}-plugins.tar.bz2 -C /config --strip-components=1;
+          rm -rf /backup/config-idea${IDEA_VERSION}-plugins.tar.bz2;
+        elif [ -f /backup/config.tar.bz2 ]; then
+          tar -jxvf /backup/config.tar.bz2 -C /config --strip-components=1;
+        else
+          echo "The config file not found"
+        fi;
+      fi;
+      until curl  -s -I http://idea-docker:5800 | grep -q "HTTP/1.1 200 OK"; do sleep 30; done;
+      echo "All done!";
+    '
+  healthcheck:
+    test: [ "CMD-SHELL", "[ -d /config/xdg/state/logrotate ]" ]
+    interval: 10s
+    timeout: 5s
+    retries: 120
+    start_period: 3s
+
+x-idea-docker-template: &idea-docker-template
+  env_file:
+    - .env
+  image: fuyb/docker-turbo:${IMAGE_TAG:-v2-22.04}
+  privileged: true
+  container_name: kde
+  shm_size: 2G
+
+  ## For Nvidia GPU's - You probably want to uncomment this
+  #    deploy:
+  #      resources:
+  #        reservations:
+  #          devices:
+  #            - driver: nvidia
+  #              count: all
+  #              capabilities: [gpu]
+
+  cap_add:
+    - SYS_ADMIN
+
+  security_opt:
+    - seccomp:unconfined
+    - apparmor:unconfined
+
+  devices:
+    - "/dev/fuse"
+    - "/dev/dri:/dev/dri"
+    # For AMD GPU
+    #- "/dev/kfd:/dev/kfd"
+
+  ports:
+    - "5900:5900"
+
+  environment:
+    SERVERLESS: ${SERVERLESS:-false}
+    SSH_PORT_HOST: ${SSH_PORT_HOST:-2222}
+
+  volumes:
+    # Workspace
+    - ${ADDONS_DIR:-./addons}:${HOME}/addons:rw
+    - ${USERS_WORKSPACE}/config:${HOME}:rw
+    - ${USERS_WORKSPACE}/projects:${HOME}/IdeaProjects:z
+    # Will echo to root-owned authorized_keys file;
+    # Avoids changing local file owner
+    - ./config/authorized_keys:/root/.ssh/authorized_keys_mount
+    - ./config/provisioning/default.sh:/opt/ai-dock/bin/provisioning.sh:rw
+    # TLS Certificates
+    - ./config/tls/server.crt:/opt/caddy/tls/container.crt
+    - ./config/tls/server.key:/opt/caddy/tls/container.key
+    # External Tools
+    - ./config/tools/External Tools.xml:${HOME}/.config/JetBrains/IntelliJIdea2024.1/tools/External Tools.xml
+    # Apps
+    - /data/container-apps:/opt/apps
+
 services:
-  supervisor:
-    env_file:
-      - .env
-    build:
-      context: ./build
-      args:
-        IMAGE_BASE: ${IMAGE_BASE:-fuyb/base-image:v2-cpu-22.04}
-        XPU_TARGET: ${XPU_TARGET:-NVIDIA_GPU}
-        XORG_ENABLED: ${XORG_ENABLED:-true}
-        PLASMA_ENABLED: ${PLASMA_ENABLED:-false}
-        PIPEWIRE_ENABLED: ${PIPEWIRE_ENABLED:-false}
-        VIRTUALGL_ENABLED: ${VIRTUALGL_ENABLED:-true}
-        SELKIES_ENABLED: ${SELKIES_ENABLED:-false}
-        KASMVNC_ENABLED: ${KASMVNC_ENABLED:-false}
-        TURBOVNC_ENABLED: ${TURBOVNC_ENABLED:-true}
-        FIREFOX_ENABLED: ${FIREFOX_ENABLED:-false}
-        SELKIES_VERSION: ${SELKIES_VERSION:-1.6.2}
+  setup:
+    << : *setup-template
 
-    image: fuyb/docker-turbo:${IMAGE_TAG:-v2-22.04}
-    privileged: true
-    container_name: kde
-    shm_size: 2G
-    
-    ## For Nvidia GPU's - You probably want to uncomment this
-#    deploy:
-#      resources:
-#        reservations:
-#          devices:
-#            - driver: nvidia
-#              count: all
-#              capabilities: [gpu]
-    
-    cap_add:
-      - SYS_ADMIN
-
-    security_opt:
-      - seccomp:unconfined
-      - apparmor:unconfined
-
-    devices:
-      - "/dev/fuse"
-      - "/dev/dri:/dev/dri"
-      # For AMD GPU
-      #- "/dev/kfd:/dev/kfd"
-
-    ports:
-      - "5900:5900"
-
-    environment:
-      SERVERLESS: ${SERVERLESS:-false}
-      SSH_PORT_HOST: ${SSH_PORT_HOST:-2222}
-
-    volumes:
-      # Workspace
-      - ./workspace:${HOME}:rw
-      - ./addons:${HOME}/addons:rw
-      # Will echo to root-owned authorized_keys file;
-      # Avoids changing local file owner
-      - ./config/authorized_keys:/root/.ssh/authorized_keys_mount
-      - ./config/provisioning/default.sh:/opt/ai-dock/bin/provisioning.sh:rw
-      # TLS Certificates
-      - ./config/tls/server.crt:/opt/caddy/tls/container.crt
-      - ./config/tls/server.key:/opt/caddy/tls/container.key
-      # External Tools
-      - ./config/tools/External Tools.xml:${HOME}/.config/JetBrains/IntelliJIdea2024.1/tools/External Tools.xml
-      # Apps
-      - /data/container-apps:/opt/apps
+  idea-docker:
+    << : *idea-docker-template
+    depends_on:
+      setup:
+        condition: service_healthy
