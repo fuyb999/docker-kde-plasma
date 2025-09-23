@@ -106,7 +106,7 @@ x-idea-docker-template: &idea-docker-template
     # Addons
     - ./addons:/opt/addons:rw
     # Apps
-#    - /data/container-apps:/opt/apps
+    - /data/container-apps:/opt/apps
 
 services:
   setup:
