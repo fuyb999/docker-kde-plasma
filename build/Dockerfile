@@ -394,8 +394,8 @@ RUN apt-get update \
 
 # Copy early so we can use scripts in the build - Changes to these files will invalidate the cache and cause a rebuild.
 COPY --chown=0:1111 ./COPY_ROOT_0/ /
-RUN find /etc/services.d/ -type f \( -name '*.dep' -o -name 'params' \) | xargs chmod 666
-RUN find /etc/services.d/ -type f -name "respawn" | xargs rm -f
+RUN find /etc/services.d/ -type f \( -name '*.dep' -o -name 'params' -o -name 'respawn' \) | xargs chmod 666
+#RUN find /etc/services.d/ -type f -name "respawn" | xargs rm -f
 
 RUN echo "**** Fix permissions ****" \
         && chmod +x /opt/ai-dock/bin/*.sh \

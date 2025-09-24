@@ -275,13 +275,13 @@ install_idea(){
   return 0
 }
 
-install_jdk
-install_node
-install_firefox
-install_oss_browser
-install_wind_term
-install_dbeaver
-install_anaconda3
-install_idea
+#install_jdk
+#install_node
+#install_firefox
+#install_oss_browser
+#install_wind_term
+#install_dbeaver
+#install_anaconda3
+#install_idea
 
 # vim:ft=sh:ts=4:sw=4:et:sts=4
