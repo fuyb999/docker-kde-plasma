@@ -2,9 +2,9 @@
 
 source /opt/ai-dock/etc/environment.sh
 
-if [ -f "${SOFTWARE_ADDONS_DIR}/fcitx5-v5.1.11.tar.xz" ] ; then
-  sudo tar -Jxf ${SOFTWARE_ADDONS_DIR}/fcitx5-v5.1.11.tar.xz -C /
-fi
+#if [ -f "${SOFTWARE_ADDONS_DIR}/fcitx5-v5.1.11.tar.xz" ] ; then
+#  sudo tar -Jxf ${SOFTWARE_ADDONS_DIR}/fcitx5-v5.1.11.tar.xz -C /
+#fi
 
 if [ -d "${XDG_CONFIG_HOME}/JetBrains" ]; then
   find ${XDG_CONFIG_HOME}/JetBrains -name '*.lock' | xargs rm -f

@@ -158,7 +158,7 @@ ENV LC_ALL=zh_CN.UTF-8
 RUN \
     echo "**** Install core requirements ****" \
         && apt-get update \
-        && apt-get install -y --no-install-recommends sudo fakeroot sox file git bc jq acl less tree curl rar unar unrar unzip vim wget xz-utils zip bzip2 gzip htop lsof mlocate net-tools rsync openssh-server pkg-config ca-certificates python3 \
+        && apt-get install -y --no-install-recommends sudo fakeroot ssl-cert sox file git bc jq acl less tree curl rar unar unrar unzip vim wget xz-utils zip bzip2 gzip htop lsof mlocate net-tools rsync openssh-server pkg-config ca-certificates python3 \
     && \
     echo "**** Install libtcmalloc ****" \
         && apt-get install -y --no-install-recommends libtcmalloc-minimal4 \
@@ -367,9 +367,8 @@ RUN set -e; \
             /tmp/* \
     ;} || echo "Firefox disabled."
 
-# fcitx5-chinese-addons fcitx5-frontend-gtk2 fcitx5-frontend-gtk3 fcitx5-frontend-gtk4
 RUN apt-get update \
-      && apt-get install --no-install-recommends -y fcitx5 fcitx5-frontend-gtk2 fcitx5-frontend-gtk3 fcitx5-frontend-gtk4 ssl-cert xterm openbox xdg-desktop-portal xdg-desktop-portal-gtk xdg-utils at-spi2-core rtkit libpulse-mainloop-glib0 libxcb-image0 libxcb-render-util0 pipewire fonts-liberation libnspr4 libnss3 \
+      && apt-get install --no-install-recommends -y xterm openbox fcitx5 fcitx5-chinese-addons fcitx5-frontend-gtk2 fcitx5-frontend-gtk3 fcitx5-frontend-gtk4 xdg-desktop-portal xdg-desktop-portal-gtk xdg-utils at-spi2-core rtkit libpulse-mainloop-glib0 libxcb-image0 libxcb-render-util0 pipewire fonts-liberation libnspr4 libnss3 \
       # !!! must be here
       && mkdir -p /usr/share/xsessions \
           && touch /usr/share/xsessions/xfce.desktop \
@@ -395,7 +394,6 @@ RUN apt-get update \
 # Copy early so we can use scripts in the build - Changes to these files will invalidate the cache and cause a rebuild.
 COPY --chown=0:1111 ./COPY_ROOT_0/ /
 RUN find /etc/services.d/ -type f \( -name '*.dep' -o -name 'params' -o -name 'respawn' \) | xargs chmod 666
-#RUN find /etc/services.d/ -type f -name "respawn" | xargs rm -f
 
 RUN echo "**** Fix permissions ****" \
         && chmod +x /opt/ai-dock/bin/*.sh \
