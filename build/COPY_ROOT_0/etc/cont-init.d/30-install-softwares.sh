@@ -241,7 +241,6 @@ install_idea(){
 
   echo "try install ideaIU-${IDEA_VERSION}"
 
-  # IDEA_BIN_ROOT_NAME="$(tar -tf /ideaIU-${IDEA_VERSION}.tar.gz | awk -F "/" '{print $1}' | sed -n '1p')"
   if [ ! -f "${SOFTWARE_ADDONS_DIR}/ideaIU-${IDEA_VERSION}.tar.gz" ]; then
     wget https://download.jetbrains.com/idea/ideaIU-${IDEA_VERSION}.tar.gz -O ${SOFTWARE_ADDONS_DIR}/ideaIU-${IDEA_VERSION}.tar.gz
   fi
