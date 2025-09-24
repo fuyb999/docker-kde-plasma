@@ -9,23 +9,23 @@ set -u # Treat unset variables as an error.
 
 source /opt/ai-dock/etc/environment.sh
 
-export XDG_SOFTWARE_HOME=/opt/apps
-export ADDONS_DIR=/opt/addons
-export SOFTWARE_ADDONS_DIR=${ADDONS_DIR}/softwares
-export CRACK_ADDONS_DIR=${ADDONS_DIR}/crack
+export XDG_SOFTWARE_HOME=${XDG_SOFTWARE_HOME:-/opt/apps}
+export XDG_ADDONS_HOME=${XDG_ADDONS_HOME:-/opt/addons}
+export SOFTWARE_ADDONS_DIR=${XDG_ADDONS_HOME}/softwares
+export CRACK_ADDONS_DIR=${XDG_ADDONS_HOME}/crack
 export JAVA_HOME=${XDG_SOFTWARE_HOME}/jdk-${JDK_VERSION}
 export DBEAVER_HOME=${XDG_SOFTWARE_HOME}/dbeaver-${DBEAVER_VERSION}
 export NODE_HOME=${XDG_SOFTWARE_HOME}/node-v${NODE_VERSION}
-export FIREFOX_HOME=${XDG_SOFTWARE_HOME}/firefox-${OSS_BROWSER_VERSION}
-export OSS_BROWSER_HOME=${XDG_SOFTWARE_HOME}/oss-browser-${FIREFOX_VERSION}
+export FIREFOX_HOME=${XDG_SOFTWARE_HOME}/firefox-${FIREFOX_VERSION}
+export OSS_BROWSER_HOME=${XDG_SOFTWARE_HOME}/oss-browser-${OSS_BROWSER_VERSION}
 export WIND_TERM_HOME=${XDG_SOFTWARE_HOME}/WindTerm-${WIND_TERM_VERSION}
 export ANACONDA_HOME=${XDG_SOFTWARE_HOME}/anaconda3-${CONDA_VERSION}
 export IDEA_HOME=${XDG_SOFTWARE_HOME}/ideaIU-${IDEA_VERSION}
 export PATH=${PATH}:${JAVA_HOME}/bin:${DBEAVER_HOME}:${NODE_HOME}/bin:${FIREFOX_HOME}:${OSS_BROWSER_HOME}:${WIND_TERM_HOME}:${ANACONDA_HOME}/bin:${IDEA_HOME}/bin
 
 env-store XDG_SOFTWARE_HOME
+env-store XDG_ADDONS_HOME
 env-store SOFTWARE_ADDONS_DIR
-env-store ADDONS_DIR
 env-store JAVA_HOME
 env-store DBEAVER_HOME
 env-store NODE_HOME
@@ -37,7 +37,7 @@ env-store PATH
 install_jdk(){
 
   if [ ${ENABLE_JDK} -eq 0 ] || [ -n "$(which java)" ]; then
-   return 1
+   return 0
   fi
 
   echo "try install jdk-${JDK_VERSION}"
@@ -63,7 +63,7 @@ install_jdk(){
 install_dbeaver(){
 
   if [ ${ENABLE_DBEAVER} -eq 0 ] || [ -n "$(which dbeaver)" ]; then
-    return 1
+    return 0
   fi
 
   echo "try install dbeaver-${DBEAVER_VERSION}"
@@ -71,10 +71,10 @@ install_dbeaver(){
   DBEAVER_PRODUCT=${DBEAVER_VERSION:0:2}
   if [ ! -f "${SOFTWARE_ADDONS_DIR}/dbeaver-${DBEAVER_VERSION}-linux.gtk.x86_64.tar.gz" ]; then
     # ${DBEAVER_VERSION:3} -> ce_24.1.2 -> 24.1.2
-    if [ "${DBEAVER_PRODUCT}" = "ue"]; then
+    if [ "${DBEAVER_PRODUCT}" = "ue" ]; then
       wget https://dbeaver.com/downloads-ultimate/${DBEAVER_VERSION:3}/dbeaver-${DBEAVER_VERSION}-linux.gtk.x86_64.tar.gz -O ${SOFTWARE_ADDONS_DIR}/dbeaver-${DBEAVER_VERSION}-linux.gtk.x86_64.tar.gz
     fi
-    if [ "${DBEAVER_PRODUCT}" = "ee"]; then
+    if [ "${DBEAVER_PRODUCT}" = "ee" ]; then
       wget https://dbeaver.com/files/${DBEAVER_VERSION:3}/dbeaver-${DBEAVER_VERSION}-linux.gtk.x86_64.tar.gz -O ${SOFTWARE_ADDONS_DIR}/dbeaver-${DBEAVER_VERSION}-linux.gtk.x86_64.tar.gz
     fi
   fi
@@ -108,7 +108,7 @@ install_dbeaver(){
 install_node(){
 
   if [ ${ENABLE_NODE} -eq 0 ] || [ -n "$(which node)" ]; then
-    return 1
+    return 0
   fi
 
   echo "try install node-${NODE_VERSION}"
@@ -131,7 +131,7 @@ install_node(){
 install_firefox(){
 
   if [ ${ENABLE_FIREFOX} -eq 0 ] || [ -n "$(which firefox)" ]; then
-    return 1
+    return 0
   fi
 
   echo "try install firefox-${FIREFOX_VERSION}"
@@ -152,7 +152,7 @@ install_firefox(){
 install_oss_browser(){
 
   if [ ${ENABLE_OSS_BROWSER} -eq 0 ] || [ -n "$(which oss-browser)" ]; then
-    return 1
+    return 0
   fi
 
   echo "try install oss-browser-${OSS_BROWSER_VERSION}"
@@ -166,6 +166,7 @@ install_oss_browser(){
   fi
 
   unzip -oq ${SOFTWARE_ADDONS_DIR}/oss-browser-${OSS_BROWSER_VERSION}-linux-x64.zip -d ${OSS_BROWSER_HOME}
+  find "${OSS_BROWSER_HOME}" -mindepth 1 -maxdepth 1 -type d -exec bash -c 'mv "$1"/* "$OSS_BROWSER_HOME"/ 2>/dev/null && rmdir "$1"' _ {} \;
 
   return 0
 }
@@ -173,7 +174,7 @@ install_oss_browser(){
 install_wind_term(){
 
   if [ ${ENABLE_WIND_TERM} -eq 0 ] || [ -n "$(which WindTerm)" ]; then
-    return 1
+    return 0
   fi
 
   echo "try install WindTerm-${WIND_TERM_VERSION}"
@@ -187,14 +188,17 @@ install_wind_term(){
   fi
 
   unzip -oq ${SOFTWARE_ADDONS_DIR}/WindTerm_${WIND_TERM_VERSION}_Linux_Portable_x86_64.zip -d ${WIND_TERM_HOME}
+  find "${WIND_TERM_HOME}" -mindepth 1 -maxdepth 1 -type d -exec bash -c 'mv "$1"/* "$WIND_TERM_HOME"/ 2>/dev/null && rmdir "$1"' _ {} \;
+
+  chmod +x ${WIND_TERM_HOME}/WindTerm
 
   return 0
 }
 
 install_anaconda3(){
 
-  if [ ${ENABLE_CONDA} -eq 0 ] ; then
-    return 1
+  if [ ${ENABLE_CONDA} -eq 0 ] || [ -n "$(which conda)" ]; then
+    return 0
   fi
 
   echo "try install anaconda3-${CONDA_VERSION}"
@@ -232,7 +236,7 @@ EOF
 install_idea(){
 
   if [ -n "$(which ${IDEA_HOME}/bin/idea.sh)" ]; then
-    return 1
+    return 0
   fi
 
   echo "try install ideaIU-${IDEA_VERSION}"
@@ -246,12 +250,13 @@ install_idea(){
     mkdir -p ${IDEA_HOME}
   fi
 
-  JREBEL_SERVER_HOME=${XDG_SOFTWARE_HOME}/jrebel-license-server
-  JETBRA_ALL_PATH=${XDG_SOFTWARE_HOME}/jetbra-all
+  export JREBEL_SERVER_HOME=${XDG_SOFTWARE_HOME}/jrebel-license-server
+  export JETBRA_ALL_PATH=${XDG_SOFTWARE_HOME}/jetbra-all
 
   # Install jetbra
   if [ -f "${CRACK_ADDONS_DIR}/jetbra-all.zip" ] && [ ! -d ${JETBRA_ALL_PATH} ] ; then
     unzip -oq ${CRACK_ADDONS_DIR}/jetbra-all.zip -d ${JETBRA_ALL_PATH}
+    find "${JETBRA_ALL_PATH}" -mindepth 1 -maxdepth 1 -type d -exec bash -c 'mv "$1"/* "$JETBRA_ALL_PATH"/ 2>/dev/null && rmdir "$1"' _ {} \;
   fi
 
   tar -xzf ${SOFTWARE_ADDONS_DIR}/ideaIU-${IDEA_VERSION}.tar.gz --strip-components=1 -C ${IDEA_HOME} && \

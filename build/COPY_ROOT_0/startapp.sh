@@ -10,8 +10,8 @@ if [ -d "${XDG_CONFIG_HOME}/JetBrains" ]; then
   find ${XDG_CONFIG_HOME}/JetBrains -name '*.lock' | xargs rm -f
 fi
 
-if [ ! -d "${XDG_CONFIG_HOME}" ]; then
-  sudo cp -r /root/.config "$(basedir $XDG_CONFIG_HOME)"
+if [ ! -d "${XDG_CONFIG_HOME}/fcitx5" ]; then
+  sudo cp -r /root/.config/fcitx5 "${XDG_CONFIG_HOME}"
   sudo chown -R ${USER_ID}:${GROUP_ID} ${XDG_CONFIG_HOME}
 fi
 
