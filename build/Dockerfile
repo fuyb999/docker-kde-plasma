@@ -151,7 +151,7 @@ ENV LC_ALL=zh_CN.UTF-8
 RUN \
     echo "**** Install core requirements ****" \
         && apt-get update \
-        && apt-get install -y --no-install-recommends sudo fakeroot ssl-cert kmod sox file git bc jq acl less tree curl rar unar unrar unzip vim wget xz-utils zip bzip2 gzip htop lsof mlocate net-tools rsync openssh-server pkg-config ca-certificates \
+        && apt-get install -y --no-install-recommends sudo fakeroot ssl-cert kmod sox file git bc jq acl less tree curl rar unar unrar unzip vim wget xz-utils zip bzip2 gzip htop lsof mlocate net-tools rsync openssh-server pkg-config ca-certificates python3 \
     && \
     echo "**** Install libtcmalloc ****" \
         && apt-get install -y --no-install-recommends libtcmalloc-minimal4 \
@@ -237,7 +237,7 @@ RUN \
             /var/lib/apt/lists/* \
             /var/tmp/* \
             /tmp/*
-#    ;} || echo "Virtualgl disabled."
+##    ;} || echo "Virtualgl disabled."
 
 RUN set -e; \
     [ "$PLASMA_ENABLED" = "true" ] && { \
@@ -325,13 +325,13 @@ RUN set -e; \
     ;} || echo "KasmVNC disabled."
 
 # TODO: python3 only for turbovnc and bigger
-RUN set -e; \
-    [ "$TURBOVNC_ENABLED" = "true" ] && { \
+#    [ "$TURBOVNC_ENABLED" = "true" ] && { \
+RUN \
     echo "**** Install TurboVNC requirements ****" \
         && cd /tmp \
         && export TURBOVNC_VERSION="3.2" \
         && wget https://github.com/TurboVNC/turbovnc/releases/download/${TURBOVNC_VERSION}/turbovnc_${TURBOVNC_VERSION}_amd64.deb \
-        && apt-get install -y --no-install-recommends python3 ./turbovnc_${TURBOVNC_VERSION}_amd64.deb \
+        && apt-get install -y --no-install-recommends ./turbovnc_${TURBOVNC_VERSION}_amd64.deb \
     && \
     echo "**** Section cleanup ****" \
         && apt-get clean autoclean -y \
@@ -339,8 +339,8 @@ RUN set -e; \
         && rm -rf \
             /var/lib/apt/lists/* \
             /var/tmp/* \
-            /tmp/* \
-    ;} || echo "TurboVNC disabled."
+            /tmp/*
+#    ;} || echo "TurboVNC disabled."
 
 RUN set -e; \
     [ "$FIREFOX_ENABLED" = "true" ] && { \
