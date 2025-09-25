@@ -23,6 +23,9 @@ export ANACONDA_HOME=${XDG_SOFTWARE_HOME}/anaconda3-${CONDA_VERSION}
 export IDEA_HOME=${XDG_SOFTWARE_HOME}/ideaIU-${IDEA_VERSION}
 export PATH=${PATH}:${JAVA_HOME}/bin:${DBEAVER_HOME}:${NODE_HOME}/bin:${FIREFOX_HOME}:${OSS_BROWSER_HOME}:${WIND_TERM_HOME}:${ANACONDA_HOME}/bin:${IDEA_HOME}/bin
 
+export JREBEL_SERVER_HOME=${XDG_SOFTWARE_HOME}/jrebel-license-server
+export JETBRA_ALL_PATH=${XDG_SOFTWARE_HOME}/jetbra-all
+
 env-store XDG_SOFTWARE_HOME
 env-store XDG_ADDONS_HOME
 env-store SOFTWARE_ADDONS_DIR
@@ -32,6 +35,7 @@ env-store NODE_HOME
 env-store FIREFOX_HOME
 env-store ANACONDA_HOME
 env-store IDEA_HOME
+env-store JREBEL_SERVER_HOME
 env-store PATH
 
 install_jdk(){
@@ -248,9 +252,6 @@ install_idea(){
   if [ ! -d "${IDEA_HOME}" ]; then
     mkdir -p ${IDEA_HOME}
   fi
-
-  export JREBEL_SERVER_HOME=${XDG_SOFTWARE_HOME}/jrebel-license-server
-  export JETBRA_ALL_PATH=${XDG_SOFTWARE_HOME}/jetbra-all
 
   # Install jetbra
   if [ -f "${CRACK_ADDONS_DIR}/jetbra-all.zip" ] && [ ! -d ${JETBRA_ALL_PATH} ] ; then

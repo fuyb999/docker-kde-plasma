@@ -146,19 +146,10 @@ ENV LANG=zh_CN.UTF-8
 ENV LANGUAGE=zh_CN:zh
 ENV LC_ALL=zh_CN.UTF-8
 
-# Use build scripts to ensure we can build all targets from one Dockerfile in a single layer.
-# Don't put anything heavy in here - We can use multi-stage building above if necessary.
-
-# RUN set -eo pipefail && /opt/ai-dock/bin/build/layer0/init.sh | tee /var/log/build.log
-
-# Copy overrides and new files into a final layer for fast rebuilds. Uncomment below
-#COPY --chown=0:1111 ./COPY_ROOT_99/ /
-#RUN set -eo pipefail && /opt/ai-dock/bin/build/layer99/init.sh | tee -a /var/log/build.log
-
 RUN \
     echo "**** Install core requirements ****" \
         && apt-get update \
-        && apt-get install -y --no-install-recommends sudo fakeroot ssl-cert sox file git bc jq acl less tree curl rar unar unrar unzip vim wget xz-utils zip bzip2 gzip htop lsof mlocate net-tools rsync openssh-server pkg-config ca-certificates python3 \
+        && apt-get install -y --no-install-recommends sudo fakeroot ssl-cert kmod sox file git bc jq acl less tree curl rar unar unrar unzip vim wget xz-utils zip bzip2 gzip htop lsof mlocate net-tools rsync openssh-server pkg-config ca-certificates python3 \
     && \
     echo "**** Install libtcmalloc ****" \
         && apt-get install -y --no-install-recommends libtcmalloc-minimal4 \
@@ -394,6 +385,7 @@ RUN apt-get update \
 # Copy early so we can use scripts in the build - Changes to these files will invalidate the cache and cause a rebuild.
 COPY --chown=0:1111 ./COPY_ROOT_0/ /
 RUN find /etc/services.d/ -type f \( -name '*.dep' -o -name 'params' -o -name 'respawn' \) | xargs chmod 666
+RUN find /etc/services.d/ -type f -name "respawn" | xargs rm -f
 
 RUN echo "**** Fix permissions ****" \
         && chmod +x /opt/ai-dock/bin/*.sh \
@@ -402,6 +394,3 @@ RUN echo "**** Fix permissions ****" \
         && ldconfig \
     && \
     echo
-
-# Keep init.sh as-is and place additional logic in /opt/ai-dock/bin/preflight.sh
-CMD ["init.sh"]
