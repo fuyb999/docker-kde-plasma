@@ -5,8 +5,10 @@ FROM ${IMAGE_BASE} AS vaapibuilder
 
 RUN \
     apt-get update \
-    && apt-get install -y --no-install-recommends curl jq pkg-config libffmpeg-nvenc-dev libva-dev libdrm-dev libegl1 libegl-dev python3-pip python3-venv build-essential cmake ninja-build \
-    && echo "**** Build NVIDIA VAAPI manually ****" \
+    && apt-get install -y --no-install-recommends curl jq pkg-config libffmpeg-nvenc-dev libva-dev libdrm-dev libegl1 libegl-dev python3-pip python3-venv build-essential cmake ninja-build
+
+RUN \
+    echo "**** Build NVIDIA VAAPI manually ****" \
         && export NVIDIA_VAAPI_DRIVER_VERSION="$(curl -fsSL "https://api.github.com/repos/elFarto/nvidia-vaapi-driver/releases/latest" | jq -r '.tag_name' | sed 's/[^0-9\.\-]*//g')" \
         && curl -fsSL "https://github.com/elFarto/nvidia-vaapi-driver/archive/v${NVIDIA_VAAPI_DRIVER_VERSION}.tar.gz" | tar -xzf - \
         && mv -f nvidia-vaapi-driver* nvidia-vaapi-driver \
@@ -149,7 +151,7 @@ ENV LC_ALL=zh_CN.UTF-8
 RUN \
     echo "**** Install core requirements ****" \
         && apt-get update \
-        && apt-get install -y --no-install-recommends sudo fakeroot ssl-cert kmod sox file git bc jq acl less tree curl rar unar unrar unzip vim wget xz-utils zip bzip2 gzip htop lsof mlocate net-tools rsync openssh-server pkg-config ca-certificates python3 \
+        && apt-get install -y --no-install-recommends sudo fakeroot ssl-cert kmod sox file git bc jq acl less tree curl rar unar unrar unzip vim wget xz-utils zip bzip2 gzip htop lsof mlocate net-tools rsync openssh-server pkg-config ca-certificates \
     && \
     echo "**** Install libtcmalloc ****" \
         && apt-get install -y --no-install-recommends libtcmalloc-minimal4 \
@@ -329,7 +331,7 @@ RUN set -e; \
         && cd /tmp \
         && export TURBOVNC_VERSION="3.2" \
         && wget https://github.com/TurboVNC/turbovnc/releases/download/${TURBOVNC_VERSION}/turbovnc_${TURBOVNC_VERSION}_amd64.deb \
-        && apt-get install -y --no-install-recommends ./turbovnc_${TURBOVNC_VERSION}_amd64.deb \
+        && apt-get install -y --no-install-recommends python3 ./turbovnc_${TURBOVNC_VERSION}_amd64.deb \
     && \
     echo "**** Section cleanup ****" \
         && apt-get clean autoclean -y \
@@ -384,8 +386,9 @@ RUN apt-get update \
 
 # Copy early so we can use scripts in the build - Changes to these files will invalidate the cache and cause a rebuild.
 COPY --chown=0:1111 ./COPY_ROOT_0/ /
-RUN find /etc/services.d/ -type f \( -name '*.dep' -o -name 'params' -o -name 'respawn' \) | xargs chmod 666
-RUN find /etc/services.d/ -type f -name "respawn" | xargs rm -f
+
+RUN find /etc/services.d/ -type f \( -name '*.dep' -o -name 'params' \) | xargs chmod 666 && \
+    find /etc/services.d/ -type f -name "respawn" | xargs rm -f
 
 RUN echo "**** Fix permissions ****" \
         && chmod +x /opt/ai-dock/bin/*.sh \

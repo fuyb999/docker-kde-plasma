@@ -153,6 +153,23 @@ install_firefox(){
   return 0
 }
 
+install_google_chrome(){
+
+  if [ ${ENABLE_CHROME} -eq 0 ] || [ -n "$(which google-chrome)" ]; then
+    return 0
+  fi
+
+  echo "try install google-chrome-${CHROME_VERSION}"
+
+  if [ ! -f "${SOFTWARE_ADDONS_DIR}/google-chrome-stable_${CHROME_VERSION}_amd64.deb" ]; then
+    wget https://repo.debiancn.org/debiancn/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}_amd64.deb -O ${SOFTWARE_ADDONS_DIR}/google-chrome-stable_${CHROME_VERSION}_amd64.deb
+  fi
+
+  sudo dpkg -i ${SOFTWARE_ADDONS_DIR}/google-chrome-stable_${CHROME_VERSION}_amd64.deb
+
+  return 0
+}
+
 install_oss_browser(){
 
   if [ ${ENABLE_OSS_BROWSER} -eq 0 ] || [ -n "$(which oss-browser)" ]; then
@@ -276,13 +293,60 @@ install_idea(){
   return 0
 }
 
-#install_jdk
-#install_node
-#install_firefox
-#install_oss_browser
-#install_wind_term
-#install_dbeaver
-#install_anaconda3
-#install_idea
+install_nvidia_driver(){
+
+  if ! command -v nvidia-smi > /dev/null; then
+    return 0
+  fi
+
+  if command -v nvidia-xconfig > /dev/null; then
+    return 0
+  fi
+
+  echo "try install Nvidia driver-${IDEA_VERSION}"
+
+  export DRIVER_ARCH="$(dpkg --print-architecture | sed -e 's/arm64/aarch64/'  -e 's/i.*86/x86/' -e 's/amd64/x86_64/' -e 's/unknown/x86_64/')"
+  export DRIVER_VERSION="$(head -n1 </proc/driver/nvidia/version | awk '{print $8}')"
+
+  if [ ! -f ${SOFTWARE_ADDONS_DIR}/NVIDIA-Linux-${DRIVER_ARCH}-${DRIVER_VERSION}.run ]; then
+    # Download the correct nvidia driver (check multiple locations)
+    wget "https://international.download.nvidia.com/XFree86/Linux-${DRIVER_ARCH}/${DRIVER_VERSION}/NVIDIA-Linux-${DRIVER_ARCH}-${DRIVER_VERSION}.run" -O ${SOFTWARE_ADDONS_DIR}/NVIDIA-Linux-${DRIVER_ARCH}-${DRIVER_VERSION}.run || \
+    wget "https://international.download.nvidia.com/tesla/${DRIVER_VERSION}/NVIDIA-Linux-${DRIVER_ARCH}-${DRIVER_VERSION}.run" -O ${SOFTWARE_ADDONS_DIR}/NVIDIA-Linux-${DRIVER_ARCH}-${DRIVER_VERSION}.run || { echo "Failed NVIDIA GPU driver download."; }
+  fi
+
+  if [ ! -f ${SOFTWARE_ADDONS_DIR}/NVIDIA-Linux-${DRIVER_ARCH}-${DRIVER_VERSION}.run ]; then
+    return 0
+  fi
+
+  # Extract installer before installing
+  sh "NVIDIA-Linux-${DRIVER_ARCH}-${DRIVER_VERSION}.run" -x
+  cd "NVIDIA-Linux-${DRIVER_ARCH}-${DRIVER_VERSION}"
+  # Run installation without the kernel modules and host components
+  sudo ./nvidia-installer \
+     --silent \
+     --no-kernel-module \
+     --install-compat32-libs \
+     --no-nouveau-check \
+     --no-nvidia-modprobe \
+     --no-rpms \
+     --no-backup \
+     --no-check-for-alternate-installs || true
+  rm -rf "NVIDIA-Linux-${DRIVER_ARCH}-${DRIVER_VERSION}"
+  cd -
+
+  return 0
+}
+
+
+install_jdk
+install_node
+install_firefox
+install_oss_browser
+install_google_chrome
+install_wind_term
+install_dbeaver
+install_anaconda3
+install_idea
+install_nvidia_driver
 
 # vim:ft=sh:ts=4:sw=4:et:sts=4
