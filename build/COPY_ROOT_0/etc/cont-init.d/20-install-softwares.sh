@@ -38,7 +38,6 @@ env-store IDEA_HOME
 env-store JREBEL_SERVER_HOME
 env-store PATH
 
-
 suo chown ${USER_ID}:${GROUP_ID}  $XDG_SOFTWARE_HOME
 
 install_jdk(){
