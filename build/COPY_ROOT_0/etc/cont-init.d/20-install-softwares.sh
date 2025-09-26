@@ -38,6 +38,9 @@ env-store IDEA_HOME
 env-store JREBEL_SERVER_HOME
 env-store PATH
 
+
+suo chown ${USER_ID}:${GROUP_ID}  $XDG_SOFTWARE_HOME
+
 install_jdk(){
 
   if [ ${ENABLE_JDK} -eq 0 ] || [ -n "$(which java)" ]; then
@@ -333,6 +336,7 @@ install_nvidia_driver(){
      --no-check-for-alternate-installs || true
   rm -rf "NVIDIA-Linux-${DRIVER_ARCH}-${DRIVER_VERSION}"
   cd -
+  rm -rf "NVIDIA-Linux-${DRIVER_ARCH}-${DRIVER_VERSION}"
 
   return 0
 }
