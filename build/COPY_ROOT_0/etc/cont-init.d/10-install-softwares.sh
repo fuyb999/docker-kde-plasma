@@ -38,7 +38,29 @@ env-store IDEA_HOME
 env-store JREBEL_SERVER_HOME
 env-store PATH
 
-suo chown ${USER_ID}:${GROUP_ID}  $XDG_SOFTWARE_HOME
+[ -d ${XDG_SOFTWARE_HOME} ] || sudo chown ${USER_ID}:${GROUP_ID} ${XDG_SOFTWARE_HOME}
+
+install_requirements(){
+
+  if [ ! -f "${XDG_SOFTWARE_HOME}/apt-offline-mirror.tar.xz" ] || [ -z "${OFFLINE_CORE_PACKEGES}" ]; then
+    return 0
+  fi
+
+  echo "try install requirements"
+
+  sudo tar -Jxf ${XDG_SOFTWARE_HOME}/apt-offline-mirror.tar.xz -C /
+  sudo mv /etc/apt/sources.list.d/local.list /etc/apt/sources.list
+  sudo apt-get install -y ${OFFLINE_CORE_PACKEGES}
+
+  if [ -f "${XDG_SOFTWARE_HOME}/virtualgl_${VIRTUALLGL_VERSION}_amd64.deb" ]; then
+    sudo dpkg -i ${XDG_SOFTWARE_HOME}/virtualgl_${VIRTUALLGL_VERSION}_amd64.deb
+  fi
+
+  if [ -f "${XDG_SOFTWARE_HOME}/turbovnc_${TURBOVNC_VERSION}_amd64.deb" ]; then
+    sudo dpkg -i ${XDG_SOFTWARE_HOME}/turbovnc_${TURBOVNC_VERSION}_amd64.deb
+  fi
+
+}
 
 install_jdk(){
 
@@ -340,7 +362,22 @@ install_nvidia_driver(){
   return 0
 }
 
+install_wps(){
 
+  if [ ${ENABLE_WPS} -eq 0 ] || [ -n "$(which wps-office)" ]; then
+    return 0
+  fi
+
+  if [ ! -f ${SOFTWARE_ADDONS_DIR}/wps-office_${WPS_VERSION}_amd64.deb ]; then
+    return 0
+  fi
+
+  sudo dpkg -i ${SOFTWARE_ADDONS_DIR}/wps-office_${WPS_VERSION}_amd64.deb
+
+}
+
+
+install_requirements
 install_jdk
 install_node
 install_firefox
@@ -351,5 +388,6 @@ install_dbeaver
 install_anaconda3
 install_idea
 install_nvidia_driver
+install_wps
 
 # vim:ft=sh:ts=4:sw=4:et:sts=4
