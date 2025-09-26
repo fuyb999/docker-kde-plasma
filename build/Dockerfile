@@ -222,16 +222,16 @@ RUN \
 #            /var/tmp/* \
 #            /tmp/*
 
-RUN apt-get update \
-      && apt-get install --no-install-recommends -y pciutils \
-    && \
-    echo "**** Section cleanup ****" \
-        && apt-get clean autoclean -y \
-        && apt-get autoremove -y \
-        && rm -rf \
-            /var/lib/apt/lists/* \
-            /var/tmp/* \
-            /tmp/*
+#RUN apt-get update \
+#      && apt-get install --no-install-recommends -y xterm \
+#    && \
+#    echo "**** Section cleanup ****" \
+#        && apt-get clean autoclean -y \
+#        && apt-get autoremove -y \
+#        && rm -rf \
+#            /var/lib/apt/lists/* \
+#            /var/tmp/* \
+#            /tmp/*
 
 #COPY ttf-wps-fonts /tmp/ttf-wps-fonts
 #RUN \
@@ -254,6 +254,10 @@ COPY --from=base /opt/base/sbin /opt/base/sbin
 
 RUN find /etc/services.d/ -type f \( -name '*.dep' -o -name 'params' \) | xargs chmod 666 && \
     find /etc/services.d/ -type f -name "respawn" | xargs rm -f
+
+# Use build scripts to ensure we can build all targets from one Dockerfile in a single layer.
+# Don't put anything heavy in here - We can use multi-stage building above if necessary.
+RUN /opt/ai-dock/bin/build/layer0/init.sh | tee /var/log/build.log
 
 RUN echo "**** Fix permissions ****" \
         && chmod +x /opt/ai-dock/bin/*.sh \
