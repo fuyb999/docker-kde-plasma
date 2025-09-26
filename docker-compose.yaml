@@ -5,7 +5,7 @@ x-setup-template: &setup-template
   build:
     context: ./build
     args:
-      IMAGE_BASE: ${IMAGE_BASE:-fuyb/base-image:v2.1-cpu-22.04}
+      IMAGE_BASE: ${IMAGE_BASE:-ubuntu:22.04}
   privileged: true
   volumes:
     - ${USERS_WORKSPACE}/config:/config:rw

@@ -1,7 +1,12 @@
 # For build automation - Allows building from any ai-dock base image
 ARG IMAGE_BASE="ghcr.io/ai-dock/base-image:v2-cuda-12.1.1-cudnn8-runtime-22.04"
 
+FROM jlesage/baseimage:ubuntu-22.04-v3 AS base
+
 FROM ${IMAGE_BASE} AS vaapibuilder
+
+# Update mirror
+RUN sed -i -E 's/(archive|security).ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list
 
 RUN \
     apt-get update \
@@ -19,6 +24,32 @@ RUN \
         && $VAAPI_VENV/bin/meson setup build \
         && $VAAPI_VENV/bin/meson install -C build
 
+# Caddy build
+FROM ${IMAGE_BASE} AS caddybuilder
+
+ENV PATH=/opt/go/bin:$PATH
+ENV GOROOT=/opt/go
+
+# Update mirror
+RUN sed -i -E 's/(archive|security).ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list
+
+RUN apt-get update && \
+    apt-get install -y git wget && \
+    wget https://mirrors.aliyun.com/golang/go1.12.4.linux-amd64.tar.gz -O /tmp/go1.12.4.linux-amd64.tar.gz
+
+RUN \
+    tar -xf /tmp/go1.12.4.linux-amd64.tar.gz -C /opt && \
+    wget https://github.com/caddyserver/xcaddy/releases/download/v0.4.2/xcaddy_0.4.2_linux_amd64.deb && \
+    apt-get install ./xcaddy_0.4.2_linux_amd64.deb
+
+RUN \
+    xcaddy build \
+        --with github.com/caddyserver/caddy/v2=github.com/ai-dock/caddy/v2@httpredirect \
+        --with github.com/caddyserver/replace-response && \
+    mkdir -p /opt/caddy/bin && \
+    mkdir -p /opt/caddy/tls && \
+    mv ./caddy /opt/caddy/bin
+
 
 FROM ${IMAGE_BASE}
 
@@ -26,19 +57,28 @@ LABEL org.opencontainers.image.source="https://github.com/ai-dock/linux-desktop"
 LABEL org.opencontainers.image.description="Docker desktop environment with hardware acceleration for NVIDIA, AMD and Intel GPUs"
 LABEL maintainer="Rob Ballantyne <rob@dynamedia.uk>"
 
-ENV USER_GROUPS=${USER_GROUPS},input
-ENV DISPLAY=:0
-ENV VNC_DISPLAY=:1
-ENV VGL_DISPLAY=egl
+SHELL ["/bin/bash", "-c"]
+ENV DEBIAN_FRONTEND=noninteractive
 
-ENV PATH=/usr/local/nvidia/bin:/opt/VirtualGL/bin:${PATH}
-ENV LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:/usr/lib/i386-linux-gnu${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}:/usr/local/nvidia/lib:/usr/local/nvidia/lib64
-ENV SDL_JOYSTICK_DEVICE=/dev/input/js0
+# Set ENV variables
+ENV TZ=Asia/Shanghai
+ENV SHELL="/bin/bash"
+ENV GROUP_ID=1000
+ENV USER_ID=1000
+ENV USER_NAME=develop
+ENV USER_PASSWORD=develop
+ENV USER_GROUPS=users,ai-dock,adm,sudo,audio,video,tty,cdrom,dialout,dip,fax,floppy,lp,plugdev,ssl-cert,tape,voice,input
+ENV HOME=/home/${USER_NAME}
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/base/sbin:/opt/base/bin:/opt/ai-dock/bin:/opt/caddy/bin:/usr/local/nvidia/bin:/opt/VirtualGL/bin
+ENV LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:/usr/lib/i386-linux-gnu:/usr/local/nvidia/lib:/usr/local/nvidia/lib64
 
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=all
 ENV __GL_SYNC_TO_VBLANK=0
 
+ENV DISPLAY=:0
+ENV VNC_DISPLAY=:1
+ENV VGL_DISPLAY=egl
 ENV DISPLAY_SIZEW=1920
 ENV DISPLAY_SIZEH=1080
 ENV DISPLAY_REFRESH=60
@@ -67,12 +107,15 @@ ENV APPIMAGE_EXTRACT_AND_RUN=1
 ARG WINE_BRANCH=staging
 ENV WINE_BRANCH=${WINE_BRANCH}
 
-ENV OPT_SYNC=$OPT_SYNC
+ENV OPT_SYNC=""
 ENV IMAGE_SLUG="linux-desktop"
 
 ENV LANG=zh_CN.UTF-8
 ENV LANGUAGE=zh_CN:zh
 ENV LC_ALL=zh_CN.UTF-8
+
+# Update mirror
+RUN sed -i -E 's/(archive|security).ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list
 
 # Update locale
 RUN \
@@ -201,6 +244,13 @@ RUN apt-get update \
 
 # Copy early so we can use scripts in the build - Changes to these files will invalidate the cache and cause a rebuild.
 COPY --chown=0:1111 ./COPY_ROOT_0/ /
+#COPY --from=caddybuilder /opt/caddy/ /opt/caddy/
+COPY --from=base /defaults/service /defaults/service
+COPY --from=base /etc/logmonitor /etc/logmonitor
+COPY --from=base /etc/services.d /etc/services.d
+COPY --from=base /opt/base/etc /opt/base/etc
+COPY --from=base /opt/base/bin /opt/base/bin
+COPY --from=base /opt/base/sbin /opt/base/sbin
 
 RUN find /etc/services.d/ -type f \( -name '*.dep' -o -name 'params' \) | xargs chmod 666 && \
     find /etc/services.d/ -type f -name "respawn" | xargs rm -f
@@ -212,3 +262,7 @@ RUN echo "**** Fix permissions ****" \
         && ldconfig \
     && \
     echo
+
+WORKDIR $HOME
+# Keep init.sh as-is and place additional logic in /opt/ai-dock/bin/preflight.d
+CMD ["init.sh"]
