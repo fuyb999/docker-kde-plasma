@@ -26,8 +26,7 @@ fi
 # 设置 bashrc 和 profile
 if [[ -f /root/.bashrc && ! -e ${HOME}/.bashrc ]]; then
     sudo cp -f /root/.bashrc ${HOME}
-    sudo cp -f /root/.profile ${HOME}
-    sudo chown ${USER_ID}:${GROUP_ID} "${HOME}/.bashrc" "${HOME}/.profile"
+    sudo chown ${USER_ID}:${GROUP_ID} "${HOME}/.bashrc"
 fi
 
 # vim:ft=sh:ts=4:sw=4:et:sts=4

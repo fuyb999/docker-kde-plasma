@@ -34,8 +34,8 @@ sudo chmod 600 /root/.ssh/authorized_keys
 if [[ -e /root/.ssh/authorized_keys && ! -d ${HOME}/.ssh ]]; then
     rm -f ${HOME}/.ssh
     mkdir -pm 700 ${HOME}/.ssh > /dev/null 2>&1
-    cp -f /root/.ssh/authorized_keys ${HOME}/.ssh/authorized_keys
-    chown -R ${USER_ID}:${GROUP_ID} "${HOME}/.ssh" > /dev/null 2>&1
+    sudo cp -f /root/.ssh/authorized_keys ${HOME}/.ssh/authorized_keys
+    sudo chown -R ${USER_ID}:${GROUP_ID} "${HOME}/.ssh" > /dev/null 2>&1
     chmod 600 ${HOME}/.ssh/authorized_keys > /dev/null 2>&1
 fi
 
