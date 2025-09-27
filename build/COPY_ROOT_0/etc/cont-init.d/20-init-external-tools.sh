@@ -11,43 +11,43 @@ source /opt/ai-dock/etc/environment.sh
 
 IDEA_CONFIG_DIR=${HOME}/.config/JetBrains/IntelliJIdea${IDEA_VERSION:0:6}
 
-#if [ ! -d "${IDEA_CONFIG_DIR}" ] || [ -z "${EXTERNAL_TOOLS_JSON}" ]; then
-#  exit 0
-#fi
+if [ ! -d "${IDEA_CONFIG_DIR}" ] || [ -z "${EXTERNAL_TOOLS_JSON}" ]; then
+  exit 0
+fi
 
 CONFIG_FILE="${IDEA_CONFIG_DIR}/tools/External Tools.xml"
 
-# 确保目录存在
+# Ensure directory exists
 mkdir -p "$(dirname "$CONFIG_FILE")"
 
-# 创建基础结构
+# Create basic structure
 cat > "$CONFIG_FILE" << EOF
 <toolSet name="External Tools">
 </toolSet>
 EOF
 
-# 转义 XML 特殊字符
+# Escape XML special characters
 escape_xml() {
     echo "$1" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&apos;/g'
 }
 
-# 添加单个 tool
+# Add single tool
 add_single_tool() {
     local name="$1"
     local description="$2"
     local command="$3"
     local parameters="$4"
 
-    # 转义 XML 特殊字符
+    # Escape XML special characters
     name=$(escape_xml "$name")
     description=$(escape_xml "$description")
     command=$(escape_xml "$command")
     parameters=$(escape_xml "$parameters")
 
-    # 创建临时文件
+    # Create temporary file
     local temp_file=$(mktemp)
 
-    # 使用 awk 在 </toolSet> 前插入新的 tool
+    # Use awk to insert new tool before </toolSet>
     awk -v name="$name" \
         -v description="$description" \
         -v command="$command" \
@@ -65,27 +65,27 @@ add_single_tool() {
     { print }
     ' "$CONFIG_FILE" > "$temp_file"
 
-    # 替换原文件
+    # Replace original file
     if mv "$temp_file" "$CONFIG_FILE" 2>/dev/null; then
-        echo "成功添加工具: $1"
+        echo "Successfully added tool: $1"
         return 0
     else
-        echo "添加工具失败: $1"
+        echo "Failed to add tool: $1"
         return 1
     fi
 }
 
-# 解析 JSON 格式的配置
+# Parse JSON configuration
 parse_json_config() {
     local json_config="$1"
 
-    # 检查是否安装了 jq
+    # Check if jq is installed
     if ! command -v jq &> /dev/null; then
-        log_error "请安装 jq 工具来解析 JSON 配置: sudo apt-get install jq"
+        echo "Please install jq tool to parse JSON configuration: sudo apt-get install jq"
         return 1
     fi
 
-    # 解析 JSON
+    # Parse JSON
     local tool_count=$(echo "$json_config" | jq length)
 
     for ((i=0; i<tool_count; i++)); do
@@ -97,13 +97,11 @@ parse_json_config() {
         if [ "$name" != "null" ] && [ "$description" != "null" ] && [ "$command" != "null" ]; then
             add_single_tool "$name" "$description" "$command" "$parameters"
         else
-            log_error "JSON 配置格式错误: 索引 $i"
+            echo "JSON configuration format error: index $i"
         fi
     done
 }
 
 parse_json_config "${EXTERNAL_TOOLS_JSON}"
-
-sleep 100
 
 # vim:ft=sh:ts=4:sw=4:et:sts=4
