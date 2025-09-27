@@ -93,7 +93,7 @@ x-idea-docker-template: &idea-docker-template
     - ./config/tls/server.crt:/opt/caddy/tls/container.crt
     - ./config/tls/server.key:/opt/caddy/tls/container.key
     # External Tools
-    - ./config/tools/External Tools.xml:${XDG_CONFIG_HOME}/JetBrains/IntelliJIdea${IDEA_VERSION}/tools/External Tools.xml
+    - ./config/tools/External Tools.xml:${XDG_CONFIG_HOME}/JetBrains/IntelliJIdea2025.2/tools/External Tools.xml
     # Addons
     - ./addons:${XDG_ADDONS_HOME}:rw
     # Apps
