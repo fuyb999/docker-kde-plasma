@@ -9,6 +9,11 @@ set -u # Treat unset variables as an error.
 
 source /opt/ai-dock/etc/environment.sh
 
+# 彻底禁用交互式配置
+export DEBIAN_FRONTEND=noninteractive
+export DEBCONF_NONINTERACTIVE_SEEN=true
+export UCF_FORCE_CONFFOLD=1
+
 export XDG_SOFTWARE_HOME=${XDG_SOFTWARE_HOME:-/opt/apps}
 export XDG_ADDONS_HOME=${XDG_ADDONS_HOME:-/opt/addons}
 export SOFTWARE_ADDONS_DIR=${XDG_ADDONS_HOME}/softwares
@@ -42,23 +47,43 @@ env-store PATH
 
 install_x11(){
 
-  if [ ! -f "${XDG_SOFTWARE_HOME}/apt-offline-mirror.tar.xz" ] || [ -z "${OFFLINE_CORE_PACKEGES}" ]; then
+  if [ ! -f "${SOFTWARE_ADDONS_DIR}/apt-offline-x11-mirror.tar.xz" ] || [ -z "${OFFLINE_CORE_PACKEGES}" ]; then
     return 0
   fi
 
   echo "try install x11 requirements"
 
-  sudo tar -Jxf ${XDG_SOFTWARE_HOME}/apt-offline-mirror.tar.xz -C /
+  sudo tar -Jxf ${SOFTWARE_ADDONS_DIR}/apt-offline-x11-mirror.tar.xz -C /
   sudo mv /etc/apt/sources.list.d/local.list /etc/apt/sources.list
+
+  # 预先设置所有键盘配置
+  sudo debconf-set-selections <<'EOF'
+  keyboard-configuration keyboard-configuration/layoutcode string us
+  keyboard-configuration keyboard-configuration/variantcode string
+  keyboard-configuration keyboard-configuration/modelcode string pc105
+  keyboard-configuration keyboard-configuration/unsupported_layout boolean true
+  keyboard-configuration keyboard-configuration/unsupported_config_options boolean true
+  keyboard-configuration keyboard-configuration/store_defaults_in_debconf_db boolean true
+  keyboard-configuration keyboard-configuration/altgr select The default for the keyboard layout
+  keyboard-configuration keyboard-configuration/compose select No compose key
+  keyboard-configuration keyboard-configuration/ctrl_alt_bksp boolean false
+  keyboard-configuration keyboard-configuration/variant select English
+  keyboard-configuration keyboard-configuration/switch select No temporary switch
+  keyboard-configuration keyboard-configuration/xkb-keymap select us
+EOF
+
   sudo apt-get update
-  sudo apt-get install -y ${OFFLINE_CORE_PACKEGES}
+  sudo apt-get install -y -q --no-install-recommends \
+      -o Dpkg::Options::="--force-confdef" \
+      -o Dpkg::Options::="--force-confold" \
+      ${OFFLINE_CORE_PACKEGES}
 
   if [ -f "${XDG_SOFTWARE_HOME}/virtualgl_${VIRTUALLGL_VERSION}_amd64.deb" ]; then
-    sudo dpkg -i ${XDG_SOFTWARE_HOME}/virtualgl_${VIRTUALLGL_VERSION}_amd64.deb
+    sudo dpkg -i ${SOFTWARE_ADDONS_DIR}/virtualgl_${VIRTUALLGL_VERSION}_amd64.deb
   fi
 
   if [ -f "${XDG_SOFTWARE_HOME}/turbovnc_${TURBOVNC_VERSION}_amd64.deb" ]; then
-    sudo dpkg -i ${XDG_SOFTWARE_HOME}/turbovnc_${TURBOVNC_VERSION}_amd64.deb
+    sudo dpkg -i ${SOFTWARE_ADDONS_DIR}/turbovnc_${TURBOVNC_VERSION}_amd64.deb
   fi
 
 }
@@ -379,16 +404,16 @@ install_wps(){
 
 
 install_x11
-install_jdk
-install_node
-install_firefox
-install_oss_browser
-install_google_chrome
-install_wind_term
-install_dbeaver
-install_anaconda3
-install_idea
-install_nvidia_driver
-install_wps
+#install_jdk
+#install_node
+#install_firefox
+#install_oss_browser
+#install_google_chrome
+#install_wind_term
+#install_dbeaver
+#install_anaconda3
+#install_idea
+#install_nvidia_driver
+#install_wps
 
 # vim:ft=sh:ts=4:sw=4:et:sts=4

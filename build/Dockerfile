@@ -12,6 +12,7 @@ RUN \
     apt-get update \
     && apt-get install -y --no-install-recommends curl jq pkg-config libffmpeg-nvenc-dev libva-dev libdrm-dev libegl1 libegl-dev python3-pip python3-venv build-essential cmake ninja-build
 
+# Firefox/Chrome 使用NVIDIA硬件解码
 RUN \
     echo "**** Build NVIDIA VAAPI manually ****" \
         && export NVIDIA_VAAPI_DRIVER_VERSION="$(curl -fsSL "https://api.github.com/repos/elFarto/nvidia-vaapi-driver/releases/latest" | jq -r '.tag_name' | sed 's/[^0-9\.\-]*//g')" \
