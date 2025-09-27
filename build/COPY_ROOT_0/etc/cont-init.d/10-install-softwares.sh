@@ -27,7 +27,7 @@ export WIND_TERM_HOME=${XDG_SOFTWARE_HOME}/WindTerm-${WIND_TERM_VERSION}
 export ANACONDA_HOME=${XDG_SOFTWARE_HOME}/anaconda3-${CONDA_VERSION}
 export IDEA_HOME=${XDG_SOFTWARE_HOME}/ideaIU-${IDEA_VERSION}
 
-export LD_LIBRARY_PATH="${WIND_TERM_HOME}/lib:${LD_LIBRARY_PATH}"
+export LD_LIBRARY_PATH="${WIND_TERM_HOME}/lib:${LD_LIBRARY_PATH:-:/usr/lib:/usr/lib/x86_64-linux-gnu:/usr/lib/i386-linux-gnu:/usr/local/nvidia/lib:/usr/local/nvidia/lib64}"
 export PATH=${PATH}:${JAVA_HOME}/bin:${DBEAVER_HOME}:${NODE_HOME}/bin:${FIREFOX_HOME}:${OSS_BROWSER_HOME}:${WIND_TERM_HOME}:${ANACONDA_HOME}/bin:${IDEA_HOME}/bin
 
 export JREBEL_SERVER_HOME=${XDG_SOFTWARE_HOME}/jrebel-license-server
