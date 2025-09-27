@@ -10,13 +10,6 @@ function preflight_main() {
     sync_vars DISPLAY_REFRESH REFRESH
     sync_vars DISPLAY_DPI DPI
     sync_vars DISPLAY_CDEPTH CDEPTH
-#    sync_vars_with_prefixes "SELKIES_" "WEBRTC_"
-#    sync_vars SELKIES_TURN_PROTOCOL TURN_PROTOCOL
-#    sync_vars SELKIES_TURN_PROTOCOL TURN_PROTOCOL
-#    sync_vars SELKIES_TURN_HOST TURN_HOST
-#    sync_vars SELKIES_TURN_PORT TURN_PORT
-#    sync_vars SELKIES_TURN_USERNAME TURN_USERNAME
-#    sync_vars SELKIES_TURN_PASSWORD TURN_PASSWORD
 
     export SYSTEM_DBUS_SOCKET=/run/dbus/system_bus_socket
     env-store SYSTEM_DBUS_SOCKET
@@ -29,13 +22,6 @@ function preflight_main() {
     env-store DBUS_SESSION_BUS_ADDRESS
     export XDG_SESSION_ID="${DISPLAY#*:}"
     env-store XDG_SESSION_ID
-
-#    export PIPEWIRE_RUNTIME_DIR="${PIPEWIRE_RUNTIME_DIR:-${XDG_RUNTIME_DIR:-/tmp}}"
-#    env-store PIPEWIRE_RUNTIME_DIR
-#    export PULSE_RUNTIME_PATH="${PULSE_RUNTIME_PATH:-${XDG_RUNTIME_DIR:-/tmp}/pulse}"
-#    env-store PULSE_RUNTIME_PATH
-#    export PULSE_SERVER="${PULSE_SERVER:-unix:${PULSE_RUNTIME_PATH:-${XDG_RUNTIME_DIR:-/tmp}/pulse}/native}"
-#    env-store PULSE_SERVER
 }
 
 
@@ -89,7 +75,5 @@ sync_vars_with_prefixes() {
         fi
     done
 }
-
-
 
 preflight_main "$@"

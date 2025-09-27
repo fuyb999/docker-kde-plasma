@@ -40,16 +40,17 @@ env-store PATH
 
 [ -d ${XDG_SOFTWARE_HOME} ] || sudo chown ${USER_ID}:${GROUP_ID} ${XDG_SOFTWARE_HOME}
 
-install_requirements(){
+install_x11(){
 
   if [ ! -f "${XDG_SOFTWARE_HOME}/apt-offline-mirror.tar.xz" ] || [ -z "${OFFLINE_CORE_PACKEGES}" ]; then
     return 0
   fi
 
-  echo "try install requirements"
+  echo "try install x11 requirements"
 
   sudo tar -Jxf ${XDG_SOFTWARE_HOME}/apt-offline-mirror.tar.xz -C /
   sudo mv /etc/apt/sources.list.d/local.list /etc/apt/sources.list
+  sudo apt-get update
   sudo apt-get install -y ${OFFLINE_CORE_PACKEGES}
 
   if [ -f "${XDG_SOFTWARE_HOME}/virtualgl_${VIRTUALLGL_VERSION}_amd64.deb" ]; then
@@ -377,7 +378,7 @@ install_wps(){
 }
 
 
-install_requirements
+install_x11
 install_jdk
 install_node
 install_firefox
