@@ -97,6 +97,8 @@ JPA Buddy
 PowerShell
 Native Terminal
 NexChat
+.env
+JetBrains AI Assistant
 
 Elasticsearch
 Spring Debugger
@@ -115,6 +117,8 @@ Redis Client
 Kafka Client
 Gerry Themes Pro
 SQLFormatter
+Snapshots for AI
+AICommit
 ```
 
 
