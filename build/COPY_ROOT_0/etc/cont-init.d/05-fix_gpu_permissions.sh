@@ -10,7 +10,7 @@ discover_gpu_devices() {
 
     # Check DRM device directory
     if [ -d "/dev/dri" ]; then
-        echo "Detected DRM device directory: /dev/dri" >&2
+        echo "Detected DRM device directory: /dev/dri" >&2  # 输出到stderr，避免污染结果
 
         # Get all render and card devices (只找字符设备，不找目录)
         while IFS= read -r -d '' device; do
@@ -81,26 +81,29 @@ fix_device_permissions() {
 
     if [ ! -e "$device" ]; then
         echo "Device does not exist: $device" >&2
-        sleep 1
-    elif [ ! -c "$device" ]; then
+        return 1
+    fi
+
+    if [ ! -c "$device" ]; then
         echo "Not a character device, skipping: $device" >&2
-        sleep 1
+        return 1
+    fi
+
+    echo "Fixing permissions for: $device" >&2
+
+    # Get current permissions
+    local current_perms
+    current_perms=$(stat -c "%a" "$device" 2>/dev/null || echo "unknown")
+
+    # Try to change permissions
+    if sudo chmod 666 "$device" 2>/dev/null; then
+        local new_perms
+        new_perms=$(stat -c "%a" "$device" 2>/dev/null || echo "unknown")
+        echo "Successfully set permissions: $device ($current_perms → $new_perms)" >&2
+        return 0
     else
-        echo "Fixing permissions for: $device" >&2
-
-        # Get current permissions
-        local current_perms
-        current_perms=$(stat -c "%a" "$device" 2>/dev/null || echo "unknown")
-
-        # Try to change permissions
-        if sudo chmod 666 "$device" 2>/dev/null; then
-            local new_perms
-            new_perms=$(stat -c "%a" "$device" 2>/dev/null || echo "unknown")
-            echo "Successfully set permissions: $device ($current_perms → $new_perms)" >&2
-        else
-            echo "Failed to set permissions: $device" >&2
-            sleep 1
-        fi
+        echo "Failed to set permissions: $device" >&2
+        return 1
     fi
 }
 
@@ -113,31 +116,31 @@ main() {
 
     if [ ${#gpu_devices[@]} -eq 0 ]; then
         echo "No GPU devices found, no need to fix permissions" >&2
-    else
-        echo "Starting to fix permissions for ${#gpu_devices[@]} devices..." >&2
+        return 0
+    fi
 
-        local success_count=0
-        local fail_count=0
+    echo "Starting to fix permissions for ${#gpu_devices[@]} devices..." >&2
 
-        # Fix permissions for each device
-        for device in "${gpu_devices[@]}"; do
-            if fix_device_permissions "$device"; then
-                ((success_count++))
-            else
-                ((fail_count++))
-                sleep 1
-            fi
-        done
+    local success_count=0
+    local fail_count=0
 
-        # Summary report
-        echo "Permission repair completed: Success: $success_count, Failed: $fail_count, Total: ${#gpu_devices[@]}" >&2
-
-        if [ $fail_count -eq 0 ]; then
-            echo "All GPU device permissions repaired successfully" >&2
+    # Fix permissions for each device
+    for device in "${gpu_devices[@]}"; do
+        if fix_device_permissions "$device"; then
+            ((success_count++))
         else
-            echo "Some device permissions repair failed" >&2
-            sleep 1
+            ((fail_count++))
         fi
+    done
+
+    # Summary report
+    echo "Permission repair completed: Success: $success_count, Failed: $fail_count, Total: ${#gpu_devices[@]}" >&2
+
+    if [ $fail_count -eq 0 ]; then
+        echo "All GPU device permissions repaired successfully" >&2
+    else
+        echo "Some device permissions repair failed" >&2
+        return 1
     fi
 }
 
