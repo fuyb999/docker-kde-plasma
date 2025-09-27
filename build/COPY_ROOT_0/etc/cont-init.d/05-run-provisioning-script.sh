@@ -27,7 +27,7 @@ if [[ ! -e "${HOME}/".update_lock ]]; then
     else
         temp_file=$(mktemp)
         sed "s/^#\!\/bin\/false$/#\!\/bin\/bash/" "$file" > "$temp_file"
-        chown "${USER_NAME}":ai-dock "${temp_file}"
+        chown "${USER_ID}":${GROUP_ID} "${temp_file}"
         chmod 0755 "${temp_file}"
         if [ $(id -u) -eq 0 ]; then
           su -l "${USER_NAME}" -c "${temp_file}"

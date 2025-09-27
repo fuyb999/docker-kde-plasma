@@ -68,7 +68,7 @@ ENV GROUP_ID=1000
 ENV USER_ID=1000
 ENV USER_NAME=develop
 ENV USER_PASSWORD=develop
-ENV USER_GROUPS=users,ai-dock,adm,sudo,audio,video,tty,cdrom,dialout,dip,fax,floppy,lp,plugdev,ssl-cert,tape,voice,input
+ENV USER_GROUPS=users,${USER_NAME},adm,sudo,audio,video,tty,cdrom,dialout,dip,fax,floppy,lp,plugdev,ssl-cert,tape,voice,input
 ENV HOME=/home/${USER_NAME}
 ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/base/sbin:/opt/base/bin:/opt/ai-dock/bin:/opt/caddy/bin:/usr/local/nvidia/bin:/opt/VirtualGL/bin
 ENV LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:/usr/lib/i386-linux-gnu:/usr/local/nvidia/lib:/usr/local/nvidia/lib64
@@ -165,7 +165,7 @@ RUN \
     echo
 
 COPY --from=vaapibuilder /usr/lib/x86_64-linux-gnu/dri /usr/lib/x86_64-linux-gnu/dri
-COPY --chown=0:1111 ./COPY_ROOT_0/opt/ai-dock/share/ /opt/ai-dock/share
+COPY --chown=${USER_ID}:${GROUP_ID} ./COPY_ROOT_0/opt/ai-dock/share/ /opt/ai-dock/share
 RUN \
     echo "**** Install NVIDIA VAAPI drivers ****" \
         && apt-get update \
@@ -244,7 +244,7 @@ RUN \
 #    echo
 
 # Copy early so we can use scripts in the build - Changes to these files will invalidate the cache and cause a rebuild.
-COPY --chown=0:1111 ./COPY_ROOT_0/ /
+COPY --chown=${USER_ID}:${GROUP_ID} ./COPY_ROOT_0/ /
 #COPY --from=caddybuilder /opt/caddy/ /opt/caddy/
 COPY --from=base /defaults/service /defaults/service
 COPY --from=base /etc/logmonitor /etc/logmonitor

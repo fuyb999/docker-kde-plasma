@@ -4,10 +4,14 @@
 set -eo pipefail
 umask 002
 
-groupadd -g 1111 ai-dock
-chown root.ai-dock /opt
+groupadd -g ${USER_ID} ${USER_NAME}
+chown root.${USER_NAME} /opt
 chmod g+w /opt
 chmod g+s /opt
+
+# 配置sudo允许${USER_NAME}组成员免密码执行命令
+echo "%${USER_NAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/${USER_NAME}
+chmod 440 /etc/sudoers.d/${USER_NAME}
 
 # Prepare environment for running SSHD
 chmod 700 /root
