@@ -26,8 +26,8 @@ x-setup-template: &setup-template
           cat /backup/config-idea${IDEA_VERSION}-plugins.tar.bz2.* > /backup/config-idea${IDEA_VERSION}-plugins.tar.bz2;
           tar -jxvf /backup/config-idea${IDEA_VERSION}-plugins.tar.bz2 -C /config --strip-components=1;
           rm -rf /backup/config-idea${IDEA_VERSION}-plugins.tar.bz2;
-        elif [ -f /backup/config.tar.bz2 ]; then
-          tar -jxvf /backup/config.tar.bz2 -C /config --strip-components=1;
+        elif [ -f /backup/config.tar.xz ]; then
+          tar -Jxvf /backup/config.tar.xz -C /config;
         else
           echo "The config file not found"
         fi;

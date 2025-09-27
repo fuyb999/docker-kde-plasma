@@ -84,6 +84,7 @@ EOF
 
   if [ -f "${SOFTWARE_ADDONS_DIR}/virtualgl_${VIRTUALLGL_VERSION}_amd64.deb" ]; then
     sudo dpkg -i ${SOFTWARE_ADDONS_DIR}/virtualgl_${VIRTUALLGL_VERSION}_amd64.deb
+    sudo chmod u+s /usr/lib/{libvglfaker,libvglfaker-nodl,libvglfaker-opencl,libdlfaker,libgefaker}.so
   fi
 
   if [ -f "${SOFTWARE_ADDONS_DIR}/turbovnc_${TURBOVNC_VERSION}_amd64.deb" ]; then
@@ -394,7 +395,7 @@ install_nvidia_driver(){
 
 install_wps(){
 
-  if [ ${ENABLE_WPS} -eq 0 ] || [ -n "$(which wps-office)" ]; then
+  if [ ${ENABLE_WPS} -eq 0 ] || [ -n "$(which wps)" ]; then
     return 0
   fi
 
@@ -408,16 +409,16 @@ install_wps(){
 
 
 install_x11
-#install_jdk
-#install_node
-#install_firefox
-#install_oss_browser
-#install_google_chrome
-#install_wind_term
-#install_dbeaver
-#install_anaconda3
-#install_idea
-#install_nvidia_driver
-#install_wps
+install_jdk
+install_node
+install_firefox
+install_oss_browser
+install_google_chrome
+install_wind_term
+install_dbeaver
+install_anaconda3
+install_idea
+install_nvidia_driver
+install_wps
 
 # vim:ft=sh:ts=4:sw=4:et:sts=4

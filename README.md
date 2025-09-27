@@ -78,3 +78,44 @@ sudo make install
 sudo mv build/.libs/libSDL2-2.0.so.0.22.0 /usr/lib/x86_64-linux-gnu/libSDL2-2.0.so.0
 ```
 
+```text
+Go
+Python
+JRebel and XRebel
+JRebel mybatisPlus extension
+Cool Request(REST Client)
+Grep Console
+Regexp Tester
+any-rule
+Regex Rename Files
+Json Parser And Code Generation
+StringManipulation
+Remote File Systems
+Kafka
+.ignore
+NexChat
+JPA Buddy
+PowerShell
+Native Terminal
+
+Elasticsearch
+Spring Debugger
+BashSupport Pro
+Nginx Configuration Pro
+MyBatis Log
+React Native Console
+MyBatisCodeHelperPro
+Fast Request
+Spring Boot Helper
+Extra Icons
+Odoo IDE
+ANSI Highlighter Premium
+Redis
+Redis Client
+Kafka Client
+Gerry Themes Pro
+SQLFormatter
+```
+
+
+
