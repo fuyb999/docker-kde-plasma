@@ -5,7 +5,7 @@ set -eo pipefail
 umask 002
 
 groupadd -g ${USER_ID} ${USER_NAME}
-chown root.${USER_NAME} /opt
+chown ${USER_ID}.${USER_NAME} /opt
 chmod g+w /opt
 chmod g+s /opt
 

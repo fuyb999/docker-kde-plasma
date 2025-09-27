@@ -258,7 +258,7 @@ RUN find /etc/services.d/ -type f \( -name '*.dep' -o -name 'params' \) | xargs 
 
 # Use build scripts to ensure we can build all targets from one Dockerfile in a single layer.
 # Don't put anything heavy in here - We can use multi-stage building above if necessary.
-RUN /opt/ai-dock/bin/build/layer0/init.sh | tee /var/log/build.log
+RUN /opt/ai-dock/bin/build/layer0/init.sh | tee /var/log/build1.log
 
 RUN echo "**** Fix permissions ****" \
         && chmod +x /opt/ai-dock/bin/*.sh \

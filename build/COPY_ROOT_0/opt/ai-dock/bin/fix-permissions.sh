@@ -21,13 +21,13 @@ function fix_container() {
     # Beware: If you copied files at buildtime without setting gid 1111 the fs will bloat
     # COPYs should ensure local permissions are suitable first
     printf "Fixing container file permissions...\n"
-    chown root.ai-dock /opt
+    chown ${USER_ID}.${USER_NAME} /opt
     chmod g+w /opt
     chmod g+s /opt
     find /opt -type d ! -perm -g=s -exec chmod g+s {} \;
     find /opt -type d ! -perm -g=w -exec chmod g+w {} \;
     # See above - Remember this is overlayfs so touch as little as possible
-    find /opt -not -group ai-dock -exec chown root.ai-dock {} \;
+    find /opt -not -group ${USER_NAME} -exec chown ${USER_ID}.${USER_NAME} {} \;
     chown -R root.root /root
     printf "Container file permissions reset\n"
 }
