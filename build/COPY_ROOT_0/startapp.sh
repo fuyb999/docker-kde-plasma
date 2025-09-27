@@ -70,7 +70,7 @@ kill_idea() {
     PID="$(get_pid_idea)"
     if [ "$PID" != "UNSET" ]; then
         log "Terminating IntelliJ IDEA..."
-        kill $PID
+        # kill $PID
         wait $PID
     fi
 }
