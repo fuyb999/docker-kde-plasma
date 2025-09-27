@@ -38,11 +38,13 @@ else
     # 用户不存在，创建用户
     useradd -ms /bin/bash $USER_NAME -d $HOME -u $USER_ID -g $GROUP_ID > /dev/null
     printf "%s:%s" "${USER_NAME}" "${USER_PASSWORD}" | chpasswd > /dev/null 2>&1
-    sudo usermod -a -G $USER_GROUPS $USER_NAME
 fi
 
 # 确保家目录所有权正确
 chown ${USER_ID}:${GROUP_ID} "${HOME}"
+
+# 添加用户到 + 组
+sudo usermod -a -G $USER_GROUPS $USER_NAME
 
 # 可能不存在的组 - 添加用户到 sgx 组（如果存在）
 if getent group sgx > /dev/null 2>&1; then

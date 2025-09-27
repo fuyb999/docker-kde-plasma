@@ -93,10 +93,10 @@ StringManipulation
 Remote File Systems
 Kafka
 .ignore
-NexChat
 JPA Buddy
 PowerShell
 Native Terminal
+NexChat
 
 Elasticsearch
 Spring Debugger

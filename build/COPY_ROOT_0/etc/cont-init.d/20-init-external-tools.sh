@@ -57,7 +57,7 @@ add_single_tool() {
         print "    <exec>"
         print "      <option name=\"COMMAND\" value=\"" command "\" />"
         print "      <option name=\"PARAMETERS\" value=\"" parameters "\" />"
-        print "      <option name=\"WORKING_DIRECTORY\" value=\"\$ProjectFileDir\$\" />"
+        print "      <option name=\"WORKING_DIRECTORY\" value=\"$ProjectFileDir$\" />"
         print "    </exec>"
         print "  </tool>"
         print ""
