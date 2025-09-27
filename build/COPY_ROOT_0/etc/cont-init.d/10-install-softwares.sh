@@ -51,6 +51,10 @@ install_x11(){
     return 0
   fi
 
+  if command -v fcitx5 > /dev/null; then
+    return 0
+  fi
+
   echo "try install x11 requirements"
 
   sudo tar -Jxf ${SOFTWARE_ADDONS_DIR}/apt-offline-x11-mirror.tar.xz -C /
@@ -78,11 +82,11 @@ EOF
       -o Dpkg::Options::="--force-confold" \
       ${OFFLINE_CORE_PACKEGES}
 
-  if [ -f "${XDG_SOFTWARE_HOME}/virtualgl_${VIRTUALLGL_VERSION}_amd64.deb" ]; then
+  if [ -f "${SOFTWARE_ADDONS_DIR}/virtualgl_${VIRTUALLGL_VERSION}_amd64.deb" ]; then
     sudo dpkg -i ${SOFTWARE_ADDONS_DIR}/virtualgl_${VIRTUALLGL_VERSION}_amd64.deb
   fi
 
-  if [ -f "${XDG_SOFTWARE_HOME}/turbovnc_${TURBOVNC_VERSION}_amd64.deb" ]; then
+  if [ -f "${SOFTWARE_ADDONS_DIR}/turbovnc_${TURBOVNC_VERSION}_amd64.deb" ]; then
     sudo dpkg -i ${SOFTWARE_ADDONS_DIR}/turbovnc_${TURBOVNC_VERSION}_amd64.deb
   fi
 
