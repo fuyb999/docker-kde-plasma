@@ -7,7 +7,7 @@
 set -e # Exit immediately if a command exits with a non-zero status.
 set -u # Treat unset variables as an error.
 
-sudo chown -R ${USER_ID}:${GROUP_ID} ${HOME}
+sudo chown ${USER_ID}:${GROUP_ID} ${HOME}
 sudo chown -R ${USER_ID}:ai-dock \
      /opt/ai-dock \
      ${XDG_SOFTWARE_HOME:-/opt/apps} \
