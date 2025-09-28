@@ -100,7 +100,6 @@ Native Terminal
 NexChat
 JetBrains AI Assistant
 
-
 CodeGPT
 Rainbow Brackets
 
@@ -127,8 +126,29 @@ AICommit
 
 sudo tar --exclude=config/IdeaProjects \
     --exclude=config/模板 \
+    --exclude=config/.cache/.lingma \
+    --exclude=*/lingma* \
+    --exclude=config/.cache/mesa_shader_cache \
+    --exclude=config/config/.local/share/Kingsoft \
+    --exclude=config/.local/share/Kingsoft \
+    --exclude=config/.config/google-chrome \
+    --exclude=config/.cache/google-chrome \
+    --exclude=config/.tabnine \
+    --exclude=*/TabNine* \
+    --exclude=config/.config/ibus/bus \
+    --exclude=config/.local/share/DBeaverData \
+    --exclude=config/.cache/mozilla \
+    --exclude=config/.mozilla/firefox \
+    --exclude=config/.cache/JetBrains/IntelliJIdea2025.2/editor \
+    --exclude=config/.config/JetBrains/IntelliJIdea2025.2/tasks \
+    --exclude=config/.cache/JetBrains/IntelliJIdea2025.2/plugins/imageCache \
+    --exclude=config/.cache/JetBrains/IntelliJIdea2025.2/log \
     --exclude=config/.cache/JetBrains/IntelliJIdea2025.2/index \
-    --exclude=config/.cache/JetBrains/IntelliJIdea2025.2/full-line  
+    --exclude=config/.cache/JetBrains/IntelliJIdea2025.2/full-line \
+    --exclude=config/.cache/JetBrains/IntelliJIdea2025.2/semantic-search/indices \
+    --exclude=config/.cache/JetBrains/IntelliJIdea2025.2/frameworks/detection \
+    --exclude=config/.cache/JetBrains/IntelliJIdea2025.2/projects \
+    --exclude=config/.cache/JetBrains/IntelliJIdea2025.2/jcef_cache/Cache \
     -Jcvf config.tar.xz config/
 
 sudo tar -Jcvf full-line.tar.xz config/.cache/JetBrains/IntelliJIdea2025.2/full-line
