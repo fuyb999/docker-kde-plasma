@@ -100,6 +100,10 @@ Native Terminal
 NexChat
 JetBrains AI Assistant
 
+
+CodeGPT
+Rainbow Brackets
+
 Elasticsearch
 Spring Debugger
 BashSupport Pro
