@@ -92,12 +92,12 @@ Json Parser And Code Generation
 StringManipulation
 Remote File Systems
 Kafka
+.env
 .ignore
 JPA Buddy
 PowerShell
 Native Terminal
 NexChat
-.env
 JetBrains AI Assistant
 
 Elasticsearch
