@@ -121,5 +121,13 @@ Snapshots for AI
 AICommit
 ```
 
+sudo tar --exclude=config/IdeaProjects \
+    --exclude=config/模板 \
+    --exclude=config/.cache/JetBrains/IntelliJIdea2025.2/index \
+    --exclude=config/.cache/JetBrains/IntelliJIdea2025.2/full-line  
+    -Jcvf config.tar.xz config/
+
+sudo tar -Jcvf full-line.tar.xz config/.cache/JetBrains/IntelliJIdea2025.2/full-line
+
 
 
