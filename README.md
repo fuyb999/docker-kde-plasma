@@ -101,8 +101,6 @@ NexChat
 JetBrains AI Assistant
 
 
-Alibaba Cloud AI Coding Assistant
-Tabnine
 CodeGPT
 Rainbow Brackets
 
