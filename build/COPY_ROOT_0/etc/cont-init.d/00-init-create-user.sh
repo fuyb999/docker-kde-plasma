@@ -43,6 +43,10 @@ fi
 # 确保家目录所有权正确
 chown ${USER_ID}:${GROUP_ID} "${HOME}"
 
+if ! getent group realtime > /dev/null 2>&1; then
+  sudo groupadd realtime
+fi
+
 # 添加用户到 + 组
 sudo usermod -a -G $USER_GROUPS $USER_NAME
 
