@@ -98,11 +98,14 @@ JPA Buddy
 PowerShell
 Native Terminal
 NexChat
+
+
+ansible
 JetBrains AI Assistant
-
 CodeGPT
-Rainbow Brackets
 
+
+Rainbow Brackets
 Elasticsearch
 Spring Debugger
 BashSupport Pro
@@ -122,6 +125,7 @@ Gerry Themes Pro
 SQLFormatter
 Snapshots for AI
 AICommit
+
 ```
 
 ```shell
