@@ -19,6 +19,7 @@ export XDG_ADDONS_HOME=${XDG_ADDONS_HOME:-/opt/addons}
 export SOFTWARE_ADDONS_DIR=${XDG_ADDONS_HOME}/softwares
 export CRACK_ADDONS_DIR=${XDG_ADDONS_HOME}/crack
 export JAVA_HOME=${XDG_SOFTWARE_HOME}/jdk-${JDK_VERSION}
+export MAVEN_HOME=${XDG_SOFTWARE_HOME}/apache-maven-${MAVEN_VERSION}
 export DBEAVER_HOME=${XDG_SOFTWARE_HOME}/dbeaver-${DBEAVER_VERSION}
 export NODE_HOME=${XDG_SOFTWARE_HOME}/node-v${NODE_VERSION}
 export FIREFOX_HOME=${XDG_SOFTWARE_HOME}/firefox-${FIREFOX_VERSION}
@@ -28,7 +29,7 @@ export ANACONDA_HOME=${XDG_SOFTWARE_HOME}/anaconda3-${CONDA_VERSION}
 export IDEA_HOME=${XDG_SOFTWARE_HOME}/ideaIU-${IDEA_VERSION}
 
 export LD_LIBRARY_PATH="${WIND_TERM_HOME}/lib:${LD_LIBRARY_PATH:-:/usr/lib:/usr/lib/x86_64-linux-gnu:/usr/lib/i386-linux-gnu:/usr/local/nvidia/lib:/usr/local/nvidia/lib64}"
-export PATH=${PATH}:${JAVA_HOME}/bin:${DBEAVER_HOME}:${NODE_HOME}/bin:${FIREFOX_HOME}:${OSS_BROWSER_HOME}:${WIND_TERM_HOME}:${ANACONDA_HOME}/bin:${IDEA_HOME}/bin
+export PATH=${PATH}:${JAVA_HOME}/bin:${MAVEN_HOME}/bin:${DBEAVER_HOME}:${NODE_HOME}/bin:${FIREFOX_HOME}:${OSS_BROWSER_HOME}:${WIND_TERM_HOME}:${ANACONDA_HOME}/bin:${IDEA_HOME}/bin
 
 export JREBEL_SERVER_HOME=${XDG_SOFTWARE_HOME}/jrebel-license-server
 export JETBRA_ALL_PATH=${XDG_SOFTWARE_HOME}/jetbra-all
@@ -37,6 +38,7 @@ env-store XDG_SOFTWARE_HOME
 env-store XDG_ADDONS_HOME
 env-store SOFTWARE_ADDONS_DIR
 env-store JAVA_HOME
+env-store MAVEN_HOME
 env-store DBEAVER_HOME
 env-store NODE_HOME
 env-store FIREFOX_HOME
@@ -119,6 +121,26 @@ install_jdk(){
   fi
 
   tar --strip-components=1 -zxf ${SOFTWARE_ADDONS_DIR}/jdk-${JDK_VERSION}_linux-x64_bin.tar.gz -C ${JAVA_HOME}
+
+  return 0
+}
+
+install_maven(){
+  if [ ${ENABLE_MAVEN} -eq 0 ] || [ -n "$(which mvn)" ]; then
+    return 0
+  fi
+
+  echo "try install maven-${MAVEN_VERSION}"
+
+  if [ ! -f "${SOFTWARE_ADDONS_DIR}/apache-maven-${MAVEN_VERSION}-bin.tar.gz" ]; then
+    wget "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz" -O "${SOFTWARE_ADDONS_DIR}/apache-maven-${MAVEN_VERSION}-bin.tar.gz"
+  fi
+
+  if [ ! -d "${MAVEN_HOME}" ]; then
+    mkdir -p "${MAVEN_HOME}"
+  fi
+
+  tar --strip-components=1 -zxf "${SOFTWARE_ADDONS_DIR}/apache-maven-${MAVEN_VERSION}-bin.tar.gz" -C "${MAVEN_HOME}"
 
   return 0
 }
@@ -414,6 +436,7 @@ install_wps(){
 
 install_x11
 install_jdk
+install_maven
 install_node
 install_firefox
 install_oss_browser
