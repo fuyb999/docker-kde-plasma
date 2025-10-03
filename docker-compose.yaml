@@ -22,19 +22,23 @@ x-setup-template: &setup-template
       if [ ! -d /config/.config/JetBrains ]; then
         echo "Try restore idea config";
         sleep 1;
-        if [ -f /backup/config-idea${IDEA_VERSION}-plugins.tar.bz2.0 ]; then
-          cat /backup/config-idea${IDEA_VERSION}-plugins.tar.bz2.* > /backup/config-idea${IDEA_VERSION}-plugins.tar.bz2;
-          tar -jxvf /backup/config-idea${IDEA_VERSION}-plugins.tar.bz2 -C /config --strip-components=1;
-          rm -rf /backup/config-idea${IDEA_VERSION}-plugins.tar.bz2;
-        elif [ -f /backup/config.tar.xz ]; then
-          tar --strip-components=1 -Jxvf /backup/config.tar.xz -C /config;
-          tar --strip-components=1 -Jxvf /backup/full-line.tar.xz -C /config;
+        if [ -f /backup/config-idea${IDEA_VERSION}.tar.xz.partaa ]; then
+          cat /backup/config-idea${IDEA_VERSION}.tar.xz.part* > /backup/config-idea${IDEA_VERSION}.tar.xz;
+          tar --strip-components=1 -Jxvf /backup/config-idea${IDEA_VERSION}.tar.xz -C /config;
+          rm -rf /backup/config-idea${IDEA_VERSION}.tar.xz;
         else
           echo "The config file not found"
         fi;
+        sleep 1;
+        if [ -f /backup/full-line-idea${IDEA_VERSION}.tar.xz.partaa ]; then
+          cat /backup/full-line-idea${IDEA_VERSION}.tar.xz.part* > /backup/full-line-idea${IDEA_VERSION}.tar.xz;
+          tar --strip-components=1 -Jxvf /backup/full-line-idea${IDEA_VERSION}.tar.bz2 -C /config;
+          rm -rf /backup/full-line-idea${IDEA_VERSION}.tar.xz;
+        else
+          echo "The full-line file not found"
       fi;
       echo '' > /tmp/.config_restored
-      until curl  -s -I http://idea-docker:5800 | grep -q "HTTP/1.1 200 OK"; do sleep 30; done;
+      until curl -s -I http://idea-docker:5800 | grep -q "HTTP/1.1 200 OK"; do sleep 20; done;
       echo "All done!";
     '
   healthcheck:

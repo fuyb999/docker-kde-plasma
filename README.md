@@ -97,7 +97,11 @@ sudo tar --exclude=config/IdeaProjects \
     --exclude=config/.cache/JetBrains/IntelliJIdea2025.2/jcef_cache/Cache \
     -Jcvf config.tar.xz config/
 
+split -b 100M config.tar.xz config-idea2025.2.2.tar.xz.part
+
 sudo tar -Jcvf full-line.tar.xz config/.cache/JetBrains/IntelliJIdea2025.2/full-line
+
+split -b 100M full-line.tar.xz full-line-idea2025.2.2.tar.xz.part
 ```
 
 
