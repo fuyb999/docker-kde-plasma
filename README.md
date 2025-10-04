@@ -106,6 +106,8 @@ split -b 100M full-line.tar.xz full-line-idea2025.2.2.tar.xz.part
 
 ```shell
 docker-compose config
+
+tar --exclude=.git --exclude=*/Anaconda3-2024.06-1-Linux-x86_64.sh --exclude=*/fcitx5-v5.1.11.tar.xz --exclude=*/jdk-*linux* --exclude=*/wps-office* -Jcvf docker-kde-plasma.tar.xz docker-kde-plasma
 ```
 
 
