@@ -53,14 +53,23 @@ usage() {
 EOF
 }
 
+# 检查是否有 NVIDIA GPU
+has_nvidia_gpu() {
+  if command -v nvidia-smi >/dev/null 2>&1; then
+    if nvidia-smi >/dev/null 2>&1; then
+      return 0
+    fi
+  fi
+  return 1
+}
+
 # 检查是否有实际用户配置（不只是空的 services:）
 has_actual_users() {
   if [[ ! -f "$COMPOSE_FILE" ]]; then
     return 1
   fi
 
-  # 检查是否有 setup- 开头的服务（真正的用户配置）
-  if grep -q "^  setup-[a-zA-Z0-9_-]+:" "$COMPOSE_FILE"; then
+  if grep -q "^  setup-" "$COMPOSE_FILE"; then
     return 0
   fi
 
@@ -272,6 +281,16 @@ generate_user_config() {
     fi
   done < <(grep -E '^[[:space:]]*- "[0-9]+:[0-9]+"' "$TEMPLATE_FILE")
 
+  # 检查是否有 NVIDIA GPU，如果有则添加 GPU 配置
+  if has_nvidia_gpu; then
+    echo -e "${BLUE}ℹ 检测到 NVIDIA GPU，启用 GPU 支持${NC}"
+    # 在 idea-docker- 服务中添加 GPU 配置
+    template_content=$(echo "$template_content" | sed "/^  idea-docker-${user}:/a\\    <<: *nvidia-gpu-config")
+    template_content=$(echo "$template_content" | sed "/^  idea-docker-${user}:/a\\    container_name: idea-docker-${user}")
+  else
+    echo -e "${YELLOW}⚠ 未检测到 NVIDIA GPU，跳过 GPU 配置${NC}"
+  fi
+
   echo "$template_content"
 }
 
@@ -284,6 +303,13 @@ add_user() {
   if user_exists "$user"; then
     echo -e "${RED}✗ 用户 '$user' 已存在${NC}"
     exit 1
+  fi
+
+  # 检查 NVIDIA GPU
+  if has_nvidia_gpu; then
+    echo -e "${GREEN}✓ 检测到 NVIDIA GPU，将启用 GPU 支持${NC}"
+  else
+    echo -e "${YELLOW}⚠ 未检测到 NVIDIA GPU，将使用 CPU 模式${NC}"
   fi
 
   # 获取当前最大端口
@@ -350,6 +376,10 @@ add_user() {
   echo -e "${BLUE}数据目录:${NC}"
   echo -e "  - \${USERS_WORKSPACE}/${user}/config"
   echo -e "  - \${USERS_WORKSPACE}/${user}/projects"
+
+  if has_nvidia_gpu; then
+    echo -e "${GREEN}✓ 已启用 NVIDIA GPU 支持${NC}"
+  fi
 
   # 显示当前所有用户的端口情况
   echo ""

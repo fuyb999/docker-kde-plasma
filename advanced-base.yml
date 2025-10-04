@@ -1,5 +1,15 @@
 version: "3.8"
 
+## For Nvidia GPU's - You probably want to uncomment this
+x-nvidia-gpu: &nvidia-gpu-config
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+
 x-setup-template: &setup-template
   image: ${IDEA_DOCKER_IMAGE}
   build:
@@ -53,15 +63,6 @@ x-idea-docker-template: &idea-docker-template
   restart: unless-stopped
   container_name: idea-docker
   shm_size: 2G
-
-  ## For Nvidia GPU's - You probably want to uncomment this
-  deploy:
-    resources:
-      reservations:
-        devices:
-          - driver: nvidia
-            count: all
-            capabilities: [gpu]
 
   cap_add:
     - SYS_ADMIN
