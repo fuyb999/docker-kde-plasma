@@ -1,0 +1,573 @@
+#!/bin/bash
+
+# Docker Compose 用户管理脚本
+# 基于外部模板文件操作，支持动态添加、删除、列出用户
+
+set -e
+
+# 配置
+COMPOSE_FILE="docker-compose.yml"
+TEMPLATE_FILE="docker-compose-template.yml"
+BACKUP_DIR="backups"
+PORT_INCREMENT=1
+
+# 颜色定义
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+# 创建备份目录
+mkdir -p "$BACKUP_DIR"
+
+# 帮助信息
+usage() {
+  cat << EOF
+用法: $0 [命令] [选项]
+
+命令:
+  add [用户名]              添加用户
+  del [用户名]              删除用户
+  list                     列出所有用户
+  show [用户名]            显示用户配置
+  backup                   备份当前配置
+  restore [备份文件]       恢复配置
+
+选项:
+  -h, --help              显示此帮助信息
+
+示例:
+  $0 add alice            添加用户 alice
+  $0 add bob              添加用户 bob
+  $0 del alice            删除用户 alice
+  $0 list                 列出所有用户
+  $0 show bob             显示用户 bob 的配置
+  $0 backup               备份当前配置
+  $0 restore backup-20231201.yml  恢复备份配置
+
+端口分配规则:
+  第一个用户使用模板端口: 5800, 5900, 9520, 5173
+  后续用户在现有所有用户最大端口基础上分别 +${PORT_INCREMENT}
+  删除用户时端口保持不变，新增用户继续累加
+EOF
+}
+
+# 检查是否有实际用户配置（不只是空的 services:）
+has_actual_users() {
+  if [[ ! -f "$COMPOSE_FILE" ]]; then
+    return 1
+  fi
+
+  # 检查是否有 setup- 开头的服务（真正的用户配置）
+  if grep -q "^  setup-[a-zA-Z0-9_-]+:" "$COMPOSE_FILE"; then
+    return 0
+  fi
+
+  return 1
+}
+
+# 检查模板文件是否存在
+check_template_file() {
+  if [[ ! -f "$TEMPLATE_FILE" ]]; then
+    echo -e "${RED}✗ 模板文件 '$TEMPLATE_FILE' 不存在${NC}"
+    echo -e "${YELLOW}请创建模板文件或指定正确的模板文件路径${NC}"
+    exit 1
+  fi
+}
+
+# 从模板中提取默认端口
+extract_ports_from_template() {
+  check_template_file
+
+  local ports=()
+  while IFS= read -r line; do
+    if [[ "$line" =~ \ \"([0-9]+):([0-9]+)\" ]]; then
+      ports+=("${BASH_REMATCH[1]}")
+    fi
+  done < <(grep -E '^[[:space:]]*- "[0-9]+:[0-9]+"' "$TEMPLATE_FILE")
+
+  if [[ ${#ports[@]} -eq 0 ]]; then
+    echo -e "${RED}✗ 无法从模板中提取端口${NC}"
+    exit 1
+  fi
+
+  echo "${ports[@]}"
+}
+
+# 备份当前配置（只在有实际用户时备份）
+backup_config() {
+  if ! has_actual_users; then
+    echo -e "${YELLOW}⚠ 没有实际用户配置，跳过备份${NC}"
+    return
+  fi
+
+  local backup_file="${BACKUP_DIR}/backup-$(date +%Y%m%d-%H%M%S).yml"
+  cp "$COMPOSE_FILE" "$backup_file"
+  echo -e "${GREEN}✓ 配置已备份到: $backup_file${NC}"
+}
+
+# 初始化 Compose 文件（如果不存在）
+init_compose_file() {
+  if [[ ! -f "$COMPOSE_FILE" ]]; then
+    cat > "$COMPOSE_FILE" << 'EOF'
+version: "3.8"
+
+services:
+EOF
+    echo -e "${GREEN}✓ 已创建新的 Compose 文件: $COMPOSE_FILE${NC}"
+  fi
+}
+
+# 获取所有用户（从 setup- 服务名中提取用户名）
+get_all_users() {
+  if [[ ! -f "$COMPOSE_FILE" ]]; then
+    return
+  fi
+  # 只从 setup- 服务名中提取用户名，避免重复
+  grep -E "^  setup-[a-zA-Z0-9_-]+:" "$COMPOSE_FILE" | sed 's/^  setup-\([a-zA-Z0-9_-]*\):.*$/\1/' | grep -v "^$"
+}
+
+# 获取所有已使用的端口
+get_all_used_ports() {
+  if [[ ! -f "$COMPOSE_FILE" ]]; then
+    return
+  fi
+
+  local ports=()
+  while IFS= read -r line; do
+    if [[ "$line" =~ \ \"([0-9]+):([0-9]+)\" ]]; then
+      ports+=("${BASH_REMATCH[1]}")
+    fi
+  done < <(grep -E '^[[:space:]]*- "[0-9]+:[0-9]+"' "$COMPOSE_FILE")
+
+  printf '%s\n' "${ports[@]}"
+}
+
+# 获取当前最大端口（从所有用户中找出最大的端口）
+get_current_max_ports() {
+  local template_ports=($(extract_ports_from_template))
+
+  # 如果没有用户，返回模板端口（第一个用户使用模板端口）
+  local users=($(get_all_users))
+  if [[ ${#users[@]} -eq 0 ]]; then
+    echo "${template_ports[@]}"
+    return
+  fi
+
+  # 初始化最大端口为模板端口
+  local max_ports=("${template_ports[@]}")
+
+  # 遍历所有用户，找到每个端口位置的最大值
+  for user in "${users[@]}"; do
+    local user_ports=()
+    # 从 idea-docker- 服务中获取端口（因为 setup- 服务没有端口映射）
+    while IFS= read -r line; do
+      if [[ "$line" =~ \ \"([0-9]+):([0-9]+)\" ]]; then
+        user_ports+=("${BASH_REMATCH[1]}")
+      fi
+    done < <(grep -A 20 "^  idea-docker-${user}:" "$COMPOSE_FILE" | grep -E '^[[:space:]]*- "[0-9]+:[0-9]+"')
+
+    # 更新每个端口位置的最大值
+    for i in "${!user_ports[@]}"; do
+      if [[ "${user_ports[i]}" -gt "${max_ports[i]}" ]]; then
+        max_ports[i]="${user_ports[i]}"
+      fi
+    done
+  done
+
+  echo "${max_ports[@]}"
+}
+
+# 计算新用户的端口
+calculate_new_ports() {
+  local max_ports=("$@")
+  local new_ports=()
+
+  for max_port in "${max_ports[@]}"; do
+    new_ports+=($((max_port + PORT_INCREMENT)))
+  done
+
+  echo "${new_ports[@]}"
+}
+
+# 检查用户是否存在
+user_exists() {
+  local user="$1"
+  if grep -q "^  setup-${user}:" "$COMPOSE_FILE" 2>/dev/null; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+# 验证用户名
+validate_username() {
+  local user="$1"
+  if [[ ! "$user" =~ ^[a-zA-Z][a-zA-Z0-9_-]{2,}$ ]]; then
+    echo -e "${RED}✗ 用户名只能包含字母、数字、下划线和连字符，且必须以字母开头${NC}"
+    exit 1
+  fi
+}
+
+# 验证端口是否可用
+is_port_available() {
+  local port="$1"
+
+  # 检查端口是否在配置文件中已被使用
+  if grep -q "\"${port}:" "$COMPOSE_FILE" 2>/dev/null; then
+    return 1
+  fi
+
+  # 检查系统端口是否被占用（可选）
+  if command -v ss >/dev/null 2>&1; then
+    if ss -tuln | grep -q ":${port} "; then
+      return 1
+    fi
+  elif command -v netstat >/dev/null 2>&1; then
+    if netstat -tuln | grep -q ":${port} "; then
+      return 1
+    fi
+  fi
+
+  return 0
+}
+
+# 验证端口范围
+validate_ports() {
+  local ports=("$@")
+
+  for port in "${ports[@]}"; do
+    if [[ "$port" -lt 1024 || "$port" -gt 65535 ]]; then
+      echo -e "${RED}✗ 端口 $port 超出有效范围 1024-65535${NC}"
+      return 1
+    fi
+  done
+
+  return 0
+}
+
+# 从模板生成用户配置
+generate_user_config() {
+  local user="$1"
+  local ports=("$2" "$3" "$4" "$5")
+
+  check_template_file
+
+  # 读取模板内容
+  local template_content=$(cat "$TEMPLATE_FILE")
+
+  # 替换用户名
+  template_content="${template_content//\{\{USER\}\}/$user}"
+
+  # 替换端口 - 按顺序替换
+  local port_index=0
+  while IFS= read -r line; do
+    if [[ "$line" =~ \ \"([0-9]+):([0-9]+)\" ]]; then
+      local old_port="${BASH_REMATCH[1]}"
+      local container_port="${BASH_REMATCH[2]}"
+      local new_port="${ports[port_index]}"
+      template_content="${template_content/\"$old_port:$container_port\"/\"$new_port:$container_port\"}"
+      ((port_index++))
+    fi
+  done < <(grep -E '^[[:space:]]*- "[0-9]+:[0-9]+"' "$TEMPLATE_FILE")
+
+  echo "$template_content"
+}
+
+# 添加用户
+add_user() {
+  local user="$1"
+
+  validate_username "$user"
+
+  if user_exists "$user"; then
+    echo -e "${RED}✗ 用户 '$user' 已存在${NC}"
+    exit 1
+  fi
+
+  # 获取当前最大端口
+  local current_max_ports=($(get_current_max_ports))
+  local users_count=$(get_all_users | wc -l)
+
+  # 如果是第一个用户，使用模板端口
+  if [[ $users_count -eq 0 ]]; then
+    local new_ports=("${current_max_ports[@]}")
+    echo -e "${BLUE}ℹ 第一个用户，使用模板端口: ${new_ports[*]}${NC}"
+  else
+    # 后续用户在最大端口基础上+1
+    local new_ports=($(calculate_new_ports "${current_max_ports[@]}"))
+    echo -e "${BLUE}ℹ 当前最大端口: ${current_max_ports[*]}${NC}"
+    echo -e "${BLUE}ℹ 新用户端口: ${new_ports[*]}${NC}"
+  fi
+
+  # 验证端口范围
+  if ! validate_ports "${new_ports[@]}"; then
+    exit 1
+  fi
+
+  # 检查所有端口是否可用
+  local port_conflict=false
+  for port in "${new_ports[@]}"; do
+    if ! is_port_available "$port"; then
+      echo -e "${RED}✗ 端口 $port 已被占用${NC}"
+      port_conflict=true
+    fi
+  done
+
+  if [[ "$port_conflict" == "true" ]]; then
+    exit 1
+  fi
+
+  # 生成用户配置
+  local user_config=$(generate_user_config "$user" "${new_ports[@]}")
+
+  # 只在有实际用户时才备份（第一个用户添加时不备份空配置）
+  if has_actual_users || [[ $users_count -gt 0 ]]; then
+    backup_config
+  fi
+
+  # 添加到 Compose 文件（移除开头的 version 和 services 行）
+  local services_content=$(echo "$user_config" | awk '/^services:/{found=1} found{print}' | tail -n +2)
+
+  # 在添加新用户前检查是否需要添加换行
+  if [[ $users_count -gt 0 ]]; then
+    # 如果不是第一个用户，先添加一个换行
+    echo "" >> "$COMPOSE_FILE"
+  fi
+
+  echo "$services_content" >> "$COMPOSE_FILE"
+
+  echo -e "${GREEN}✓ 用户 '$user' 添加成功！${NC}"
+
+  # 显示端口映射详情
+  local template_ports=($(extract_ports_from_template))
+  echo -e "${BLUE}端口映射:${NC}"
+  for i in "${!new_ports[@]}"; do
+    echo -e "  - ${new_ports[i]}:${template_ports[i]}"
+  done
+
+  echo -e "${BLUE}数据目录:${NC}"
+  echo -e "  - \${USERS_WORKSPACE}/${user}/config"
+  echo -e "  - \${USERS_WORKSPACE}/${user}/projects"
+
+  # 显示当前所有用户的端口情况
+  echo ""
+  show_port_usage
+}
+
+# 显示端口使用情况
+show_port_usage() {
+  local users=($(get_all_users))
+
+  if [[ ${#users[@]} -eq 0 ]]; then
+    echo -e "${YELLOW}当前没有用户${NC}"
+    return
+  fi
+
+  echo -e "${BLUE}当前端口使用情况:${NC}"
+  echo "----------------------------------------"
+
+  local current_max_ports=($(get_current_max_ports))
+
+  for user in "${users[@]}"; do
+    local user_ports=()
+    # 从 idea-docker- 服务中获取端口
+    while IFS= read -r line; do
+      if [[ "$line" =~ \ \"([0-9]+):([0-9]+)\" ]]; then
+        user_ports+=("${BASH_REMATCH[1]}")
+      fi
+    done < <(grep -A 20 "^  idea-docker-${user}:" "$COMPOSE_FILE" | grep -E '^[[:space:]]*- "[0-9]+:[0-9]+"')
+
+    if [[ ${#user_ports[@]} -gt 0 ]]; then
+      echo -e "  ${GREEN}✓${NC} $user: ${user_ports[*]}"
+    fi
+  done
+
+  echo -e "${GREEN}当前最大端口: ${current_max_ports[*]}${NC}"
+
+  local users_count=${#users[@]}
+  if [[ $users_count -eq 0 ]]; then
+    local template_ports=($(extract_ports_from_template))
+    echo -e "${YELLOW}下一个用户将使用端口: ${template_ports[*]} (模板端口)${NC}"
+  else
+    local next_ports=($(calculate_new_ports "${current_max_ports[@]}"))
+    echo -e "${YELLOW}下一个用户将使用端口: ${next_ports[*]}${NC}"
+  fi
+}
+
+# 删除用户
+delete_user() {
+  local user="$1"
+
+  if ! user_exists "$user"; then
+    echo -e "${RED}✗ 用户 '$user' 不存在${NC}"
+    exit 1
+  fi
+
+  # 获取被删除用户的端口信息（用于显示）
+  local user_ports=()
+  # 从 idea-docker- 服务中获取端口
+  while IFS= read -r line; do
+    if [[ "$line" =~ \ \"([0-9]+):([0-9]+)\" ]]; then
+      user_ports+=("${BASH_REMATCH[1]}")
+    fi
+  done < <(grep -A 20 "^  idea-docker-${user}:" "$COMPOSE_FILE" | grep -E '^[[:space:]]*- "[0-9]+:[0-9]+"')
+
+  # 只在有实际用户时才备份
+  backup_config
+
+  # 使用临时文件删除用户配置
+  local temp_file=$(mktemp)
+
+  # 删除用户相关的服务块（setup- 和 idea-docker-）
+  awk -v user="$user" '
+    /^  setup-'$user':/ { skip_setup = 1; next }
+    /^  idea-docker-'$user':/ { skip_idea = 1; next }
+    /^  [a-zA-Z]/ && (skip_setup || skip_idea) {
+        skip_setup = 0; skip_idea = 0
+    }
+    !skip_setup && !skip_idea { print }
+    ' "$COMPOSE_FILE" > "$temp_file"
+
+  mv "$temp_file" "$COMPOSE_FILE"
+
+  echo -e "${GREEN}✓ 用户 '$user' 删除成功${NC}"
+
+  if [[ ${#user_ports[@]} -gt 0 ]]; then
+    echo -e "${YELLOW}释放的端口: ${user_ports[*]}${NC}"
+    echo -e "${YELLOW}注意: 这些端口已被释放但不会被重用，新用户将继续使用最大端口+1的规则${NC}"
+  fi
+
+  # 显示当前端口使用情况
+  echo ""
+  show_port_usage
+}
+
+# 列出所有用户
+list_users() {
+  init_compose_file
+
+  local users=($(get_all_users))
+
+  if [[ ${#users[@]} -eq 0 ]]; then
+    echo -e "${YELLOW}当前没有用户${NC}"
+    return
+  fi
+
+  echo -e "${BLUE}当前用户列表 (${#users[@]} 个用户):${NC}"
+  echo "----------------------------------------"
+
+  for user in "${users[@]}"; do
+    local user_ports=()
+    # 从 idea-docker- 服务中获取端口
+    while IFS= read -r line; do
+      if [[ "$line" =~ \ \"([0-9]+):([0-9]+)\" ]]; then
+        user_ports+=("${BASH_REMATCH[1]}")
+      fi
+    done < <(grep -A 20 "^  idea-docker-${user}:" "$COMPOSE_FILE" | grep -E '^[[:space:]]*- "[0-9]+:[0-9]+"')
+
+    if [[ ${#user_ports[@]} -gt 0 ]]; then
+      echo -e "  ${GREEN}✓${NC} $user"
+      echo -e "      端口: ${user_ports[*]}"
+    else
+      echo -e "  ${YELLOW}⚠${NC} $user (端口: 未知)"
+    fi
+  done
+
+  echo ""
+  show_port_usage
+}
+
+# 显示用户配置
+show_user() {
+  local user="$1"
+
+  if ! user_exists "$user"; then
+    echo -e "${RED}✗ 用户 '$user' 不存在${NC}"
+    exit 1
+  fi
+
+  echo -e "${BLUE}用户 '$user' 的配置:${NC}"
+  echo "----------------------------------------"
+
+  # 提取用户配置块（setup- 和 idea-docker-）
+  sed -n "/^  setup-${user}:/,/^  [a-zA-Z]/p" "$COMPOSE_FILE" | head -n -1
+  sed -n "/^  idea-docker-${user}:/,/^  [a-zA-Z]/p" "$COMPOSE_FILE" | head -n -1
+}
+
+# 恢复备份
+restore_backup() {
+  local backup_file="$1"
+
+  if [[ ! -f "$backup_file" ]]; then
+    echo -e "${RED}✗ 备份文件 '$backup_file' 不存在${NC}"
+    exit 1
+  fi
+
+  cp "$backup_file" "$COMPOSE_FILE"
+  echo -e "${GREEN}✓ 配置已从 '$backup_file' 恢复${NC}"
+}
+
+# 主函数
+main() {
+  local command="$1"
+
+  case "$command" in
+  add|a)
+    if [[ $# -lt 2 ]]; then
+      echo -e "${RED}✗ 请指定用户名${NC}"
+      usage
+      exit 1
+    fi
+    init_compose_file
+    add_user "$2"
+    ;;
+  del|d|delete)
+    if [[ $# -lt 2 ]]; then
+      echo -e "${RED}✗ 请指定要删除的用户名${NC}"
+      usage
+      exit 1
+    fi
+    delete_user "$2"
+    ;;
+  list|ls)
+    list_users
+    ;;
+  show)
+    if [[ $# -lt 2 ]]; then
+      echo -e "${RED}✗ 请指定要查看的用户名${NC}"
+      usage
+      exit 1
+    fi
+    show_user "$2"
+    ;;
+  backup)
+    backup_config
+    ;;
+  restore)
+    if [[ $# -lt 2 ]]; then
+      echo -e "${RED}✗ 请指定备份文件${NC}"
+      usage
+      exit 1
+    fi
+    restore_backup "$2"
+    ;;
+  -h|--help|help)
+    usage
+    ;;
+  *)
+    echo -e "${RED}✗ 未知命令: $command${NC}"
+    usage
+    exit 1
+    ;;
+  esac
+}
+
+# 脚本入口
+if [[ $# -eq 0 ]]; then
+  usage
+  exit 0
+fi
+
+main "$@"

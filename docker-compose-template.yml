@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  setup-{{USER}}:
+    extends:
+      file: advanced-base.yml
+      service: setup-base
+    volumes:
+      - ${USERS_WORKSPACE}/{{USER}}/config:/config:rw
+
+  idea-docker-{{USER}}:
+    container_name: idea-docker-{{USER}}
+    extends:
+      file: advanced-base.yml
+      service: idea-docker-base
+    depends_on:
+      setup-{{USER}}:
+        condition: service_healthy
+    environment:
+      USER_NAME: {{USER}}
+    ports:
+      - "5800:5800"
+      - "5900:5900"
+      - "9520:9527"
+      - "5173:5173"
+    volumes:
+      - ${USERS_WORKSPACE}/{{USER}}/config:${HOME}:rw
+      - ${USERS_WORKSPACE}/{{USER}}/projects:${IDEA_PROJECTS_HOME}:rw

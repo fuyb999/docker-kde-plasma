@@ -104,6 +104,10 @@ sudo tar -Jcvf full-line.tar.xz config/.cache/JetBrains/IntelliJIdea2025.2/full-
 split -b 100M full-line.tar.xz full-line-idea2025.2.2.tar.xz.part
 ```
 
+```shell
+docker-compose config
+```
+
 
 
 

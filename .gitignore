@@ -1,5 +1,7 @@
-workspace
+.idea/
+/addons/
+/backups/
+workspaces
+docker-compose.yml
 config/authorized_keys
 config/rclone
-/addons/
-.idea/
