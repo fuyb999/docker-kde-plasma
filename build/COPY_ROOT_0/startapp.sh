@@ -47,6 +47,10 @@ start_idea() {
       fcitx5 --disable=unicode,chttrans,wayland -r -d --keep
     fi
 
+    if command -v conda > /dev/null && [ -z "$(grep conda ~/.bashrc)" ]; then
+      conda init bash
+    fi
+
     if [ -n "$(echo "$STARTAPP" | grep idea)" ] && [ -f "$JREBEL_JAR_PATH" ] && [ -z "$(jps -l | grep -w $JREBEL_JAR_PATH | grep -vw grep)" ]; then
       nohup $JAVA_HOME/bin/java -Dfile.encoding=UTF-8 -Xmx300m -Xms100m -Duser.timezone=GMT+8 \
         -jar $JREBEL_JAR_PATH --server.port=$JREBEL_SERVER_PORT --logging.file.name=${IDEA_CACHE_DIR}/jrebel.log > /dev/null 2>&1 &

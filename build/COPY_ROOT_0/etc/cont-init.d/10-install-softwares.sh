@@ -208,7 +208,7 @@ install_node(){
     mkdir -p ${NODE_HOME}
   fi
 
-  tar --strip-components=1 -zxf ${SOFTWARE_ADDONS_DIR}/node-v${NODE_VERSION}-linux-x64.tar.gz -C ${NODE_HOME}
+  tar --strip-components=1 -zxf "${SOFTWARE_ADDONS_DIR}/node-v${NODE_VERSION}-linux-x64.tar.gz" -C "${NODE_HOME}"
 
   return 0
 }
@@ -344,11 +344,11 @@ install_idea(){
   echo "try install ideaIU-${IDEA_VERSION}"
 
   if [ ! -f "${SOFTWARE_ADDONS_DIR}/ideaIU-${IDEA_VERSION}.tar.gz" ]; then
-    wget https://download.jetbrains.com/idea/ideaIU-${IDEA_VERSION}.tar.gz -O ${SOFTWARE_ADDONS_DIR}/ideaIU-${IDEA_VERSION}.tar.gz
+    wget "https://download.jetbrains.com/idea/ideaIU-${IDEA_VERSION}.tar.gz" -O "${SOFTWARE_ADDONS_DIR}/ideaIU-${IDEA_VERSION}.tar.gz"
   fi
 
   if [ ! -d "${IDEA_HOME}" ]; then
-    mkdir -p ${IDEA_HOME}
+    mkdir -p "${IDEA_HOME}"
   fi
 
   # Install jetbra
@@ -363,12 +363,12 @@ install_idea(){
     echo "--add-opens=java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED" >> ${IDEA_HOME}/bin/idea64.vmoptions
 
   if [ ! -d "${JREBEL_SERVER_HOME}" ]; then
-    mkdir -p ${JREBEL_SERVER_HOME}
+    mkdir -p "${JREBEL_SERVER_HOME}"
   fi
 
   # Install jrebel-license-server
-  if [ -f "${CRACK_ADDONS_DIR}/jrebel/jrebel-license-server-0.0.1.jar" ] && [ ! -f ${JREBEL_SERVER_HOME}/jrebel-license-server.jar ] ; then
-    cp ${CRACK_ADDONS_DIR}/jrebel/jrebel-license-server-*.jar ${JREBEL_SERVER_HOME}/jrebel-license-server.jar
+  if [ -f "${CRACK_ADDONS_DIR}/jrebel/jrebel-license-server-0.0.1.jar" ] && [ ! -f "${JREBEL_SERVER_HOME}/jrebel-license-server.jar" ] ; then
+    cp "${CRACK_ADDONS_DIR}/jrebel/jrebel-license-server-*.jar" "${JREBEL_SERVER_HOME}/jrebel-license-server.jar"
   fi
 
   return 0
@@ -425,11 +425,23 @@ install_wps(){
     return 0
   fi
 
-  if [ ! -f ${SOFTWARE_ADDONS_DIR}/wps-office_${WPS_VERSION}_amd64.deb ]; then
+  if [ ! -f "${SOFTWARE_ADDONS_DIR}/wps-office_${WPS_VERSION}_amd64.deb" ]; then
     return 0
   fi
 
-  sudo dpkg -i ${SOFTWARE_ADDONS_DIR}/wps-office_${WPS_VERSION}_amd64.deb
+  sudo dpkg -i "${SOFTWARE_ADDONS_DIR}/wps-office_${WPS_VERSION}_amd64.deb"
+
+}
+
+install_podman(){
+
+  if [ ! -f "${SOFTWARE_ADDONS_DIR}/podman-linux-amd64.tar.gz" ]; then
+    return 0
+  fi
+
+  tar --strip-components=1 -zxf "${SOFTWARE_ADDONS_DIR}/podman-linux-amd64.tar.gz" -C "/"
+
+  [ -f "${SOFTWARE_ADDONS_DIR}/podman-compose" ] && cp "${SOFTWARE_ADDONS_DIR}/podman-compose" /usr/local/bin
 
 }
 
@@ -447,5 +459,6 @@ install_anaconda3
 install_idea
 install_nvidia_driver
 install_wps
+install_podman
 
 # vim:ft=sh:ts=4:sw=4:et:sts=4
