@@ -117,14 +117,149 @@ backup_config() {
 }
 
 # 初始化 Compose 文件（如果不存在）
+#!/bin/bash
+
+# Docker Compose 用户管理脚本
+# 基于外部模板文件操作，支持动态添加、删除、列出用户
+
+set -e
+
+# 配置
+COMPOSE_FILE="docker-compose.yml"
+TEMPLATE_FILE="docker-compose-template.yml"
+BACKUP_DIR="backups"
+PORT_INCREMENT=1
+
+# 颜色定义
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+# 创建备份目录
+mkdir -p "$BACKUP_DIR"
+
+# 帮助信息
+usage() {
+  cat << EOF
+用法: $0 [命令] [选项]
+
+命令:
+  add [用户名]              添加用户
+  del [用户名]              删除用户
+  list                     列出所有用户
+  show [用户名]            显示用户配置
+  backup                   备份当前配置
+  restore [备份文件]       恢复配置
+
+选项:
+  -h, --help              显示此帮助信息
+
+示例:
+  $0 add alice            添加用户 alice
+  $0 add bob              添加用户 bob
+  $0 del alice            删除用户 alice
+  $0 list                 列出所有用户
+  $0 show bob             显示用户 bob 的配置
+  $0 backup               备份当前配置
+  $0 restore backup-20231201.yml  恢复备份配置
+
+端口分配规则:
+  第一个用户使用模板端口: 5800, 5900, 9520, 5173
+  后续用户在现有所有用户最大端口基础上分别 +${PORT_INCREMENT}
+  删除用户时端口保持不变，新增用户继续累加
+EOF
+}
+
+# 检查是否有 NVIDIA GPU
+has_nvidia_gpu() {
+  if command -v nvidia-smi >/dev/null 2>&1; then
+    if nvidia-smi >/dev/null 2>&1; then
+      return 0
+    fi
+  fi
+  return 1
+}
+
+# 检查是否有实际用户配置（不只是空的 services:）
+has_actual_users() {
+  if [[ ! -f "$COMPOSE_FILE" ]]; then
+    return 1
+  fi
+
+  # 检查是否有 setup- 开头的服务（真正的用户配置）
+  # 修复：使用正确的正则表达式语法
+  if grep -q "^  setup-" "$COMPOSE_FILE"; then
+    return 0
+  fi
+
+  return 1
+}
+
+# 检查模板文件是否存在
+check_template_file() {
+  if [[ ! -f "$TEMPLATE_FILE" ]]; then
+    echo -e "${RED}✗ 模板文件 '$TEMPLATE_FILE' 不存在${NC}"
+    echo -e "${YELLOW}请创建模板文件或指定正确的模板文件路径${NC}"
+    exit 1
+  fi
+}
+
+# 从模板中提取默认端口
+extract_ports_from_template() {
+  check_template_file
+
+  local ports=()
+  while IFS= read -r line; do
+    if [[ "$line" =~ \ \"([0-9]+):([0-9]+)\" ]]; then
+      ports+=("${BASH_REMATCH[1]}")
+    fi
+  done < <(grep -E '^[[:space:]]*- "[0-9]+:[0-9]+"' "$TEMPLATE_FILE")
+
+  if [[ ${#ports[@]} -eq 0 ]]; then
+    echo -e "${RED}✗ 无法从模板中提取端口${NC}"
+    exit 1
+  fi
+
+  echo "${ports[@]}"
+}
+
+# 备份当前配置（只在有实际用户时备份）
+backup_config() {
+  if ! has_actual_users; then
+    echo -e "${YELLOW}⚠ 没有实际用户配置，跳过备份${NC}"
+    return
+  fi
+
+  local backup_file="${BACKUP_DIR}/backup-$(date +%Y%m%d-%H%M%S).yml"
+  cp "$COMPOSE_FILE" "$backup_file"
+  echo -e "${GREEN}✓ 配置已备份到: $backup_file${NC}"
+}
+
+# 初始化 Compose 文件（如果不存在）- 从模板读取完整结构
 init_compose_file() {
   if [[ ! -f "$COMPOSE_FILE" ]]; then
-    cat > "$COMPOSE_FILE" << 'EOF'
+    check_template_file
+
+    # 从模板文件中提取 services 之前的所有内容
+    local header_content=$(awk '/^services:/ {exit} {print}' "$TEMPLATE_FILE")
+
+    # 如果模板中没有 services: 部分，使用默认结构
+    if [[ -z "$header_content" ]]; then
+      cat > "$COMPOSE_FILE" << 'EOF'
 version: "3.8"
 
 services:
 EOF
-    echo -e "${GREEN}✓ 已创建新的 Compose 文件: $COMPOSE_FILE${NC}"
+    else
+      # 使用模板中的完整头部结构
+      echo "$header_content" > "$COMPOSE_FILE"
+      echo "" >> "$COMPOSE_FILE"
+      echo "services:" >> "$COMPOSE_FILE"
+    fi
+
+    echo -e "${GREEN}✓ 已从模板创建新的 Compose 文件: $COMPOSE_FILE${NC}"
   fi
 }
 

@@ -68,7 +68,8 @@ ENV GROUP_ID=1000
 ENV USER_ID=1000
 ENV USER_NAME=develop
 ENV USER_PASSWORD=develop
-ENV USER_GROUPS=users,${USER_NAME},adm,sudo,audio,video,tty,cdrom,dialout,dip,fax,floppy,lp,plugdev,ssl-cert,tape,voice,input,realtime
+ENV USER_GROUP_NAME=develop
+ENV USER_GROUPS=users,${USER_GROUP_NAME},adm,sudo,audio,video,tty,cdrom,dialout,dip,fax,floppy,lp,plugdev,ssl-cert,tape,voice,input,realtime
 ENV HOME=/home/${USER_NAME}
 ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/base/sbin:/opt/base/bin:/opt/ai-dock/bin:/opt/caddy/bin:/usr/local/nvidia/bin:/opt/VirtualGL/bin
 ENV LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:/usr/lib/i386-linux-gnu:/usr/local/nvidia/lib:/usr/local/nvidia/lib64
@@ -139,7 +140,7 @@ RUN \
     && \
     echo "**** Install core requirements ****" \
         && apt-get update \
-        && apt-get install -y --no-install-recommends sudo fakeroot ssl-cert kmod base-files udev sox file git bc jq acl less tree curl rar unar unrar unzip vim wget xz-utils zip bzip2 gzip htop lsof mlocate net-tools rsync openssh-server pkg-config ca-certificates pciutils bsdmainutils \
+        && apt-get install -y --no-install-recommends sudo fakeroot ssl-cert kmod base-files udev sox file git bc jq acl less tree curl rar unar unrar unzip vim wget xz-utils zip bzip2 gzip htop lsof mlocate net-tools rsync openssh-server pkg-config ca-certificates pciutils bsdmainutils uidmap slirp4netns fuse-overlayfs \
     && \
     echo "**** Install libtcmalloc ****" \
         && apt-get install -y --no-install-recommends libtcmalloc-minimal4 \

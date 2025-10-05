@@ -9,6 +9,10 @@ set -u # Treat unset variables as an error.
 
 source /opt/ai-dock/etc/environment.sh
 
+if ! command -v dbus-uuidgen > /dev/null; then
+  exit 0
+fi
+
 sudo mkdir -pm777 /var/run/dbus
 sudo mkdir -pm777 /run/dbus  # Ensure /run/dbus directory exists
 

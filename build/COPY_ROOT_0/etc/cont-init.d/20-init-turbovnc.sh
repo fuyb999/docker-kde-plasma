@@ -9,15 +9,21 @@ set -u # Treat unset variables as an error.
 
 source /opt/ai-dock/etc/environment.sh
 
+export PATH=$PATH:/opt/TurboVNC/bin
+
+if ! command -v vncpasswd > /dev/null; then
+  exit 0
+fi
+
 rm -rf /tmp/.X${DISPLAY:1}-lock /tmp/.X11-unix ~/.vnc
 mkdir -p /tmp/.X11-unix
 chmod 755 -R /tmp/.X11-unix
 
 mkdir -p ~/.vnc/ ~/.dosbox
-echo $USER_PASSWORD | /opt/TurboVNC/bin/vncpasswd -f > ~/.vnc/passwd
+echo $USER_PASSWORD | vncpasswd -f > ~/.vnc/passwd
 chmod 0600 ~/.vnc/passwd
 
-/opt/TurboVNC/bin/vncserver ${DISPLAY} \
+vncserver ${DISPLAY} \
    -geometry ${DISPLAY_SIZEW}x${DISPLAY_SIZEH} \
    -depth ${DISPLAY_CDEPTH} \
    -auth ~/.vnc/passwd \

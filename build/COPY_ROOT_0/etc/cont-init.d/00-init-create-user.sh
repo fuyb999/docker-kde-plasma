@@ -15,13 +15,13 @@ export GROUP_ID=${GROUP_ID:-1000}
 export HOME=${HOME:-"/home/${USER_NAME}"}
 
 # 检查组是否已存在，如果不存在则创建
-if ! getent group $USER_NAME > /dev/null 2>&1; then
-    groupadd -g $GROUP_ID $USER_NAME
+if ! getent group $USER_GROUP_NAME > /dev/null 2>&1; then
+    groupadd -g $GROUP_ID $USER_GROUP_NAME
 else
     # 如果组已存在，确保其 GID 正确
-    existing_gid=$(getent group $USER_NAME | cut -d: -f3)
+    existing_gid=$(getent group $USER_GROUP_NAME | cut -d: -f3)
     if [ "$existing_gid" != "$GROUP_ID" ]; then
-        groupmod -g $GROUP_ID $USER_NAME
+        groupmod -g $GROUP_ID $USER_GROUP_NAME
     fi
 fi
 

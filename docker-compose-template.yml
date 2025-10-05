@@ -1,5 +1,15 @@
 version: "3.8"
 
+## For Nvidia GPU's - You probably want to uncomment this
+x-nvidia-gpu: &nvidia-gpu-config
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+
 services:
   setup-{{USER}}:
     extends:
@@ -17,8 +27,8 @@ services:
       setup-{{USER}}:
         condition: service_healthy
     environment:
-      USER_NAME: {{USER}}
       HOME: /home/{{USER}}
+      USER_NAME: {{USER}}
     ports:
       - "5800:5800"
       - "5900:5900"

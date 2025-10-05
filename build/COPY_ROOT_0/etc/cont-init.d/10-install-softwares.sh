@@ -439,9 +439,20 @@ install_podman(){
     return 0
   fi
 
-  tar --strip-components=1 -zxf "${SOFTWARE_ADDONS_DIR}/podman-linux-amd64.tar.gz" -C "/"
+  sudo tar --strip-components=1 -zxf "${SOFTWARE_ADDONS_DIR}/podman-linux-amd64.tar.gz" -C "/"
 
-  [ -f "${SOFTWARE_ADDONS_DIR}/podman-compose" ] && cp "${SOFTWARE_ADDONS_DIR}/podman-compose" /usr/local/bin
+  [ -f "${SOFTWARE_ADDONS_DIR}/podman-compose" ] && sudo cp "${SOFTWARE_ADDONS_DIR}/podman-compose" /usr/local/bin
+
+  # 配置用户命名空间
+  echo 'kernel.unprivileged_userns_clone=1' | sudo tee -a /etc/sysctl.conf
+  echo 'user.max_user_namespaces=28633' | sudo tee -a /etc/sysctl.conf
+  sudo sysctl -p
+
+  # 配置用户映射
+  sudo usermod --add-subuids 100000-165535 --add-subgids 100000-165535 $USER
+
+  # 重新加载用户组信息
+  newgrp "$(id -gn)"
 
 }
 
