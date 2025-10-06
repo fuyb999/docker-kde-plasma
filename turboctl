@@ -421,7 +421,6 @@ generate_user_config() {
     echo -e "${BLUE}ℹ 检测到 NVIDIA GPU，启用 GPU 支持${NC}"
     # 在 idea-docker- 服务中添加 GPU 配置
     template_content=$(echo "$template_content" | sed "/^  idea-docker-${user}:/a\\    <<: *nvidia-gpu-config")
-    template_content=$(echo "$template_content" | sed "/^  idea-docker-${user}:/a\\    container_name: idea-docker-${user}")
   else
     echo -e "${YELLOW}⚠ 未检测到 NVIDIA GPU，跳过 GPU 配置${NC}"
   fi
