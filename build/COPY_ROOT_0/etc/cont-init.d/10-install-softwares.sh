@@ -106,11 +106,6 @@ install_jdk(){
   fi
 
   echo "try install jdk-${JDK_VERSION}"
-
-  # 在 ENV 中定义的PATH 在此不生效
-  if [ ! -f $HOME/.bashrc ] || [ -z "$(cat $HOME/.bashrc | grep 'JAVA_HOME')" ]; then
-    echo "export PATH=\$JAVA_HOME/bin:\$PATH" >> $HOME/.bashrc
-  fi
   
   if [ ! -f "${SOFTWARE_ADDONS_DIR}/jdk-${JDK_VERSION}_linux-x64_bin.tar.gz" ]; then
     wget https://download.oracle.com/java/17/archive/jdk-${JDK_VERSION}_linux-x64_bin.tar.gz -O ${SOFTWARE_ADDONS_DIR}/jdk-${JDK_VERSION}_linux-x64_bin.tar.gz
@@ -337,7 +332,7 @@ EOF
 
 install_idea(){
 
-  if [ -n "$(which ${IDEA_HOME}/bin/idea.sh)" ]; then
+  if [ -n "$(which idea)" ]; then
     return 0
   fi
 
@@ -357,7 +352,7 @@ install_idea(){
     find "${JETBRA_ALL_PATH}" -mindepth 1 -maxdepth 1 -type d -exec bash -c 'mv "$1"/* "$JETBRA_ALL_PATH"/ 2>/dev/null && rmdir "$1"' _ {} \;
   fi
 
-  tar -xzf ${SOFTWARE_ADDONS_DIR}/ideaIU-${IDEA_VERSION}.tar.gz --strip-components=1 -C ${IDEA_HOME} && \
+  tar --strip-components=1 -xzf ${SOFTWARE_ADDONS_DIR}/ideaIU-${IDEA_VERSION}.tar.gz -C ${IDEA_HOME} && \
     echo "-javaagent:${JETBRA_ALL_PATH}/jetbra-agent.jar=jetbrains" >> ${IDEA_HOME}/bin/idea64.vmoptions && \
     echo "--add-opens=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED" >> ${IDEA_HOME}/bin/idea64.vmoptions && \
     echo "--add-opens=java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED" >> ${IDEA_HOME}/bin/idea64.vmoptions
@@ -400,7 +395,7 @@ install_nvidia_driver(){
   fi
 
   # Extract installer before installing
-  sh "NVIDIA-Linux-${DRIVER_ARCH}-${DRIVER_VERSION}.run" -x
+  sudo bash "${SOFTWARE_ADDONS_DIR}/NVIDIA-Linux-${DRIVER_ARCH}-${DRIVER_VERSION}.run" -x
   cd "NVIDIA-Linux-${DRIVER_ARCH}-${DRIVER_VERSION}"
   # Run installation without the kernel modules and host components
   sudo ./nvidia-installer \
@@ -412,9 +407,8 @@ install_nvidia_driver(){
      --no-rpms \
      --no-backup \
      --no-check-for-alternate-installs || true
-  rm -rf "NVIDIA-Linux-${DRIVER_ARCH}-${DRIVER_VERSION}"
   cd -
-  rm -rf "NVIDIA-Linux-${DRIVER_ARCH}-${DRIVER_VERSION}"
+  sudo rm -rf "NVIDIA-Linux-${DRIVER_ARCH}-${DRIVER_VERSION}"
 
   return 0
 }

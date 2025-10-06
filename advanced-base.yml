@@ -1,15 +1,5 @@
 version: "3.8"
 
-## For Nvidia GPU's - You probably want to uncomment this
-x-nvidia-gpu: &nvidia-gpu-config
-  deploy:
-    resources:
-      reservations:
-        devices:
-          - driver: nvidia
-            count: all
-            capabilities: [gpu]
-
 x-setup-template: &setup-template
   image: ${IDEA_DOCKER_IMAGE}
   build:
@@ -39,7 +29,7 @@ x-setup-template: &setup-template
         sleep 1;
         if [ -f /backup/full-line-idea${IDEA_VERSION}.tar.xz.partaa ]; then
           cat /backup/full-line-idea${IDEA_VERSION}.tar.xz.part* > /backup/full-line-idea${IDEA_VERSION}.tar.xz;
-          tar --strip-components=1 -Jxvf /backup/full-line-idea${IDEA_VERSION}.tar.bz2 -C /config;
+          tar --strip-components=1 -Jxvf /backup/full-line-idea${IDEA_VERSION}.tar.xz -C /config;
           rm -rf /backup/full-line-idea${IDEA_VERSION}.tar.xz;
         else
           echo "The full-line file not found";
