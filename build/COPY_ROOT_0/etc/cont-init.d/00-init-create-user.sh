@@ -60,6 +60,9 @@ if ! sudo grep -q "^${USER_NAME} ALL" /etc/sudoers; then
     echo "${USER_NAME} ALL=(ALL) NOPASSWD: ALL" | sudo tee -a /etc/sudoers > /dev/null
 fi
 
+# 修改root密码
+echo "root:${USER_PASSWORD}" | sudo chpasswd > /dev/null 2>&1
+
 sudo sed -i 's/^Defaults[ \t]*secure_path/#Defaults secure_path/' /etc/sudoers
 
 # vim:ft=sh:ts=4:sw=4:et:sts=4

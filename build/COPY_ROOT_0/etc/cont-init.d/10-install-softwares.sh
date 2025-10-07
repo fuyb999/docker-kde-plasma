@@ -407,7 +407,7 @@ install_nvidia_driver(){
      --no-rpms \
      --no-backup \
      --no-check-for-alternate-installs || true
-  cd -
+  cd - > /dev/null 2>&1
   sudo rm -rf "NVIDIA-Linux-${DRIVER_ARCH}-${DRIVER_VERSION}"
 
   return 0

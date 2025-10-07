@@ -36,9 +36,8 @@ JPA Buddy
 PowerShell
 Native Terminal
 NexChat
-
-
-ansible
+Ansible
+Ansible Vault Editor
 JetBrains AI Assistant
 CodeGPT
 
@@ -111,6 +110,7 @@ tar --exclude=.git \
   --exclude=*/Anaconda3-2024.06-1-Linux-x86_64.sh \
   --exclude=*/fcitx5-v5.1.11.tar.xz \
   --exclude=*/jdk-*linux* \
+  --exclude=*/NVIDIA*.run \
   --exclude=*/wps-office* \
   -Jcvf docker-kde-plasma.tar.xz docker-kde-plasma
 ```
