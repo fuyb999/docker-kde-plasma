@@ -462,13 +462,13 @@ install_maven
 install_node
 install_firefox
 install_oss_browser
-#install_google_chrome
-#install_wind_term
-#install_dbeaver
-#install_anaconda3
-#install_idea
-#install_nvidia_driver
-#install_wps
-#install_podman
+install_google_chrome
+install_wind_term
+install_dbeaver
+install_anaconda3
+install_idea
+install_nvidia_driver
+install_wps
+install_podman
 
 # vim:ft=sh:ts=4:sw=4:et:sts=4
