@@ -22,6 +22,9 @@ function preflight_main() {
     env-store DBUS_SESSION_BUS_ADDRESS
     export XDG_SESSION_ID="${DISPLAY#*:}"
     env-store XDG_SESSION_ID
+
+    export TERM=xterm
+    env-store TERM
 }
 
 

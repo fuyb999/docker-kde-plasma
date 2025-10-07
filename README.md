@@ -67,6 +67,7 @@ AICommit
 
 ```shell
 XZ_OPT="-9e --memlimit-compress=2G" tar --exclude=config/IdeaProjects \
+    --exclude=config/.bashrc \
     --exclude=config/.wind \
     --exclude=config/模板 \
     --exclude=config/Downloads \
