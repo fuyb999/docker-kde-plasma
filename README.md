@@ -66,7 +66,7 @@ AICommit
 ```
 
 ```shell
-tar --exclude=config/IdeaProjects \
+XZ_OPT="-9e --memlimit-compress=12G" tar --exclude=config/IdeaProjects \
     --exclude=config/.wind \
     --exclude=config/模板 \
     --exclude=config/Downloads \
@@ -122,14 +122,14 @@ split -b 100M full-line.tar.xz full-line.tar.xz.part
 ```shell
 docker-compose config
 
-tar --exclude=.git \
+XZ_OPT="-9e --memlimit-compress=12G" tar --exclude=.git \
   --exclude=*/Anaconda3-2024.06-1-Linux-x86_64.sh \
   --exclude=*/fcitx5-v5.1.11.tar.xz \
-  --exclude=*/jdk-*linux* \
+  --exclude=*/jdk-*linux*.tar.gz \
   --exclude=*/NVIDIA*.run \
-  --exclude=*/wps-office* \
-  --exclude=*/node-v18* \
-  --exclude=*/oss-browser* \
+  --exclude=*/wps-office*.deb \
+  --exclude=*/node-v18*.tar.gz \
+  --exclude=*/oss-browser*.zip \
   --exclude=*/firefox-128.0.tar.bz2* \
   --exclude=workspaces \
   -Jcvf docker-kde-plasma.tar.xz docker-kde-plasma
