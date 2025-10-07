@@ -115,7 +115,9 @@ XZ_OPT="-9e --memlimit-compress=2G" tar --exclude=config/IdeaProjects \
 
 split -b 100M config.tar.xz config-idea2025.2.3.tar.xz.part
 
-sudo tar -Jcvf full-line.tar.xz config/.cache/JetBrains/IntelliJIdea2025.2/full-line
+XZ_OPT="-9e --memlimit-compress=2G" \
+  tar -Jcvf full-line.tar.xz config/.cache/JetBrains/IntelliJIdea2025.2/full-line
+  
 split -b 100M full-line.tar.xz full-line.tar.xz.part
 ```
 
