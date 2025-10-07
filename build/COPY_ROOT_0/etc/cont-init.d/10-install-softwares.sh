@@ -455,6 +455,16 @@ install_podman(){
 
 }
 
+install_feige(){
+
+  if [ ! -f "${SOFTWARE_ADDONS_DIR}/Feige_for_64_Linux.tar.gz" ]; then
+    return 0
+  fi
+
+  sudo tar -zxf "${SOFTWARE_ADDONS_DIR}/Feige_for_64_Linux.tar.gz" -C "/usr/local/bin"
+
+}
+
 
 install_x11
 install_jdk
@@ -470,5 +480,6 @@ install_idea
 install_nvidia_driver
 install_wps
 install_podman
+install_feige
 
 # vim:ft=sh:ts=4:sw=4:et:sts=4
