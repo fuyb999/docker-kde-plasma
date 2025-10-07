@@ -25,7 +25,7 @@ x-setup-template: &setup-template
           cat /backup/config-idea${IDEA_VERSION}.tar.xz.part* > /backup/config-idea${IDEA_VERSION}.tar.xz;
           tar --strip-components=1 -Jxvf /backup/config-idea${IDEA_VERSION}.tar.xz -C /config;
           rm -rf /backup/config-idea${IDEA_VERSION}.tar.xz;
-          rm -rf /config/.bashrc
+          rm -rf /config/{.bashrc,.bash_history,.gitconfig}
         else
           echo "The config file not found";
         fi;
