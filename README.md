@@ -128,6 +128,9 @@ tar --exclude=.git \
   --exclude=*/jdk-*linux* \
   --exclude=*/NVIDIA*.run \
   --exclude=*/wps-office* \
+  --exclude=*/node-v18* \
+  --exclude=*/oss-browser* \
+  --exclude=*/firefox-128.0.tar.bz2* \
   --exclude=workspaces \
   -Jcvf docker-kde-plasma.tar.xz docker-kde-plasma
 ```
