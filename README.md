@@ -66,16 +66,22 @@ AICommit
 ```
 
 ```shell
-sudo tar --exclude=config/IdeaProjects \
+tar --exclude=config/IdeaProjects \
     --exclude=config/模板 \
     --exclude=config/Downloads \
     --exclude=config/Documents \
-    --exclude=*/.lingma/* \
+    --exclude=config/.m2/repository \
     --exclude=*/lingma* \
-    --exclude=*/.tabnine/* \
+    --exclude=config/.lingma \
     --exclude=*/TabNine* \
+    --exclude=config/.tabnine \
+    --exclude=config/.npm \
+    --exclude=config/.cache/idea \
+    --exclude=config/.cache/mozilla \
+    --exclude=config/.cache/google-chrome \
+    --exclude=config/.cache/event-sound-cache* \
     --exclude=config/.cache/mesa_shader_cache \
-    --exclude=config/config/.local/share/Kingsoft \
+    --exclude=config/.cache/fontconfig \
     --exclude=config/.local/share/Kingsoft \
     --exclude=config/.cache/google-chrome \
     --exclude=config/.config/google-chrome \
@@ -83,9 +89,19 @@ sudo tar --exclude=config/IdeaProjects \
     --exclude=config/.local/share/DBeaverData \
     --exclude=config/.cache/mozilla \
     --exclude=config/.mozilla/firefox \
+    --exclude=config/.config/fcitx/dbus \
+    --exclude=config/.local/share/Kingsoft \
+    --exclude=config/.config/JetBrains/IntelliJIdea2025.2/tasks \
+    --exclude=config/.config/JetBrains/IntelliJIdea2025.2/workspace \
+    --exclude=config/.cache/JetBrains/IntelliJIdea2025.2/compiler \
+    --exclude=config/.cache/JetBrains/IntelliJIdea2025.2/testHistory \
+    --exclude=config/.cache/JetBrains/IntelliJIdea2025.2/jcef_cache \
+    --exclude=config/.cache/JetBrains/IntelliJIdea2025.2/compile-server \
+    --exclude=config/.cache/JetBrains/IntelliJIdea2025.2/caches \
+    --exclude=config/.cache/JetBrains/IntelliJIdea2025.2/tmp \
+    --exclude=config/.cache/JetBrains/IntelliJIdea2025.2/Maven \
     --exclude=config/.cache/JetBrains/IntelliJIdea2025.2/editor \
     --exclude=config/.cache/JetBrains/IntelliJIdea2025.2/plugins/*.zip \
-    --exclude=config/.config/JetBrains/IntelliJIdea2025.2/tasks \
     --exclude=config/.cache/JetBrains/IntelliJIdea2025.2/plugins/imageCache \
     --exclude=config/.cache/JetBrains/IntelliJIdea2025.2/log \
     --exclude=config/.cache/JetBrains/IntelliJIdea2025.2/index \
@@ -96,11 +112,10 @@ sudo tar --exclude=config/IdeaProjects \
     --exclude=config/.cache/JetBrains/IntelliJIdea2025.2/jcef_cache/Cache \
     -Jcvf config.tar.xz config/
 
-split -b 100M config.tar.xz config-idea2025.2.2.tar.xz.part
+split -b 100M config.tar.xz config-idea2025.2.3.tar.xz.part
 
 sudo tar -Jcvf full-line.tar.xz config/.cache/JetBrains/IntelliJIdea2025.2/full-line
-
-split -b 100M full-line.tar.xz full-line-idea2025.2.2.tar.xz.part
+split -b 100M full-line.tar.xz full-line.tar.xz.part
 ```
 
 ```shell
