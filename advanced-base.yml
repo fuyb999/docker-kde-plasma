@@ -16,8 +16,8 @@ x-setup-template: &setup-template
         echo "Set the USERS_WORKSPACE environment variable in the .env file";
         exit 1;
       fi;
-      mkdir -p /workspaces/${GIT_USER};
-      chown -R ${USER_ID}:${GROUP_ID} /workspaces/${GIT_USER};
+      mkdir -p /workspaces/$${GIT_USER};
+      chown -R ${USER_ID}:${GROUP_ID} /workspaces/$${GIT_USER};
       if [ ! -d /config/.config/JetBrains ]; then
         echo "Try restore idea config";
         sleep 1;

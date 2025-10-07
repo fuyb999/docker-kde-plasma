@@ -67,6 +67,7 @@ AICommit
 
 ```shell
 tar --exclude=config/IdeaProjects \
+    --exclude=config/.wind \
     --exclude=config/模板 \
     --exclude=config/Downloads \
     --exclude=config/Documents \

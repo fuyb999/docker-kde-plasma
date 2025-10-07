@@ -9,6 +9,11 @@ set -u # Treat unset variables as an error.
 
 source /opt/ai-dock/etc/environment.sh
 
+if [[ ${SERVERLESS,,} = "true" ]]; then
+    printf "Refusing to start system dbus in serverless mode\n"
+    exit 0
+fi
+
 if ! command -v dbus-uuidgen > /dev/null; then
   exit 0
 fi

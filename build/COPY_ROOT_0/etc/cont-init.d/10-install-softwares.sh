@@ -48,6 +48,10 @@ env-store JREBEL_SERVER_HOME
 env-store LD_LIBRARY_PATH
 env-store PATH
 
+if [[ ${SERVERLESS,,} = "true" ]]; then
+    printf "Refusing to start softwares in serverless mode\n"
+    exit 0
+fi
 
 [ -d ${XDG_SOFTWARE_HOME} ] || sudo chown ${USER_ID}:${GROUP_ID} ${XDG_SOFTWARE_HOME}
 

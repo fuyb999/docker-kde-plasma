@@ -9,6 +9,11 @@ set -u # Treat unset variables as an error.
 
 source /opt/ai-dock/etc/environment.sh
 
+if [[ ${SERVERLESS,,} = "true" ]]; then
+    printf "Refusing to start turbovnc in serverless mode\n"
+    exit 0
+fi
+
 export PATH=$PATH:/opt/TurboVNC/bin
 
 if ! command -v vncpasswd > /dev/null; then

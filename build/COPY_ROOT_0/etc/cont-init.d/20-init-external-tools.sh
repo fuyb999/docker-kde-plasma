@@ -9,6 +9,11 @@ set -u # Treat unset variables as an error.
 
 source /opt/ai-dock/etc/environment.sh
 
+if [[ ${SERVERLESS,,} = "true" ]]; then
+    printf "Refusing to start external tools in serverless mode\n"
+    exit 0
+fi
+
 IDEA_CONFIG_DIR=${HOME}/.config/JetBrains/IntelliJIdea${IDEA_VERSION:0:6}
 
 if [ ! -d "${IDEA_CONFIG_DIR}" ] || [ -z "${EXTERNAL_TOOLS_JSON}" ]; then
