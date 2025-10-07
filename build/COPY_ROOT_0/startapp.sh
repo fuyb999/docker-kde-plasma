@@ -44,7 +44,7 @@ start_idea() {
 
   # 禁用unicode,chttrans(简繁切换)插件，以解决ctrl+shift+f,ctrl+shift+u快捷键冲突
   if command -v fcitx5 > /dev/null; then
-    fcitx5 --disable=unicode,chttrans,wayland -r -d --keep
+    fcitx5 --disable=unicode,chttrans,wayland,luaaddonloader -r -d --keep
   fi
 
   if command -v conda > /dev/null && [ -z "$(grep conda ~/.bashrc)" ]; then

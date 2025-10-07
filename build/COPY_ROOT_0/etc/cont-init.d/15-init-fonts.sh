@@ -9,7 +9,7 @@ set -u # Treat unset variables as an error.
 
 source /opt/ai-dock/etc/environment.sh
 
-export ADDON_FONTS_DIR="${XDG_SOFTWARE_HOME}/fonts"
+export ADDON_FONTS_DIR="${XDG_ADDONS_HOME}/fonts"
 
 HOME_FONT="$HOME/.fonts"
 MOST_DISTROS="/usr/share/fonts"
@@ -30,7 +30,7 @@ FONT_PATH="$FONT_PATH/custom-fonts"
 
 if [ ! -d "$FONT_PATH" ]; then
   echo "Creating $FONT_PATH Font Directory..."
-  mkdir -p $FONT_PATH
+  sudo mkdir -p $FONT_PATH
 fi
 
 # 获取当前已缓存的字体列表
@@ -83,8 +83,8 @@ find "$ADDON_FONTS_DIR" -type f \( -name "*.ttf" -o -name "*.TTF" -o -name "*.tt
     else
         # 复制字体文件
         echo "↑ Installing: $font_filename"
-        cp "$font_file" "$dest_file"
-        chmod 644 "$dest_file"
+        sudo cp "$font_file" "$dest_file"
+        sudo chmod 644 "$dest_file"
         INSTALLED_COUNT=$((INSTALLED_COUNT + 1))
     fi
 done
@@ -120,7 +120,7 @@ echo "  Skipped (already cached): $ACTUAL_SKIPPED"
 
 if [ $ACTUAL_INSTALLED -gt 0 ]; then
     echo "Rebuilding Font Cache..."
-    fc-cache -vfs
+    sudo fc-cache -vfs
     echo "Font cache updated."
 else
     echo "No new fonts to cache."
