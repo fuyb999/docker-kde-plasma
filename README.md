@@ -128,6 +128,7 @@ tar --exclude=.git \
   --exclude=*/jdk-*linux* \
   --exclude=*/NVIDIA*.run \
   --exclude=*/wps-office* \
+  --exclude=workspaces \
   -Jcvf docker-kde-plasma.tar.xz docker-kde-plasma
 ```
 
