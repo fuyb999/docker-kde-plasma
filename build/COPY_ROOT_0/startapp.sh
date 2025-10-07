@@ -38,10 +38,6 @@ is_idea_running() {
 
 start_idea() {
 
-  if [ ! -d "${XDG_CONFIG_HOME}/fcitx5" ] && [ -f "${XDG_ADDONS_HOME}/backups/config-base.tar.gz" ]; then
-    tar -zxf ${XDG_ADDONS_HOME}/backups/config-base.tar.gz -C ${HOME}
-  fi
-
   # 禁用unicode,chttrans(简繁切换)插件，以解决ctrl+shift+f,ctrl+shift+u快捷键冲突
   if command -v fcitx5 > /dev/null; then
     fcitx5 --disable=unicode,chttrans,wayland,luaaddonloader -r -d --keep

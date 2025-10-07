@@ -39,7 +39,7 @@ x-setup-template: &setup-template
         fi;
       fi;
       echo '' > /tmp/.config_restored;
-      until nc -z idea-docker-$${GIT_USER} 5900; do 
+      until nc -z idea-docker-$${GIT_USER} 5900 > /dev/null 2>&1; do 
         echo "Waiting for TurboVNC service to start on port 5900..."
         sleep 10
       done
