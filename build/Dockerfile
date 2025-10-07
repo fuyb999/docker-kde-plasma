@@ -140,7 +140,7 @@ RUN \
     && \
     echo "**** Install core requirements ****" \
         && apt-get update \
-        && apt-get install -y --no-install-recommends sudo fakeroot ssl-cert coreutils fontconfig kmod base-files udev sox file git bc jq acl less tree curl rar unar unrar unzip vim wget xz-utils zip bzip2 gzip htop lsof mlocate net-tools rsync openssh-server pkg-config ca-certificates pciutils bsdmainutils uidmap slirp4netns fuse-overlayfs \
+        && apt-get install -y --no-install-recommends sudo fakeroot ssl-cert coreutils fontconfig kmod base-files udev sox file git bc jq acl less tree curl rar unar unrar unzip vim wget xz-utils zip bzip2 gzip htop lsof mlocate netcat net-tools rsync openssh-server pkg-config ca-certificates pciutils bsdmainutils uidmap slirp4netns fuse-overlayfs \
     && \
     echo "**** Install libtcmalloc ****" \
         && apt-get install -y --no-install-recommends libtcmalloc-minimal4 \
@@ -234,15 +234,6 @@ RUN \
 #            /var/lib/apt/lists/* \
 #            /var/tmp/* \
 #            /tmp/*
-
-#COPY ttf-wps-fonts /tmp/ttf-wps-fonts
-#RUN \
-#    echo "**** Install ttf-wps-fonts ****" \
-#        && chmod +x /tmp/ttf-wps-fonts/install.sh \
-#        && /tmp/ttf-wps-fonts/install.sh \
-#        && rm -rf /tmp/ttf-wps-fonts \
-#    && \
-#    echo
 
 # Copy early so we can use scripts in the build - Changes to these files will invalidate the cache and cause a rebuild.
 COPY --chown=${USER_ID}:${GROUP_ID} ./COPY_ROOT_0/ /

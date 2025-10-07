@@ -19,9 +19,9 @@ x-setup-template: &setup-template
       mkdir -p /workspaces/$${GIT_USER};
       chown -R ${USER_ID}:${GROUP_ID} /workspaces/$${GIT_USER};
       if [ ! -d /config/.config/JetBrains ]; then
-        echo "Try restore idea config";
         sleep 1;
         if [ -f /backup/config-idea${IDEA_VERSION}.tar.xz.partaa ]; then
+          echo "Try restore idea config";
           cat /backup/config-idea${IDEA_VERSION}.tar.xz.part* > /backup/config-idea${IDEA_VERSION}.tar.xz;
           tar --strip-components=1 -Jxvf /backup/config-idea${IDEA_VERSION}.tar.xz -C /config;
           rm -rf /backup/config-idea${IDEA_VERSION}.tar.xz;
@@ -30,6 +30,7 @@ x-setup-template: &setup-template
         fi;
         sleep 1;
         if [ -f /backup/full-line.tar.xz.partaa ]; then
+           echo "Try restore full-line cache";
           cat /backup/full-line.tar.xz.part* > /backup/full-line.tar.xz;
           tar --strip-components=1 -Jxvf /backup/full-line.tar.xz -C /config;
           rm -rf /backup/full-line.tar.xz;
@@ -38,7 +39,10 @@ x-setup-template: &setup-template
         fi;
       fi;
       echo '' > /tmp/.config_restored;
-      sleep 12;
+      until nc -z idea-docker-$${GIT_USER} 5900; do 
+        echo "Waiting for TurboVNC service to start on port 5900..."
+        sleep 10
+      done
       echo "All done!";
     '
   healthcheck:

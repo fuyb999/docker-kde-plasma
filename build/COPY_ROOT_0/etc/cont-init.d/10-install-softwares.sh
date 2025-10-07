@@ -428,6 +428,7 @@ install_wps(){
   fi
 
   sudo dpkg -i "${SOFTWARE_ADDONS_DIR}/wps-office_${WPS_VERSION}_amd64.deb"
+  sudo rm -rf ~/模板
 
 }
 
