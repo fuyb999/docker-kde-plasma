@@ -394,7 +394,8 @@ validate_ports() {
 # 从模板生成用户配置
 generate_user_config() {
   local user="$1"
-  local ports=("$2" "$3" "$4" "$5")
+  shift  # 移除第一个参数（用户名）
+  local ports=("$@")  # 剩余的所有参数都是端口
 
   check_template_file
 
@@ -404,17 +405,31 @@ generate_user_config() {
   # 替换用户名
   template_content="${template_content//\{\{USER\}\}/$user}"
 
-  # 替换端口 - 按顺序替换
+  # 修复端口替换逻辑 - 使用更安全的方法
   local port_index=0
+  local new_content=""
+
+  # 逐行处理模板内容
   while IFS= read -r line; do
     if [[ "$line" =~ \ \"([0-9]+):([0-9]+)\" ]]; then
       local old_port="${BASH_REMATCH[1]}"
       local container_port="${BASH_REMATCH[2]}"
-      local new_port="${ports[port_index]}"
-      template_content="${template_content/\"$old_port:$container_port\"/\"$new_port:$container_port\"}"
-      ((port_index++))
+
+      # 确保有足够的端口号
+      if [[ $port_index -lt ${#ports[@]} ]]; then
+        local new_port="${ports[port_index]}"
+        # 只替换主机端口部分，保持容器端口不变
+        line="${line/$old_port:/$new_port:}"
+        ((port_index++))
+      else
+        echo -e "${RED}✗ 端口数量不匹配: 模板有更多端口配置${NC}"
+        exit 1
+      fi
     fi
-  done < <(grep -E '^[[:space:]]*- "[0-9]+:[0-9]+"' "$TEMPLATE_FILE")
+    new_content+="$line"$'\n'
+  done <<< "$template_content"
+
+  template_content="$new_content"
 
   # 检查是否有 NVIDIA GPU，如果有则添加 GPU 配置
   if has_nvidia_gpu; then
@@ -501,10 +516,24 @@ add_user() {
   echo -e "${GREEN}✓ 用户 '$user' 添加成功！${NC}"
 
   # 显示端口映射详情
-  local template_ports=($(extract_ports_from_template))
   echo -e "${BLUE}端口映射:${NC}"
+
+  # 从模板中提取容器端口
+  local container_ports=()
+  while IFS= read -r line; do
+      if [[ "$line" =~ \ \"([0-9]+):([0-9]+)\" ]]; then
+          container_ports+=("${BASH_REMATCH[2]}")
+      fi
+  done < <(grep -E '^[[:space:]]*- "[0-9]+:[0-9]+"' "$TEMPLATE_FILE")
+
+  # 显示正确的端口映射
   for i in "${!new_ports[@]}"; do
-    echo -e "  - ${new_ports[i]}:${template_ports[i]}"
+      if [[ $i -lt ${#container_ports[@]} ]]; then
+          echo -e "  - ${new_ports[i]}:${container_ports[i]}"
+      else
+          echo -e "  ${RED}✗ 端口映射数量不匹配${NC}"
+          break
+      fi
   done
 
   echo -e "${BLUE}数据目录:${NC}"
