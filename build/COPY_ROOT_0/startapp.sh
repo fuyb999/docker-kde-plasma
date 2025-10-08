@@ -74,6 +74,10 @@ start_idea() {
     find "${XDG_CONFIG_HOME}/JetBrains" -name '*.lock' | xargs rm -f
   fi
 
+  if [ -d "~/.config/google-chrome" ] && [ -f "~/.config/google-chrome/SingletonLock" ]; then
+    rm -rf ~/.config/google-chrome/{SingletonCookie,SingletonLock,SingletonSocket}
+  fi
+
   vglrun ${STARTAPP:-xterm} > ${IDEA_CACHE_DIR}/output.log 2>&1 &
 
 }
