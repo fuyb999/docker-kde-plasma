@@ -71,10 +71,11 @@ XZ_OPT="-9e --memlimit-compress=2G" tar --exclude=config/IdeaProjects \
     --exclude=config/.gitconfig \
     --exclude=config/.bash_history \
     --exclude=config/.wind \
+    --exclude=config/.xsession-errors \
+    --exclude=config/.m2/repository \
     --exclude=config/模板 \
     --exclude=config/Downloads \
     --exclude=config/Documents \
-    --exclude=config/.m2/repository \
     --exclude=*/lingma* \
     --exclude=config/.lingma \
     --exclude=*/TabNine* \

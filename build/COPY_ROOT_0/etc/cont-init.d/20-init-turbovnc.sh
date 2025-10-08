@@ -20,7 +20,7 @@ if ! command -v vncpasswd > /dev/null; then
   exit 0
 fi
 
-rm -rf /tmp/.X${DISPLAY:1}-lock /tmp/.X11-unix ~/.vnc
+rm -rf /tmp/.X${DISPLAY:1}-lock /tmp/.X11-unix ~/.vnc ~/.xsession-errors
 mkdir -p /tmp/.X11-unix
 chmod 755 -R /tmp/.X11-unix
 

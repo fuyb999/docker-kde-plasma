@@ -57,7 +57,7 @@ fi
 
 install_x11(){
 
-  if [ ! -f "${SOFTWARE_ADDONS_DIR}/apt-offline-x11-mirror.tar.xz" ] || [ -z "${OFFLINE_CORE_PACKEGES}" ]; then
+  if [ ! -f "${SOFTWARE_ADDONS_DIR}/apt-offline-x11-mirror.tar.xz" ] || [ -z "${OFFLINE_CORE_PACKAGES}" ]; then
     return 0
   fi
 
@@ -90,7 +90,7 @@ EOF
   sudo apt-get install -y -q --no-install-recommends \
       -o Dpkg::Options::="--force-confdef" \
       -o Dpkg::Options::="--force-confold" \
-      ${OFFLINE_CORE_PACKEGES}
+      ${OFFLINE_CORE_PACKAGES}
 
   if [ -f "${SOFTWARE_ADDONS_DIR}/virtualgl_${VIRTUALLGL_VERSION}_amd64.deb" ]; then
     sudo dpkg -i ${SOFTWARE_ADDONS_DIR}/virtualgl_${VIRTUALLGL_VERSION}_amd64.deb
