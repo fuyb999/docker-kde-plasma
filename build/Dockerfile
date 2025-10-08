@@ -140,7 +140,7 @@ RUN \
     && \
     echo "**** Install core requirements ****" \
         && apt-get update \
-        && apt-get install -y --no-install-recommends sudo fakeroot ssl-cert coreutils fontconfig kmod base-files udev sox file git bc jq acl less tree curl rar unar unrar unzip vim wget xz-utils zip bzip2 gzip htop lsof mlocate netcat net-tools rsync openssh-server pkg-config ca-certificates pciutils bsdmainutils uidmap slirp4netns fuse-overlayfs libgconf-2-4 \
+        && apt-get install -y --no-install-recommends sudo fakeroot ssl-cert coreutils fontconfig kmod base-files udev sox file git bc jq acl less tree curl rar unar unrar unzip vim wget xz-utils zip bzip2 gzip htop lsof mlocate netcat net-tools rsync openssh-server pkg-config ca-certificates pciutils bsdmainutils uidmap slirp4netns fuse-overlayfs libgconf-2-4 libnotify-bin libappindicator3-1 libkeybinder-3.0-0 libgdk-pixbuf2.0-0 \
     && \
     echo "**** Install libtcmalloc ****" \
         && apt-get install -y --no-install-recommends libtcmalloc-minimal4 \
@@ -224,16 +224,16 @@ RUN \
 #            /var/tmp/* \
 #            /tmp/*
 
-#RUN apt-get update \
-#      && apt-get install --no-install-recommends -y xterm \
-#    && \
-#    echo "**** Section cleanup ****" \
-#        && apt-get clean autoclean -y \
-#        && apt-get autoremove -y \
-#        && rm -rf \
-#            /var/lib/apt/lists/* \
-#            /var/tmp/* \
-#            /tmp/*
+RUN apt-get update \
+      && apt-get install --no-install-recommends -y libnotify-bin libappindicator3-1 libkeybinder-3.0-0 libgdk-pixbuf2.0-0 \
+    && \
+    echo "**** Section cleanup ****" \
+        && apt-get clean autoclean -y \
+        && apt-get autoremove -y \
+        && rm -rf \
+            /var/lib/apt/lists/* \
+            /var/tmp/* \
+            /tmp/*
 
 # Copy early so we can use scripts in the build - Changes to these files will invalidate the cache and cause a rebuild.
 COPY --chown=${USER_ID}:${GROUP_ID} ./COPY_ROOT_0/ /

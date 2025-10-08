@@ -389,9 +389,7 @@ install_nvidia_driver(){
   export DRIVER_VERSION="$(head -n1 </proc/driver/nvidia/version | awk '{print $8}')"
 
   if [ ! -f ${SOFTWARE_ADDONS_DIR}/NVIDIA-Linux-${DRIVER_ARCH}-${DRIVER_VERSION}.run ]; then
-    # Download the correct nvidia driver (check multiple locations)
-    wget "https://international.download.nvidia.com/XFree86/Linux-${DRIVER_ARCH}/${DRIVER_VERSION}/NVIDIA-Linux-${DRIVER_ARCH}-${DRIVER_VERSION}.run" -O ${SOFTWARE_ADDONS_DIR}/NVIDIA-Linux-${DRIVER_ARCH}-${DRIVER_VERSION}.run || \
-    wget "https://international.download.nvidia.com/tesla/${DRIVER_VERSION}/NVIDIA-Linux-${DRIVER_ARCH}-${DRIVER_VERSION}.run" -O ${SOFTWARE_ADDONS_DIR}/NVIDIA-Linux-${DRIVER_ARCH}-${DRIVER_VERSION}.run || { echo "Failed NVIDIA GPU driver download."; }
+    wget "https://international.download.nvidia.com/XFree86/Linux-${DRIVER_ARCH}/${DRIVER_VERSION}/NVIDIA-Linux-${DRIVER_ARCH}-${DRIVER_VERSION}.run" -O ${SOFTWARE_ADDONS_DIR}/NVIDIA-Linux-${DRIVER_ARCH}-${DRIVER_VERSION}.run
   fi
 
   if [ ! -f ${SOFTWARE_ADDONS_DIR}/NVIDIA-Linux-${DRIVER_ARCH}-${DRIVER_VERSION}.run ]; then
