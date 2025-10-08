@@ -35,6 +35,8 @@ services:
       - "5900:5900"
       - "9520:9527"
       - "5173:5173"
+      - "2425:2425"
+      - "8890:8892"
     volumes:
       - ${USERS_WORKSPACE}/{{USER}}/config:${HOME}:rw
       - ${USERS_WORKSPACE}/{{USER}}/projects:${IDEA_PROJECTS_HOME}:rw

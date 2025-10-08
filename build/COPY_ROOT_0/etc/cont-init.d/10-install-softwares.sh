@@ -153,6 +153,7 @@ install_dbeaver(){
   echo "try install dbeaver-${DBEAVER_VERSION}"
 
   DBEAVER_PRODUCT=${DBEAVER_VERSION:0:2}
+  DBEAVER_VERSION_NUMBER=${DBEAVER_VERSION:3:2}
   if [ ! -f "${SOFTWARE_ADDONS_DIR}/dbeaver-${DBEAVER_VERSION}-linux.gtk.x86_64.tar.gz" ]; then
     # ${DBEAVER_VERSION:3} -> ce_24.1.2 -> 24.1.2
     if [ "${DBEAVER_PRODUCT}" = "ue" ]; then
@@ -170,21 +171,36 @@ install_dbeaver(){
   tar --strip-components=1 -zxf ${SOFTWARE_ADDONS_DIR}/dbeaver-${DBEAVER_VERSION}-linux.gtk.x86_64.tar.gz -C ${DBEAVER_HOME}
 
   # https://github.com/wgzhao/dbeaver-agent
-  if [ -f "${CRACK_ADDONS_DIR}/dbeaver/dbeaver-agent-1.0.jar" ] && [ ! -f "${DBEAVER_HOME}/dbeaver-agent-1.0.jar" ]; then
-    sudo cp ${CRACK_ADDONS_DIR}/dbeaver/dbeaver-agent-1.0.jar ${DBEAVER_HOME}/dbeaver-agent.jar
+  if [ -f "${CRACK_ADDONS_DIR}/dbeaver-${DBEAVER_VERSION_NUMBER}/dbeaver-agent.jar" ] && [ ! -f "${DBEAVER_HOME}/dbeaver-agent.jar" ]; then
+    cp "${CRACK_ADDONS_DIR}/dbeaver-${DBEAVER_VERSION_NUMBER}/dbeaver-agent.jar" "${DBEAVER_HOME}/dbeaver-agent.jar"
   fi
 
   DBEAVER_CONFIG=${DBEAVER_HOME}/dbeaver.ini
+  DBEAVER_CRACK_CLASS="dev.misakacloud.dbee.License"
+  JAVA_BIN="${JAVA_HOME}/bin/java"
   if [ -z "$(grep dbeaver-agent $DBEAVER_CONFIG)" ]; then
-    sudo sed -i -e "/-vmargs/a\-javaagent:${DBEAVER_HOME}/dbeaver-agent.jar" ${DBEAVER_CONFIG}
+    if [ ${DBEAVER_VERSION_NUMBER} -eq 25 ]; then
+      DBEAVER_CRACK_CLASS="com.dbeaver.agent.License"
+      sed -i "/-vmargs/a\-javaagent:${DBEAVER_HOME}/dbeaver-agent.jar\n-Xbootclasspath/a:${DBEAVER_HOME}/dbeaver-agent.jar" ${DBEAVER_CONFIG}
+      if ! ${JAVA_BIN} -version 2>&1 | grep -q '"21'; then
+        JAVA_HOME_21="${XDG_SOFTWARE_HOME}/jdk-21.0.7"
+        if [ ! -d "${JAVA_HOME_21}" ] && [ -f "${SOFTWARE_ADDONS_DIR}/jdk-21.0.7_linux-x64_bin.tar.gz" ]; then
+          mkdir -p ${JAVA_HOME_21}
+          tar --strip-components=1 -zxf ${SOFTWARE_ADDONS_DIR}/jdk-21.0.7_linux-x64_bin.tar.gz -C ${JAVA_HOME_21}
+          rm -rf ${DBEAVER_HOME}/jre && ln -s ${JAVA_HOME_21} ${DBEAVER_HOME}/jre
+        fi
+      fi
+    else
+      rm -rf ${DBEAVER_HOME}/jre && ln -s ${JAVA_HOME} ${DBEAVER_HOME}/jre
+      sed -i "/-vmargs/a\-javaagent:${DBEAVER_HOME}/dbeaver-agent.jar" ${DBEAVER_CONFIG}
+    fi
   fi
 
-  sudo rm -rf ${DBEAVER_HOME}/jre && sudo ln -s ${JAVA_HOME} ${DBEAVER_HOME}/jre
-  ${JAVA_HOME}/bin/java -cp ${CRACK_ADDONS_DIR}/dbeaver/libs/\*:${DBEAVER_HOME}/dbeaver-agent.jar \
-     dev.misakacloud.dbee.License \
+  ${JAVA_BIN} -cp "${CRACK_ADDONS_DIR}/dbeaver-${DBEAVER_VERSION_NUMBER}/libs/*:${DBEAVER_HOME}/dbeaver-agent.jar" \
+     ${DBEAVER_CRACK_CLASS} \
      --product=dbeaver \
      --type=${DBEAVER_PRODUCT} \
-     --version=24
+     --version=${DBEAVER_VERSION_NUMBER}
 
   return 0
 }
