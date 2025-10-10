@@ -51,7 +51,7 @@ add_single_tool() {
     parameters=$(escape_xml "$parameters")
     workdir=$(escape_xml "$workdir")
 
-    if [ -z "$workdir" ] || [ "$wrokdir" = "null" ]; then
+    if [ -z "$workdir" ] || [ "$workdir" = "null" ]; then
       workdir='$ProjectFileDir$'
     fi
 
@@ -62,7 +62,8 @@ add_single_tool() {
     awk -v name="$name" \
         -v description="$description" \
         -v command="$command" \
-        -v parameters="$parameters" '
+        -v parameters="$parameters" \
+        -v workdir="$workdir" '
     /<\/toolSet>/ {
         print "  <tool name=\"" name "\" description=\"" description "\" showInMainMenu=\"false\" showInEditor=\"false\" showInProject=\"false\" showInSearchPopup=\"false\" disabled=\"false\" useConsole=\"false\" showConsoleOnStdOut=\"false\" showConsoleOnStdErr=\"false\" synchronizeAfterRun=\"true\">"
         print "    <exec>"

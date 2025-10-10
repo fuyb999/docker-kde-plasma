@@ -28,6 +28,7 @@ services:
     depends_on:
       aura-setup-{{USER}}:
         condition: service_healthy
+    working_dir: ${USER_HOME}
     environment:
       GIT_USER: {{USER}}
     ports:

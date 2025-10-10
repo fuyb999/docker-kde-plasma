@@ -11,7 +11,7 @@ fi
 
 sudo tar -zxf "${SOFTWARE_ADDONS_DIR}/Feige_for_64_Linux.tar.gz" -C "/usr/local/bin"
 
-config_dir="~/.feige"
+config_dir="$HOME/.feige"
 config_file="$config_dir/.configIpmsg"
 [ -d "$config_dir" ] || mkdir "$config_dir"
 
