@@ -7,7 +7,7 @@
 set -e # Exit immediately if a command exits with a non-zero status.
 
 if [[ -n $PROVISIONING_SCRIPT ]]; then
-    file="/opt/aura-dev/bin/provisioning.sh"
+    file="/opt/aura-dock/bin/provisioning.sh"
     curl -L -o ${file} ${PROVISIONING_SCRIPT}
     if [[ "$?" -eq 0 ]] && [[ `command -v dos2unix` ]]; then
         dos2unix "$file"
@@ -20,7 +20,7 @@ fi
 
 # Provisioning script should create the lock file if it wants to only run once
 if [[ ! -e "${HOME}/".update_lock ]]; then
-    file="/opt/aura-dev/bin/provisioning.sh"
+    file="/opt/aura-dock/bin/provisioning.sh"
     printf "Looking for provisioning.sh...\n"
     if [[ ! -f ${file} ]]; then
         printf "Not found\n"

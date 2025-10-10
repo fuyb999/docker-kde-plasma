@@ -10,7 +10,7 @@ function cleanup() {
 }
 
 function start() {
-    source /opt/aura-dev/etc/environment.sh
+    source /opt/aura-dock/etc/environment.sh
     if [[ ${SERVERLESS,,} = "true" ]]; then
         printf "Refusing to start $SERVICE_NAME in serverless mode\n"
         exec sleep 10
@@ -28,7 +28,7 @@ function start() {
         sleep 1
     done
 
-    source /opt/aura-dev/etc/environment.sh
+    source /opt/aura-dock/etc/environment.sh
 
     /usr/bin/wireplumber
 }

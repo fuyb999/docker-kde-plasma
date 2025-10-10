@@ -8,7 +8,7 @@ function cleanup() {
 }
 
 function start() {
-    source /opt/aura-dev/etc/environment.sh
+    source /opt/aura-dock/etc/environment.sh
 
     ak_file="/root/.ssh/authorized_keys"
     if [[ -f "$ak_file" ]] && [[ ! $(ssh-keygen -l -f $ak_file) ]]; then

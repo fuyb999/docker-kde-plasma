@@ -50,14 +50,14 @@ function get_url() {
     if [[ -n $preset_url ]]; then
         url="$preset_url"
     elif [[ ${DIRECT_ADDRESS_GET_WAN,,} == "true" ]]; then
-        url="$(get_scheme)$(/opt/aura-dev/bin/external-ip-address):${port}"
+        url="$(get_scheme)$(/opt/aura-dock/bin/external-ip-address):${port}"
     # Vast.ai
     elif env | grep 'VAST_TCP_PORT' > /dev/null 2>&1; then
         declare -n vast_mapped_port=VAST_TCP_PORT_${port}
         if [[ -n $vast_mapped_port ]]; then
-            url="$(get_scheme)$(/opt/aura-dev/bin/external-ip-address):${vast_mapped_port}"
+            url="$(get_scheme)$(/opt/aura-dock/bin/external-ip-address):${vast_mapped_port}"
         else
-            url="$(/opt/aura-dev/bin/cfqt-url -p $port)"
+            url="$(/opt/aura-dock/bin/cfqt-url -p $port)"
         fi
     # Runpod.io
     elif env | grep 'RUNPOD' > /dev/null 2>&1; then

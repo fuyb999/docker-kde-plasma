@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /opt/aura-dev/etc/environment.sh
+source /opt/aura-dock/etc/environment.sh
 
 [ -d "$XDG_RUNTIME_DIR" ]
 

@@ -1,4 +1,4 @@
-# For build automation - Allows building from any aura-dev base image
+# For build automation - Allows building from any aura-dock base image
 ARG IMAGE_BASE="ubuntu:22.04"
 
 FROM jlesage/baseimage:ubuntu-22.04-v3 AS base
@@ -45,7 +45,7 @@ RUN \
 
 RUN \
     xcaddy build \
-        --with github.com/caddyserver/caddy/v2=github.com/aura-dev/caddy/v2@httpredirect \
+        --with github.com/caddyserver/caddy/v2=github.com/aura-dock/caddy/v2@httpredirect \
         --with github.com/caddyserver/replace-response && \
     mkdir -p /opt/caddy/bin && \
     mkdir -p /opt/caddy/tls && \
@@ -54,7 +54,7 @@ RUN \
 
 FROM ${IMAGE_BASE}
 
-LABEL org.opencontainers.image.source="https://github.com/aura-dev/aura-desktop"
+LABEL org.opencontainers.image.source="https://github.com/aura-dock/aura-desktop"
 LABEL org.opencontainers.image.description="Docker desktop environment with hardware acceleration for NVIDIA, AMD and Intel GPUs"
 LABEL maintainer="fuyb <fuyb@gmail.com>"
 
@@ -68,10 +68,10 @@ ENV GROUP_ID=1000
 ENV USER_ID=1000
 ENV USER_NAME=develop
 ENV USER_PASSWORD=develop
-ENV USER_GROUP_NAME=aura-dev
+ENV USER_GROUP_NAME=aura-dock
 ENV USER_GROUPS=users,${USER_GROUP_NAME},adm,sudo,audio,video,tty,cdrom,dialout,dip,fax,floppy,lp,plugdev,ssl-cert,tape,voice,input,realtime
 ENV HOME=/home/${USER_NAME}
-ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/base/sbin:/opt/base/bin:/opt/aura-dev/bin:/opt/caddy/bin:/usr/local/nvidia/bin:/opt/VirtualGL/bin
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/base/sbin:/opt/base/bin:/opt/aura-dock/bin:/opt/caddy/bin:/usr/local/nvidia/bin:/opt/VirtualGL/bin
 ENV LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:/usr/lib/i386-linux-gnu:/usr/local/nvidia/lib:/usr/local/nvidia/lib64
 
 ENV NVIDIA_VISIBLE_DEVICES=all
@@ -166,7 +166,7 @@ RUN \
     echo
 
 COPY --from=vaapibuilder /usr/lib/x86_64-linux-gnu/dri /usr/lib/x86_64-linux-gnu/dri
-COPY --chown=${USER_ID}:${GROUP_ID} COPY_ROOT_0/opt/aura-dev/share/ /opt/aura-dev/share
+COPY --chown=${USER_ID}:${GROUP_ID} COPY_ROOT_0/opt/aura-dock/share/ /opt/aura-dock/share
 RUN \
     echo "**** Install NVIDIA VAAPI drivers ****" \
         && apt-get update \
@@ -179,7 +179,7 @@ RUN \
         && echo "**** Configure Vulkan manually ****" \
             && export VULKAN_API_VERSION=$(dpkg -s libvulkan1 | grep -oP 'Version: [0-9|\.]+' | grep -oP '[0-9]+(\.[0-9]+)(\.[0-9]+)') \
             && mkdir -pm755 /etc/vulkan/icd.d/ \
-            && cp /opt/aura-dev/share/vulkan/icd.d/nvidia_icd.json /etc/vulkan/icd.d/ \
+            && cp /opt/aura-dock/share/vulkan/icd.d/nvidia_icd.json /etc/vulkan/icd.d/ \
             && sed -i "s/\$VULKAN_API_VERSION/$VULKAN_API_VERSION/g" /etc/vulkan/icd.d/nvidia_icd.json \
     && \
     echo "**** Section cleanup ****" \
@@ -250,15 +250,15 @@ RUN find /etc/services.d/ -type f \( -name '*.dep' -o -name 'params' \) | xargs 
 
 # Use build scripts to ensure we can build all targets from one Dockerfile in a single layer.
 # Don't put anything heavy in here - We can use multi-stage building above if necessary.
-RUN /opt/aura-dev/bin/build/layer0/init.sh | tee /var/log/build1.log
+RUN /opt/aura-dock/bin/build/layer0/init.sh | tee /var/log/build1.log
 
 RUN echo "**** Fix permissions ****" \
-        && chmod +x /opt/aura-dev/bin/*.sh \
+        && chmod +x /opt/aura-dock/bin/*.sh \
         && fix-permissions.sh -o container \
         && rm -f /etc/ld.so.cache \
         && ldconfig \
     && \
     echo
 
-# Keep init.sh as-is and place additional logic in /opt/aura-dev/bin/preflight.d
+# Keep init.sh as-is and place additional logic in /opt/aura-dock/bin/preflight.d
 CMD ["init.sh"]

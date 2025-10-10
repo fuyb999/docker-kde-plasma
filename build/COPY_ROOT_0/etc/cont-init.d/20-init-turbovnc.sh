@@ -7,7 +7,7 @@
 set -e # Exit immediately if a command exits with a non-zero status.
 set -u # Treat unset variables as an error.
 
-source /opt/aura-dev/etc/environment.sh
+source /opt/aura-dock/etc/environment.sh
 
 if [[ ${SERVERLESS,,} = "true" ]]; then
     printf "Refusing to start turbovnc in serverless mode\n"

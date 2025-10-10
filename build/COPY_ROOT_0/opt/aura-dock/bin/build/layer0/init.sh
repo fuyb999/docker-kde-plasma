@@ -26,15 +26,15 @@ rm -f /etc/update-motd.d/10-help-text
 # Ensure critical paths/files are present
 mkdir -p --mode=0755 /etc/apt/keyrings
 mkdir -p --mode=0755 /run/sshd
-chown -R root.aura-dev /var/log
+chown -R root.aura-dock /var/log
 chmod -R g+w /var/log
 chmod -R g+s /var/log
 mkdir -p /var/log/supervisor
 mkdir -p /var/empty
 
-printf "source /opt/aura-dev/etc/environment.sh\n" >> /etc/profile.d/02-aura-dev.sh
-printf "source /opt/aura-dev/etc/environment.sh\n" >> /etc/bash.bashrc
+printf "source /opt/aura-dock/etc/environment.sh\n" >> /etc/profile.d/02-aura-dock.sh
+printf "source /opt/aura-dock/etc/environment.sh\n" >> /etc/bash.bashrc
 printf "ready-test\n" >> /root/.bashrc
 
-# Give our runtime user full access (added to aura-dev group)
-source /opt/aura-dev/bin/build/layer0/clean.sh
+# Give our runtime user full access (added to aura-dock group)
+source /opt/aura-dock/bin/build/layer0/clean.sh

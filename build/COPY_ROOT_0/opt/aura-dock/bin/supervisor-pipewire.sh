@@ -2,7 +2,7 @@
 
 trap cleanup EXIT
 
-SERVICE_NAME="Pipewire-pulse"
+SERVICE_NAME="Pipewire"
 
 function cleanup() {
     kill $(jobs -p) > /dev/null 2>&1
@@ -10,7 +10,7 @@ function cleanup() {
 }
 
 function start() {
-    source /opt/aura-dev/etc/environment.sh
+    source /opt/aura-dock/etc/environment.sh
     if [[ ${SERVERLESS,,} = "true" ]]; then
         printf "Refusing to start $SERVICE_NAME in serverless mode\n"
         exec sleep 10
@@ -23,14 +23,14 @@ function start() {
 
     printf "Starting ${SERVICE_NAME}...\n"
     
-    until ls ${XDG_RUNTIME_DIR}/pipewire-*.lock >/dev/null 2>&1; do
-        printf "Waiting for Pipewire lockfile...\n"
+    until [ -S "/tmp/.X11-unix/X${DISPLAY/:/}" ]; do
+        printf "Waiting for X11 socket...\n"
         sleep 1
     done
 
-    source /opt/aura-dev/etc/environment.sh
+    source /opt/aura-dock/etc/environment.sh
 
-    /usr/bin/pipewire-pulse
+    /usr/bin/pipewire   
 }
 
 start 2>&1

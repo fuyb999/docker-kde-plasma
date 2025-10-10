@@ -3,7 +3,7 @@
 # This file will be sourced in init.sh
 # If you want to make environment variables avaiable globally:
 # do export VAR_NAME; env-store VAR_NAME
-# This will write to /opt/aura-dev/etc/environment.sh
+# This will write to /opt/aura-dock/etc/environment.sh
 
 function preflight_main() {
     preflight_do_something

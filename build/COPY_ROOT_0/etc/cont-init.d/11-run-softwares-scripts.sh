@@ -7,9 +7,9 @@
 set -e # Exit immediately if a command exits with a non-zero status.
 set -u # Treat unset variables as an error.
 
-software_dir="/opt/aura-dev/bin/software.d"
+software_dir="/opt/aura-dock/bin/software.d"
 printf "Looking for scripts in %s...\n" "$software_dir"
-for script in /opt/aura-dev/bin/software.d/*.sh; do
+for script in /opt/aura-dock/bin/software.d/*.sh; do
   source "$script";
 done
 
