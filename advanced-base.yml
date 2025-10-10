@@ -16,8 +16,8 @@ x-setup-template: &setup-template
         echo "Set the USERS_WORKSPACE environment variable in the .env file";
         exit 1;
       fi;
-      mkdir -p /workspaces/$${GIT_USER};
-      chown -R ${USER_ID}:${GROUP_ID} /workspaces/$${GIT_USER};
+      mkdir -p /workspaces/$${USER_NAME};
+      chown -R ${USER_ID}:${GROUP_ID} /workspaces/$${USER_NAME};
       if [ ! -d /config/.config/JetBrains ]; then
         sleep 1;
         if [ -f /backup/config-idea${IDEA_VERSION}.tar.xz.partaa ]; then
@@ -40,7 +40,7 @@ x-setup-template: &setup-template
         fi;
       fi;
       echo '' > /tmp/.config_restored;
-      until nc -z idea-docker-$${GIT_USER} 5900 > /dev/null 2>&1; do 
+      until nc -z idea-docker-$${USER_NAME} 5900 > /dev/null 2>&1; do 
         echo "Waiting for TurboVNC service to start on port 5900..."
         sleep 10
       done

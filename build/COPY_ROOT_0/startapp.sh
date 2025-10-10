@@ -52,11 +52,11 @@ start_idea() {
   fi
 
   if [ -z "$(git config --global user.name)" ]; then
-    git config --global user.name "${GIT_USER:-$USER_NAME}"
+    git config --global user.name "${USER_NAME}"
   fi
 
   if [ -z "$(git config --global user.email)" ]; then
-    git config --global user.email "${GIT_USER:-$USER_NAME}@gmail.com"
+    git config --global user.email "${USER_NAME}@gmail.com"
   fi
 
   if [ -n "$(echo "$STARTAPP" | grep idea)" ] && [ -f "$JREBEL_JAR_PATH" ] && [ -z "$(jps -l | grep -w $JREBEL_JAR_PATH | grep -vw grep)" ]; then
