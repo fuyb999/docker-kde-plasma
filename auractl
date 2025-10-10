@@ -69,7 +69,7 @@ has_actual_users() {
     return 1
   fi
 
-  if grep -q "^  setup-" "$COMPOSE_FILE"; then
+  if grep -q "^  aura-setup-" "$COMPOSE_FILE"; then
     return 0
   fi
 
@@ -188,9 +188,9 @@ has_actual_users() {
     return 1
   fi
 
-  # 检查是否有 setup- 开头的服务（真正的用户配置）
+  # 检查是否有 aura-setup- 开头的服务（真正的用户配置）
   # 修复：使用正确的正则表达式语法
-  if grep -q "^  setup-" "$COMPOSE_FILE"; then
+  if grep -q "^  aura-setup-" "$COMPOSE_FILE"; then
     return 0
   fi
 
@@ -263,13 +263,13 @@ EOF
   fi
 }
 
-# 获取所有用户（从 setup- 服务名中提取用户名）
+# 获取所有用户（从 aura-setup- 服务名中提取用户名）
 get_all_users() {
   if [[ ! -f "$COMPOSE_FILE" ]]; then
     return
   fi
-  # 只从 setup- 服务名中提取用户名，避免重复
-  grep -E "^  setup-[a-zA-Z0-9_-]+:" "$COMPOSE_FILE" | sed 's/^  setup-\([a-zA-Z0-9_-]*\):.*$/\1/' | grep -v "^$"
+  # 只从 aura-setup- 服务名中提取用户名，避免重复
+  grep -E "^  aura-setup-[a-zA-Z0-9_-]+:" "$COMPOSE_FILE" | sed 's/^  aura-setup-\([a-zA-Z0-9_-]*\):.*$/\1/' | grep -v "^$"
 }
 
 # 获取所有已使用的端口
@@ -305,12 +305,12 @@ get_current_max_ports() {
   # 遍历所有用户，找到每个端口位置的最大值
   for user in "${users[@]}"; do
     local user_ports=()
-    # 从 idea-docker- 服务中获取端口（因为 setup- 服务没有端口映射）
+    # 从 aura-docker- 服务中获取端口（因为 aura-setup- 服务没有端口映射）
     while IFS= read -r line; do
       if [[ "$line" =~ \ \"([0-9]+):([0-9]+)\" ]]; then
         user_ports+=("${BASH_REMATCH[1]}")
       fi
-    done < <(grep -A 20 "^  idea-docker-${user}:" "$COMPOSE_FILE" | grep -E '^[[:space:]]*- "[0-9]+:[0-9]+"')
+    done < <(grep -A 20 "^  aura-docker-${user}:" "$COMPOSE_FILE" | grep -E '^[[:space:]]*- "[0-9]+:[0-9]+"')
 
     # 更新每个端口位置的最大值
     for i in "${!user_ports[@]}"; do
@@ -338,7 +338,7 @@ calculate_new_ports() {
 # 检查用户是否存在
 user_exists() {
   local user="$1"
-  if grep -q "^  setup-${user}:" "$COMPOSE_FILE" 2>/dev/null; then
+  if grep -q "^  aura-setup-${user}:" "$COMPOSE_FILE" 2>/dev/null; then
     return 0
   else
     return 1
@@ -434,8 +434,8 @@ generate_user_config() {
   # 检查是否有 NVIDIA GPU，如果有则添加 GPU 配置
   if has_nvidia_gpu; then
     echo -e "${BLUE}ℹ 检测到 NVIDIA GPU，启用 GPU 支持${NC}"
-    # 在 idea-docker- 服务中添加 GPU 配置
-    template_content=$(echo "$template_content" | sed "/^  idea-docker-${user}:/a\\    <<: *nvidia-gpu-config")
+    # 在 aura-docker- 服务中添加 GPU 配置
+    template_content=$(echo "$template_content" | sed "/^  aura-docker-${user}:/a\\    <<: *nvidia-gpu-config")
   else
     echo -e "${YELLOW}⚠ 未检测到 NVIDIA GPU，跳过 GPU 配置${NC}"
   fi
@@ -565,12 +565,12 @@ show_port_usage() {
 
   for user in "${users[@]}"; do
     local user_ports=()
-    # 从 idea-docker- 服务中获取端口
+    # 从 aura-docker- 服务中获取端口
     while IFS= read -r line; do
       if [[ "$line" =~ \ \"([0-9]+):([0-9]+)\" ]]; then
         user_ports+=("${BASH_REMATCH[1]}")
       fi
-    done < <(grep -A 20 "^  idea-docker-${user}:" "$COMPOSE_FILE" | grep -E '^[[:space:]]*- "[0-9]+:[0-9]+"')
+    done < <(grep -A 20 "^  aura-docker-${user}:" "$COMPOSE_FILE" | grep -E '^[[:space:]]*- "[0-9]+:[0-9]+"')
 
     if [[ ${#user_ports[@]} -gt 0 ]]; then
       echo -e "  ${GREEN}✓${NC} $user: ${user_ports[*]}"
@@ -600,12 +600,12 @@ delete_user() {
 
   # 获取被删除用户的端口信息（用于显示）
   local user_ports=()
-  # 从 idea-docker- 服务中获取端口
+  # 从 aura-docker- 服务中获取端口
   while IFS= read -r line; do
     if [[ "$line" =~ \ \"([0-9]+):([0-9]+)\" ]]; then
       user_ports+=("${BASH_REMATCH[1]}")
     fi
-  done < <(grep -A 20 "^  idea-docker-${user}:" "$COMPOSE_FILE" | grep -E '^[[:space:]]*- "[0-9]+:[0-9]+"')
+  done < <(grep -A 20 "^  aura-docker-${user}:" "$COMPOSE_FILE" | grep -E '^[[:space:]]*- "[0-9]+:[0-9]+"')
 
   # 只在有实际用户时才备份
   backup_config
@@ -613,10 +613,10 @@ delete_user() {
   # 使用临时文件删除用户配置
   local temp_file=$(mktemp)
 
-  # 删除用户相关的服务块（setup- 和 idea-docker-）
+  # 删除用户相关的服务块（aura-setup- 和 aura-docker-）
   awk -v user="$user" '
-    /^  setup-'$user':/ { skip_setup = 1; next }
-    /^  idea-docker-'$user':/ { skip_idea = 1; next }
+    /^  aura-setup-'$user':/ { skip_setup = 1; next }
+    /^  aura-docker-'$user':/ { skip_idea = 1; next }
     /^  [a-zA-Z]/ && (skip_setup || skip_idea) {
         skip_setup = 0; skip_idea = 0
     }
@@ -653,12 +653,12 @@ list_users() {
 
   for user in "${users[@]}"; do
     local user_ports=()
-    # 从 idea-docker- 服务中获取端口
+    # 从 aura-docker- 服务中获取端口
     while IFS= read -r line; do
       if [[ "$line" =~ \ \"([0-9]+):([0-9]+)\" ]]; then
         user_ports+=("${BASH_REMATCH[1]}")
       fi
-    done < <(grep -A 20 "^  idea-docker-${user}:" "$COMPOSE_FILE" | grep -E '^[[:space:]]*- "[0-9]+:[0-9]+"')
+    done < <(grep -A 20 "^  aura-docker-${user}:" "$COMPOSE_FILE" | grep -E '^[[:space:]]*- "[0-9]+:[0-9]+"')
 
     if [[ ${#user_ports[@]} -gt 0 ]]; then
       echo -e "  ${GREEN}✓${NC} $user"
@@ -684,9 +684,9 @@ show_user() {
   echo -e "${BLUE}用户 '$user' 的配置:${NC}"
   echo "----------------------------------------"
 
-  # 提取用户配置块（setup- 和 idea-docker-）
-  sed -n "/^  setup-${user}:/,/^  [a-zA-Z]/p" "$COMPOSE_FILE" | head -n -1
-  sed -n "/^  idea-docker-${user}:/,/^  [a-zA-Z]/p" "$COMPOSE_FILE" | head -n -1
+  # 提取用户配置块（aura-setup- 和 aura-docker-）
+  sed -n "/^  aura-setup-${user}:/,/^  [a-zA-Z]/p" "$COMPOSE_FILE" | head -n -1
+  sed -n "/^  aura-docker-${user}:/,/^  [a-zA-Z]/p" "$COMPOSE_FILE" | head -n -1
 }
 
 # 恢复备份

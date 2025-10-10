@@ -53,7 +53,7 @@ x-setup-template: &setup-template
     retries: 120
     start_period: 3s
 
-x-idea-docker-template: &idea-docker-template
+x-aura-docker-template: &aura-docker-template
   env_file:
     - .env
   image: ${IDEA_DOCKER_IMAGE}
@@ -75,7 +75,7 @@ x-idea-docker-template: &idea-docker-template
     # For AMD GPU
     #- "/dev/kfd:/dev/kfd"
 
-  environment: &idea-docker-environment
+  environment: &aura-docker-environment
     SERVERLESS: ${SERVERLESS:-false}
     SSH_PORT_HOST: ${SSH_PORT_HOST:-2222}
 
@@ -99,7 +99,8 @@ services:
     volumes:
       - ${CONFIG_BACKUP_PATH:-./addons/backups}:/backup
       - ${USERS_WORKSPACE:-./workspaces}:/workspaces
-  idea-docker-base:
-    << : *idea-docker-template
+  aura-docker-base:
+    << : *aura-docker-template
+    working_dir: ${USER_HOME}
     environment:
-      << : *idea-docker-environment
+      << : *aura-docker-environment

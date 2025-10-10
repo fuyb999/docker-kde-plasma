@@ -12,6 +12,7 @@ x-nvidia-gpu: &nvidia-gpu-config
 
 services:
   aura-setup-{{USER}}:
+    container_name: aura-setup-{{USER}}
     extends:
       file: advanced-base.yml
       service: setup-base
@@ -19,14 +20,13 @@ services:
       - ${USERS_WORKSPACE}/{{USER}}/config:/config:rw
 
   aura-docker-{{USER}}:
-    container_name: idea-docker-{{USER}}
+    container_name: aura-docker-{{USER}}
     extends:
       file: advanced-base.yml
-      service: idea-docker-base
+      service: aura-docker-base
     depends_on:
       aura-setup-{{USER}}:
         condition: service_healthy
-    working_dir: ${USER_HOME}
     ports:
       - "5800:5800"
       - "5900:5900"
