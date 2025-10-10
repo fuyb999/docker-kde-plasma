@@ -17,8 +17,8 @@ function cleanup() {
 
 # todo improve this
 function start() {
-    source /opt/ai-dock/etc/environment.sh
-    source /opt/ai-dock/bin/venv-set.sh serviceportal
+    source /opt/aura-dev/etc/environment.sh
+    source /opt/aura-dev/bin/venv-set.sh serviceportal
     
     if [[ ${SERVERLESS,,} = "true" ]]; then
         printf "Refusing to start $SERVICE_NAME in serverless mode\n"
@@ -46,7 +46,7 @@ function start() {
     fuser -k -SIGKILL ${LISTEN_PORT}/tcp > /dev/null 2>&1 &
     wait -n
     
-    "$SERVICEPORTAL_VENV_PYTHON" /opt/ai-dock/fastapi/logviewer/main.py \
+    "$SERVICEPORTAL_VENV_PYTHON" /opt/aura-dev/fastapi/logviewer/main.py \
         -p $LISTEN_PORT \
         -r 5 \
         -s "${SERVICE_NAME}" \
@@ -63,7 +63,7 @@ function start() {
 
     printf "Starting ${SERVICE_NAME}...\n"
     
-    source /opt/ai-dock/etc/environment.sh
+    source /opt/aura-dev/etc/environment.sh
 
     sudo cp -f /usr/share/kasmvnc/kasmvnc_defaults.yaml.template \
         /usr/share/kasmvnc/kasmvnc_defaults.yaml

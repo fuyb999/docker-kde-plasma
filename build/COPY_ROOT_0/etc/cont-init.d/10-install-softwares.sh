@@ -7,7 +7,7 @@
 set -e # Exit immediately if a command exits with a non-zero status.
 set -u # Treat unset variables as an error.
 
-source /opt/ai-dock/etc/environment.sh
+source /opt/aura-dev/etc/environment.sh
 
 # 彻底禁用交互式配置
 export DEBIAN_FRONTEND=noninteractive

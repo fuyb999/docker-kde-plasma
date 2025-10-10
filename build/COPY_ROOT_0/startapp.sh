@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /opt/ai-dock/etc/environment.sh
+source /opt/aura-dev/etc/environment.sh
 
 set -u # Treat unset variables as an error.
 

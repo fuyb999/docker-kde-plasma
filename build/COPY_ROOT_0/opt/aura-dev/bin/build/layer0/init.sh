@@ -4,8 +4,8 @@
 set -eo pipefail
 umask 002
 
-groupadd -g ${USER_ID} ${USER_NAME}
-chown ${USER_ID}.${USER_NAME} /opt
+groupadd -g ${USER_ID} ${USER_GROUP_NAME}
+chown ${USER_ID}.${USER_GROUP_NAME} /opt
 chmod g+w /opt
 chmod g+s /opt
 
@@ -26,15 +26,15 @@ rm -f /etc/update-motd.d/10-help-text
 # Ensure critical paths/files are present
 mkdir -p --mode=0755 /etc/apt/keyrings
 mkdir -p --mode=0755 /run/sshd
-chown -R root.ai-dock /var/log
+chown -R root.aura-dev /var/log
 chmod -R g+w /var/log
 chmod -R g+s /var/log
 mkdir -p /var/log/supervisor
 mkdir -p /var/empty
 
-printf "source /opt/ai-dock/etc/environment.sh\n" >> /etc/profile.d/02-ai-dock.sh
-printf "source /opt/ai-dock/etc/environment.sh\n" >> /etc/bash.bashrc
+printf "source /opt/aura-dev/etc/environment.sh\n" >> /etc/profile.d/02-aura-dev.sh
+printf "source /opt/aura-dev/etc/environment.sh\n" >> /etc/bash.bashrc
 printf "ready-test\n" >> /root/.bashrc
 
-# Give our runtime user full access (added to ai-dock group)
-source /opt/ai-dock/bin/build/layer0/clean.sh
+# Give our runtime user full access (added to aura-dev group)
+source /opt/aura-dev/bin/build/layer0/clean.sh

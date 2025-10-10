@@ -1,6 +1,6 @@
 #!/bin/false
 
-source /opt/ai-dock/etc/environment.sh
+source /opt/aura-dev/etc/environment.sh
 
 build_common_main() {
     add-apt-repository multiverse

@@ -11,7 +11,7 @@ x-nvidia-gpu: &nvidia-gpu-config
             capabilities: [gpu]
 
 services:
-  setup-{{USER}}:
+  aura-setup-{{USER}}:
     extends:
       file: advanced-base.yml
       service: setup-base
@@ -20,13 +20,13 @@ services:
     volumes:
       - ${USERS_WORKSPACE}/{{USER}}/config:/config:rw
 
-  idea-docker-{{USER}}:
+  aura-docker-{{USER}}:
     container_name: idea-docker-{{USER}}
     extends:
       file: advanced-base.yml
       service: idea-docker-base
     depends_on:
-      setup-{{USER}}:
+      aura-setup-{{USER}}:
         condition: service_healthy
     environment:
       GIT_USER: {{USER}}

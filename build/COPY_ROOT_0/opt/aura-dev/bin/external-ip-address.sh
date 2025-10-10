@@ -1,9 +1,5 @@
 #!/bin/bash
 
-if [ -z "$(which dig)" ]; then
-  exit 0
-fi
-
 current_time=$(date +%s)
 cache_file="/tmp/external_ip_address"
 cache_max_age=${EXTERNAL_IP_CACHE_SECS:-900}

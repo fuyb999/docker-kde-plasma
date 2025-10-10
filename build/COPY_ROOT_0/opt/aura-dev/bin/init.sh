@@ -189,7 +189,7 @@ function init_count_quicktunnels() {
     if [[ ${CF_QUICK_TUNNELS,,} == "false" ]]; then
         export CF_QUICK_TUNNELS_COUNT=0
     else
-        export CF_QUICK_TUNNELS_COUNT=$(grep -l "QUICKTUNNELS=true" /opt/ai-dock/bin/supervisor-*.sh | wc -l)
+        export CF_QUICK_TUNNELS_COUNT=$(grep -l "QUICKTUNNELS=true" /opt/aura-dev/bin/supervisor-*.sh | wc -l)
         if [[ -z $TUNNEL_TRANSPORT_PROTOCOL ]]; then
             export TUNNEL_TRANSPORT_PROTOCOL=http2
         fi
@@ -204,7 +204,7 @@ init_sync_opt() {
         IFS=: read -r -d '' -a path_array < <(printf '%s:\0' "$OPT_SYNC")
         for item in "${path_array[@]}"; do
             opt_dir="/opt/${item}"
-            if [[ ! -d $opt_dir || $opt_dir = "/opt/" || $opt_dir = "/opt/ai-dock" ]]; then
+            if [[ ! -d $opt_dir || $opt_dir = "/opt/" || $opt_dir = "/opt/aura-dev" ]]; then
                 continue
             fi
 
@@ -306,8 +306,8 @@ function init_debug_print() {
         printf "authorized_keys...\n\n"
         cat /root/.ssh/authorized_keys
         printf "\n--------------------------------------------\n"
-        printf "/opt/ai-dock/etc/environment.sh...\n\n"
-        cat /opt/ai-dock/etc/environment.sh
+        printf "/opt/aura-dev/etc/environment.sh...\n\n"
+        cat /opt/aura-dev/etc/environment.sh
         printf "\n--------------------------------------------\n"
         printf ".bashrc...\n\n"
         cat /root/.bashrc
@@ -316,7 +316,7 @@ function init_debug_print() {
 }
 
 umask 002
-source /opt/ai-dock/etc/environment.sh
+source /opt/aura-dev/etc/environment.sh
 ldconfig
 
 STAGE=envs-init

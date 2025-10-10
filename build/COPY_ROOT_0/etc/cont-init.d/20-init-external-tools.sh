@@ -7,7 +7,7 @@
 set -e # Exit immediately if a command exits with a non-zero status.
 set -u # Treat unset variables as an error.
 
-source /opt/ai-dock/etc/environment.sh
+source /opt/aura-dev/etc/environment.sh
 
 if [[ ${SERVERLESS,,} = "true" ]]; then
     printf "Refusing to start external tools in serverless mode\n"
@@ -42,12 +42,18 @@ add_single_tool() {
     local description="$2"
     local command="$3"
     local parameters="$4"
+    local workdir="$5"
 
     # Escape XML special characters
     name=$(escape_xml "$name")
     description=$(escape_xml "$description")
     command=$(escape_xml "$command")
     parameters=$(escape_xml "$parameters")
+    workdir=$(escape_xml "$workdir")
+
+    if [ -z "$workdir" ] || [ "$wrokdir" = "null" ]; then
+      workdir='$ProjectFileDir$'
+    fi
 
     # Create temporary file
     local temp_file=$(mktemp)
@@ -62,7 +68,7 @@ add_single_tool() {
         print "    <exec>"
         print "      <option name=\"COMMAND\" value=\"" command "\" />"
         print "      <option name=\"PARAMETERS\" value=\"" parameters "\" />"
-        print "      <option name=\"WORKING_DIRECTORY\" value=\"$ProjectFileDir$\" />"
+        print "      <option name=\"WORKING_DIRECTORY\" value=\"" workdir "\" />"
         print "    </exec>"
         print "  </tool>"
         print ""
@@ -98,9 +104,10 @@ parse_json_config() {
         local description=$(echo "$json_config" | jq -r ".[$i].description")
         local command=$(echo "$json_config" | jq -r ".[$i].command")
         local parameters=$(echo "$json_config" | jq -r ".[$i].parameters")
+        local workdir=$(echo "$json_config" | jq -r ".[$i].workdir")
 
         if [ "$name" != "null" ] && [ "$description" != "null" ] && [ "$command" != "null" ]; then
-            add_single_tool "$name" "$description" "$command" "$parameters"
+            add_single_tool "$name" "$description" "$command" "$parameters" "$workdir"
         else
             echo "JSON configuration format error: index $i"
         fi

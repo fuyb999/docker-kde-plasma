@@ -2,7 +2,7 @@
 
 trap cleanup EXIT
 
-SERVICE_NAME="Pipewire-pulse"
+SERVICE_NAME="Wireplumber"
 
 function cleanup() {
     kill $(jobs -p) > /dev/null 2>&1
@@ -10,7 +10,7 @@ function cleanup() {
 }
 
 function start() {
-    source /opt/ai-dock/etc/environment.sh
+    source /opt/aura-dev/etc/environment.sh
     if [[ ${SERVERLESS,,} = "true" ]]; then
         printf "Refusing to start $SERVICE_NAME in serverless mode\n"
         exec sleep 10
@@ -28,9 +28,9 @@ function start() {
         sleep 1
     done
 
-    source /opt/ai-dock/etc/environment.sh
+    source /opt/aura-dev/etc/environment.sh
 
-    /usr/bin/pipewire-pulse
+    /usr/bin/wireplumber
 }
 
 start 2>&1

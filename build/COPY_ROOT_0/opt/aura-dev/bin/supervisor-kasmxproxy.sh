@@ -9,7 +9,7 @@ function cleanup() {
 
 # todo improve this
 function start() {
-    source /opt/ai-dock/etc/environment.sh
+    source /opt/aura-dev/etc/environment.sh
     if [[ ${SERVERLESS,,} = "true" ]]; then
         printf "Refusing to start $SERVICE_NAME in serverless mode\n"
         exec sleep 10
@@ -26,7 +26,7 @@ function start() {
     done
     
     
-    source /opt/ai-dock/etc/environment.sh
+    source /opt/aura-dev/etc/environment.sh
     kasmxproxy -a "${DISPLAY}" -v "${VNC_DISPLAY}"
 }
 

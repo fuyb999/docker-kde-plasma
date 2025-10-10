@@ -24,7 +24,7 @@ build_nvidia_main() {
     # Configure Vulkan manually
     VULKAN_API_VERSION=$(dpkg -s libvulkan1 | grep -oP 'Version: [0-9|\.]+' | grep -oP '[0-9]+(\.[0-9]+)(\.[0-9]+)')
     mkdir -pm755 /etc/vulkan/icd.d/ 
-    cp /opt/ai-dock/share/vulkan/icd.d/nvidia_icd.json /etc/vulkan/icd.d/
+    cp /opt/aura-dev/share/vulkan/icd.d/nvidia_icd.json /etc/vulkan/icd.d/
     sed -i "s/\$VULKAN_API_VERSION/$VULKAN_API_VERSION/g" /etc/vulkan/icd.d/nvidia_icd.json
 }
 

@@ -37,7 +37,7 @@ $APT_INSTALL \
 #wget https://ftp.halifax.rwth-aachen.de/blender/release/Blender4.2/blender-4.2.0-linux-x64.tar.xz
 #tar xvf blender-4.2.0-linux-x64.tar.xz
 #rm blender-4.2.0-linux-x64.tar.xz
-#ln -s /opt/blender-4.2.0-linux-x64/blender /opt/ai-dock/bin/blender
+#ln -s /opt/blender-4.2.0-linux-x64/blender /opt/aura-dev/bin/blender
 #cp /opt/blender-4.2.0-linux-x64/blender.desktop /usr/share/applications
 #cp /opt/blender-4.2.0-linux-x64/blender.svg /usr/share/icons/hicolor/scalable/apps/
 
@@ -48,14 +48,14 @@ $APT_INSTALL \
 #(cd /opt/krita && /opt/krita/krita.appimage --appimage-extract)
 #rm -f /opt/krita/krita.appimage
 #cp -rf /opt/krita/squashfs-root/usr/share/{applications,icons} /usr/share/
-#chmod +x /opt/ai-dock/bin/krita
+#chmod +x /opt/aura-dev/bin/krita
 
 # Chrome
 #wget -O /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 #$APT_INSTALL /tmp/chrome.deb
 #dpkg-divert --add /opt/google/chrome/google-chrome
 #cp -f /opt/google/chrome/google-chrome /opt/google/chrome/google-chrome.distrib
-#cp -f /opt/ai-dock/share/google-chrome/bin/google-chrome /opt/google/chrome/google-chrome
+#cp -f /opt/aura-dev/share/google-chrome/bin/google-chrome /opt/google/chrome/google-chrome
 
 #apt-get clean -y
 

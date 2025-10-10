@@ -83,8 +83,8 @@ x-idea-docker-template: &idea-docker-template
     # Will echo to root-owned authorized_keys file;
     # Avoids changing local file owner
     - ./config/authorized_keys:/root/.ssh/authorized_keys_mount
-    - ./config/provisioning/default.sh:/opt/ai-dock/bin/provisioning.sh:rw
-    - ./config/software:/opt/ai-dock/bin/software.d:ro,exec
+    - ./config/provisioning/default.sh:/opt/aura-dev/bin/provisioning.sh:rw
+    - ./config/software:/opt/aura-dev/bin/software.d:ro,exec
     # TLS Certificates
     - ./config/tls/server.crt:/opt/caddy/tls/container.crt
     - ./config/tls/server.key:/opt/caddy/tls/container.key

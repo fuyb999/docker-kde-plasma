@@ -17,9 +17,9 @@ function cleanup() {
 
 # todo improve this
 function start() {
-    source /opt/ai-dock/etc/environment.sh
-    source /opt/ai-dock/bin/venv-set.sh serviceportal
-    source /opt/ai-dock/bin/venv-set.sh selkies
+    source /opt/aura-dev/etc/environment.sh
+    source /opt/aura-dev/bin/venv-set.sh serviceportal
+    source /opt/aura-dev/bin/venv-set.sh selkies
     
     if [[ ${SERVERLESS,,} = "true" ]]; then
         printf "Refusing to start $SERVICE_NAME in serverless mode\n"
@@ -47,7 +47,7 @@ function start() {
     fuser -k -SIGKILL ${LISTEN_PORT}/tcp > /dev/null 2>&1 &
     wait -n
 
-    "$SERVICEPORTAL_VENV_PYTHON" /opt/ai-dock/fastapi/logviewer/main.py \
+    "$SERVICEPORTAL_VENV_PYTHON" /opt/aura-dev/fastapi/logviewer/main.py \
         -p $LISTEN_PORT \
         -r 5 \
         -s "${SERVICE_NAME}" \
@@ -64,7 +64,7 @@ function start() {
 
     printf "Starting ${SERVICE_NAME}...\n"
     
-    source /opt/ai-dock/etc/environment.sh
+    source /opt/aura-dev/etc/environment.sh
     source "$SELKIES_VENV/bin/activate"
     
     sudo mkdir -pm755 /dev/input
@@ -83,7 +83,7 @@ function start() {
     selkies-gstreamer-resize ${DISPLAY_SIZEW}x${DISPLAY_SIZEH}
     
     if [[ ${COTURN_ENABLED,,} == "true" ]]; then
-        export SELKIES_TURN_HOST="${SELKIES_TURN_HOST:-$(/opt/ai-dock/bin/external-ip-address)}"
+        export SELKIES_TURN_HOST="${SELKIES_TURN_HOST:-$(/opt/aura-dev/bin/external-ip-address)}"
         export SELKIES_TURN_PORT="${COTURN_PORT_HOST:-3478}"
         export SELKIES_TURN_USERNAME="${COTURN_USER:-user}"
         export SELKIES_TURN_PASSWORD="${COTURN_PASSWORD:-password}"

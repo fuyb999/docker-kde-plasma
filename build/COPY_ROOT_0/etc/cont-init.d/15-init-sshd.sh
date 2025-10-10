@@ -7,7 +7,7 @@
 set -e # Exit immediately if a command exits with a non-zero status.
 set -u # Treat unset variables as an error.
 
-source /opt/ai-dock/etc/environment.sh
+source /opt/aura-dev/etc/environment.sh
 
 ak_file="/root/.ssh/authorized_keys"
 if ! sudo ssh-keygen -l -f "$ak_file" > /dev/null 2>&1; then

@@ -7,9 +7,9 @@
 set -e # Exit immediately if a command exits with a non-zero status.
 set -u # Treat unset variables as an error.
 
-preflight_dir="/opt/ai-dock/bin/preflight.d"
+preflight_dir="/opt/aura-dev/bin/preflight.d"
 printf "Looking for scripts in %s...\n" "$preflight_dir"
-for script in /opt/ai-dock/bin/preflight.d/*.sh; do
+for script in /opt/aura-dev/bin/preflight.d/*.sh; do
   source "$script";
 done
 
