@@ -126,8 +126,6 @@ split -b 100M full-line.tar.xz full-line.tar.xz.part
 ```
 
 ```shell
-docker-compose config
-
 XZ_OPT="-9e --memlimit-compress=2G" tar --exclude=.git \
   --exclude=*/Anaconda3-2024.06-1-Linux-x86_64.sh \
   --exclude=*/jdk-*linux*.tar.gz \
@@ -138,6 +136,12 @@ XZ_OPT="-9e --memlimit-compress=2G" tar --exclude=.git \
   --exclude=*/firefox-128.0.tar.bz2* \
   --exclude=workspaces \
   -Jcvf docker-kde-plasma.tar.xz docker-kde-plasma
+```
+
+```shell
+docker-compose config
+obxprop | grep -E "(WM_CLASS|WM_NAME|_NET_WM_NAME)"
+openbox --reconfigure
 ```
 
 
